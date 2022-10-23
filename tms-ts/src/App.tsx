@@ -1,19 +1,16 @@
 import React from "react";
 import './App.css';
-import {Button, Grid} from "@mui/material";
+import {Grid} from "@mui/material";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import TestCases from "./testcases/testcases";
+import Header from "./components/Header";
 
 
 function App() {
     return (
         <Grid>
             <Grid>
-
-                <Button href="/testcases">
-                    Тест кейсы
-                </Button>
-
+                <Header/>
             </Grid>
             <Grid>
                 <BrowserRouter>
