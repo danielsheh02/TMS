@@ -3,7 +3,7 @@ import './App.css';
 import {Grid} from "@mui/material";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import TestCases from "./testcases/testcases";
-import Header from "./components/Header";
+import Header from "./components/header.component";
 
 
 function App() {
