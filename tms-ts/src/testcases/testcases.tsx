@@ -4,6 +4,7 @@ import {
 } from "@material-ui/core";
 import React, {useState} from "react";
 import useStyles from "../styles/styles";
+import Header from "../components/Header";
 
 
 const TestCases: React.FC = () => {
@@ -13,36 +14,39 @@ const TestCases: React.FC = () => {
     const handleShow = () => setShow(true);
 
     return (
-        <Grid>
-            <Button className={classes.button} onClick={handleShow}>Создать тест-кейс</Button>
+        <>
+            <Header/>
+            <Grid>
+                <Button className={classes.button} onClick={handleShow}>Создать тест-кейс</Button>
 
-            <Dialog
-                open={show}
-                onClose={handleClose}
-                classes={{ paper: classes.paperCreationTestCase}}
-            >
-                <DialogContent >
-                    <DialogContentText style={{fontSize: 20, color: "black"}}>
-                        Создание тест-кейса
-                        <br/>
-                    </DialogContentText>
-                    <DialogActions>
-                        <Button
-                            className={classes.button}
-                            onClick={handleClose}
-                            title={"Нет"}>
-                            Нет
-                        </Button>
-                        <Button className={classes.button}
-                                onClick={handleShow}
-                                title={"Да"}>
-                            Да
-                        </Button>
-                    </DialogActions>
-                </DialogContent>
-            </Dialog>
+                <Dialog
+                    open={show}
+                    onClose={handleClose}
+                    classes={{paper: classes.paperCreationTestCase}}
+                >
+                    <DialogContent>
+                        <DialogContentText style={{fontSize: 20, color: "black"}}>
+                            Создание тест-кейса
+                            <br/>
+                        </DialogContentText>
+                        <DialogActions>
+                            <Button
+                                className={classes.button}
+                                onClick={handleClose}
+                                title={"Нет"}>
+                                Нет
+                            </Button>
+                            <Button className={classes.button}
+                                    onClick={handleShow}
+                                    title={"Да"}>
+                                Да
+                            </Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Dialog>
 
-        </Grid>
+            </Grid>
+        </>
     );
 }
 
