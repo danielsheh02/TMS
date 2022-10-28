@@ -1,5 +1,4 @@
 import React from 'react';
-import Header from "../components/Header";
 import {
     Accordion,
     AccordionDetails,
@@ -21,8 +20,7 @@ const ProjectPage: React.FC = () => {
     const exampleData = ['Тест-план 1', '13', '10', '1', '0', '2']
 
     return (
-        <>
-            <Header/>
+        <div>
             <Grid sx={{display: 'flex', justifyContent: 'center'}}>
                 <Chart
                     chartType="LineChart"
@@ -85,7 +83,7 @@ const ProjectPage: React.FC = () => {
                         style={{maxHeight: '20px', fontWeight: 600, margin: '20px 20px 20px'}}>Фильтр</Button>
             </Paper>
 
-        </>
+        </div>
 
     );
 };

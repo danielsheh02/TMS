@@ -1,24 +1,23 @@
 import React from "react";
 import './App.css';
-import {Grid} from "@mui/material";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import TestCases from "./testcases/testcases";
 import ProjectPage from "./pages/ProjectPage";
+import Header from "./components/Header";
 
 
 function App() {
     return (
-        <Grid>
-            <Grid>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path={"/"} element={<ProjectPage/>}/>
-                        <Route path={"/testcases"} element={<TestCases/>}/>
-                    </Routes>
-                </BrowserRouter>
-            </Grid>
+        <div>
+            <Header/>
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"/"} element={<ProjectPage/>}/>
+                    <Route path={"/testcases"} element={<TestCases/>}/>
+                </Routes>
+            </BrowserRouter>
 
-        </Grid>
+        </div>
     );
 }
 
