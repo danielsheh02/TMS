@@ -7,15 +7,17 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
+import {Button} from "@material-ui/core";
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {NotificationsActive} from "@mui/icons-material";
+import useStyles from "../styles/styles";
+
 
 const settings = ['Профиль', 'Настройки', 'Выход'];
 
-const Header = () => {
+const Header: React.FC = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -33,6 +35,7 @@ const Header = () => {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+    const classes = useStyles()
 
     return (
         <AppBar position="static" sx={{
@@ -45,13 +48,9 @@ const Header = () => {
                         noWrap
                         component="a"
                         href="/"
+                        className={classes.logo_header}
                         sx={{
-                            mr: 0,
                             display: {xs: 'none', md: 'flex'},
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            color: 'inherit',
-                            textDecoration: 'none',
                         }}
                     >
                         TMS
@@ -87,17 +86,16 @@ const Header = () => {
                         >
                             <MenuItem onClick={handleCloseNavMenu}>
                                 <Typography
-                                    textAlign="center"
                                     component="a"
                                     href="/testcases"
-                                    sx={{
-                                        color: 'inherit',
-                                        textDecoration: 'none',
-                                    }}
+                                    className={classes.menuItem_header}
                                 >Тест-кейсы</Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseNavMenu}>
-                                <Typography textAlign="center">Тест-планы</Typography>
+                                <Typography
+                                    textAlign="center"
+                                    className={classes.menuItem_header}
+                                >Тест-планы</Typography>
                             </MenuItem>
                         </Menu>
                     </Box>
@@ -105,35 +103,26 @@ const Header = () => {
                         variant="h5"
                         noWrap
                         component="a"
-                        href=""
+                        href="/"
+                        className={classes.logo_header}
                         sx={{
                             mr: 2,
                             display: {xs: 'flex', md: 'none'},
                             flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
+                            letterSpacing: '.3rem'
                         }}
                     >
                         TMS
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, justifyContent: "center"}}>
                         <Button
-                            sx={{
-                                color: 'white',
-                                fontWeight: 600
-                            }}
+                            className={classes.button_header}
                             href="/testcases"
                         >
                             Тест-кейсы
                         </Button>
                         <Button
-                            sx={{
-                                color: 'white',
-                                fontWeight: 600
-                            }}
+                            className={classes.button_header}
                         >
                             Тест-планы
                         </Button>
