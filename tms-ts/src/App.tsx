@@ -1,23 +1,18 @@
 import React from "react";
 import './App.css';
-import {Button, Grid} from "@mui/material";
+import {Grid} from "@mui/material";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import TestCases from "./testcases/testcases";
+import ProjectPage from "./pages/ProjectPage";
 
 
 function App() {
     return (
         <Grid>
             <Grid>
-
-                <Button href="/testcases">
-                    Тест кейсы
-                </Button>
-
-            </Grid>
-            <Grid>
                 <BrowserRouter>
                     <Routes>
+                        <Route path={"/"} element={<ProjectPage/>}/>
                         <Route path={"/testcases"} element={<TestCases/>}/>
                     </Routes>
                 </BrowserRouter>
