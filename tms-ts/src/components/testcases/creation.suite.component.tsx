@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import useStyles from "../styles/styles";
+import useStyles from "../../styles/styles";
 import {
     Button,
     Dialog,
@@ -87,7 +87,6 @@ const CreationSuite: React.FC<Props> = ({show, setShow}) => {
                     <Grid style={{textAlign: "center"}}>
                         <Grid>
                             <Button onClick={handleClose} style={{
-
                                 marginRight: 7,
                                 marginBottom: 20,
                                 width: "40%",
@@ -99,8 +98,6 @@ const CreationSuite: React.FC<Props> = ({show, setShow}) => {
                                 Отменить
                             </Button>
                             <Button style={{
-                                // overflow: "hidden",
-                                // whiteSpace: "pre-wrap",
                                 marginLeft: 7,
                                 marginBottom: 20,
                                 width: "40%",

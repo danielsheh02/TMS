@@ -1,7 +1,7 @@
 import React from "react";
 import './App.css';
 import {Route, Routes, BrowserRouter} from "react-router-dom";
-import TestCases from "./testcases/testcases";
+import SuitesComponent from "./components/testcases/suites.component";
 import ProjectPage from "./pages/ProjectPage";
 import Header from "./components/Header";
 
@@ -13,7 +13,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path={"/"} element={<ProjectPage/>}/>
-                    <Route path={"/testcases"} element={<TestCases/>}/>
+                    <Route path={"/testcases"} element={<SuitesComponent/>}/>
                 </Routes>
             </BrowserRouter>
 
