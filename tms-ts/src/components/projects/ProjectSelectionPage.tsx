@@ -1,5 +1,5 @@
 import React from "react";
-import useStyles from "../styles/styles";
+import useStyles from "../../styles/styles";
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import BookIcon from '@mui/icons-material/Book';
 import Typography from "@mui/material/Typography";
