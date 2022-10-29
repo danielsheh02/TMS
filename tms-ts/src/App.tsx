@@ -1,7 +1,7 @@
 import React from "react";
 import './App.css';
 import {Route, Routes, BrowserRouter} from "react-router-dom";
-import TestCases from "./testcases/testcases";
+import SuitesComponent from "./components/testcases/suites.component";
 import ProjectPage from "./pages/ProjectPage";
 import Header from "./components/Header";
 import Login from "./components/Login"
@@ -17,7 +17,7 @@ function App() {
                     <Route path={"/"} element={<ProjectSelectionPage/>}/>
                     <Route path={"/project"} element={<ProjectPage/>}/>
                     <Route path={"/login"} element={<Login/>}/>
-                    <Route path={"/testcases"} element={<TestCases/>}/>
+                    <Route path={"/testcases"} element={<SuitesComponent/>}/>
                 </Routes>
             </BrowserRouter>
 
