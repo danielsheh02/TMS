@@ -2,14 +2,12 @@ import {
     Button, Grid
 } from "@material-ui/core";
 import React, {useState} from "react";
-import useStyles from "../../styles/styles";
 import CreationCase from "./creation.case.component";
 import CreationSuite from "./creation.suite.component";
 import TableSuites from "./table.suites.component";
 
 
-const SuitesComponent: React.FC = () => {
-    const classes = useStyles()
+const Suites: React.FC = () => {
     const [showCreationCase, setShowCreationCase] = useState(false)
     const [showCreationSuite, setShowCreationSuite] = useState(false)
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -55,4 +53,4 @@ const SuitesComponent: React.FC = () => {
         ;
 }
 
-export default SuitesComponent
+export default Suites

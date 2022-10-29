@@ -1,23 +1,23 @@
 import React from "react";
 import './App.css';
 import {Route, Routes, BrowserRouter} from "react-router-dom";
-import SuitesComponent from "./components/testcases/suites.component";
-import ProjectPage from "./components/projects/ProjectPage";
-import Header from "./components/Header";
-import Login from "./components/Login"
-import ProjectSelectionPage from "./components/projects/ProjectSelectionPage";
+import Suites from "./components/testcases/suites";
+import Projects from "./components/projects/projects";
+import HeaderComponent from "./components/header";
+import Login from "./components/login"
+import ProjectSelection from "./components/projects/projectSelection";
 
 
 function App() {
     return (
         <div>
-            <Header/>
+            <HeaderComponent/>
             <BrowserRouter>
                 <Routes>
-                    <Route path={"/"} element={<ProjectSelectionPage/>}/>
-                    <Route path={"/project"} element={<ProjectPage/>}/>
+                    <Route path={"/"} element={<ProjectSelection/>}/>
+                    <Route path={"/project"} element={<Projects/>}/>
                     <Route path={"/login"} element={<Login/>}/>
-                    <Route path={"/testcases"} element={<SuitesComponent/>}/>
+                    <Route path={"/testcases"} element={<Suites/>}/>
                 </Routes>
             </BrowserRouter>
 

@@ -13,7 +13,7 @@ import IconButton from "@mui/material/IconButton";
 const projects = [["Проект1", "Какая-то информация о проекте 1"], ["Проект2", "Какая-то информация о проекте 2"],
     ["Проект3", "Какая-то информация о проекте 3"], ["Проект4", "Какая-то информация о проекте 4"]]
 
-const ProjectSelectionPage: React.FC = () => {
+const ProjectSelection: React.FC = () => {
     const classes = useStyles()
     const [expanded, setExpanded] = React.useState(false);
     const [projectName, setProjectName] = React.useState("");
@@ -161,4 +161,4 @@ const ProjectSelectionPage: React.FC = () => {
     )
 }
 
-export default ProjectSelectionPage;
+export default ProjectSelection;
