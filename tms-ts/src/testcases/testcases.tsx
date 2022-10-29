@@ -5,7 +5,6 @@ import React, {useState} from "react";
 import useStyles from "../styles/styles";
 import CreationCase from "./creation.case.component";
 import CreationSuite from "./creation.suite.component";
-import Header from "../components/Header";
 
 
 const TestCases: React.FC = () => {

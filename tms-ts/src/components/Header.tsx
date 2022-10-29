@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {NotificationsActive} from "@mui/icons-material";
 
-const settings = ['Профиль', 'Настройки', 'Выход'];
+const settings = [['Профиль', "/"], ['Настройки', "/"], ['Выход', "/login"]];
 
 const Header = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -164,9 +164,9 @@ const Header = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
+                            {settings.map(([setting_name, path]) => (
+                                <MenuItem key={setting_name}>
+                                    <Typography textAlign="center">{setting_name}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

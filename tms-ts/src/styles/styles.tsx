@@ -1,4 +1,5 @@
 import {makeStyles} from "@material-ui/core/styles";
+import React from "react";
 
 
 export default makeStyles({
@@ -45,5 +46,43 @@ export default makeStyles({
         "& .MuiButton-textSizeMedium": {
             fontSize: 50
         },
-    }
+    },
+    rootLogin: {
+        // "& .MuiFormLabel-root": {
+        //     margin: 0
+        // }
+    },
+    divLogin: {
+        margin: 20,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    paperLogin: {
+        marginTop: 40,
+        // width: 500,
+        minWidth: 300,
+        minHeight: 300
+    },
+    formLogin: {
+        width: '100%',
+        marginTop: 5,
+    },
+    submitLogin: {
+        backgroundColor: '#3f51b5',
+    },
+    divProjectSelectionPage: {
+        // width: '60%',
+        marginTop: 100,
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    divProjectSelectionPageLine: {
+        flexDirection: 'row',
+        display: 'flex',
+        marginTop: 10,
+    },
+    paperCreationProject: {
+        borderRadius: 10
+    },
 });
