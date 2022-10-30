@@ -24,8 +24,11 @@ const SuitesComponent: React.FC = () => {
             height: "91%",
             width: "100%"
         }}>
-            <Grid xs={10} item style={{backgroundColor: "#4d4d4d"}}>
-                <TableSuites selected={selected} setSelected={setSelected}/>
+            <Grid xs={10} item >
+                <TableSuites selected={selected} setSelected={setSelected}
+                             setShowCreationCase={setShowCreationCase}
+                             setShowCreationSuite={setShowCreationSuite}
+                />
             </Grid>
             <Grid xs={2} item style={{
                 backgroundColor: "#eeeeee"
