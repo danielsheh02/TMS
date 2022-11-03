@@ -11,7 +11,7 @@ import ProjectSelection from "./components/projects/projectSelection";
 function App() {
     return (
         <div>
-            <HeaderComponent/>
+            {window.location.pathname !== '/login' && <HeaderComponent/>}
             <BrowserRouter>
                 <Routes>
                     <Route path={"/"} element={<ProjectSelection/>}/>

@@ -14,6 +14,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {NotificationsActive} from "@mui/icons-material";
 
 const settings = [['Профиль', "/"], ['Настройки', "/"], ['Выход', "/login"]];
+const buttons = [['Тест-кейсы', "/testcases"], ['Тест-планы', "/"]];
 
 const Header = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -34,6 +35,25 @@ const Header = () => {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
+    const isProjectOpen = window.location.pathname !== '/';
+
+    const buttonsAtNavBar = () => {
+        if (isProjectOpen) {
+            return (
+                buttons.map(([button_name, path]) => (
+                    <Button
+                        sx={{
+                            color: 'white',
+                            fontWeight: 600
+                        }}
+                        href={path}
+                    >
+                        {button_name}
+                    </Button>
+                )))
+        }
+    }
 
     return (
         <AppBar position="static" sx={{
@@ -121,24 +141,11 @@ const Header = () => {
                         TMS
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, justifyContent: "center"}}>
-                        <Button
-                            sx={{
-                                color: 'white',
-                                fontWeight: 600
-                            }}
-                            href="/testcases"
-                        >
-                            Тест-кейсы
-                        </Button>
-                        <Button
-                            sx={{
-                                color: 'white',
-                                fontWeight: 600
-                            }}
-                        >
-                            Тест-планы
-                        </Button>
+                        <React.Fragment>
+                            {buttonsAtNavBar()}
+                        </React.Fragment>
                     </Box>
+
 
                     <Box sx={{flexGrow: 0}}>
                         <Tooltip title="Уведомления">
@@ -167,7 +174,15 @@ const Header = () => {
                         >
                             {settings.map(([setting_name, path]) => (
                                 <MenuItem key={setting_name}>
-                                    <Typography textAlign="center">{setting_name}</Typography>
+                                    <Typography
+                                        textAlign="center"
+                                        component="a"
+                                        href={path}
+                                        sx={{
+                                            color: 'inherit',
+                                            textDecoration: 'none',
+                                        }}
+                                    >{setting_name}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
