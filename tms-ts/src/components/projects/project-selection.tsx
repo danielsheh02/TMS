@@ -19,21 +19,25 @@ const ProjectSelection: React.FC = () => {
     const [projectName, setProjectName] = React.useState("");
     const [projectDescription, setProjectDescription] = React.useState("");
 
-    const onChangeProjectName =
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            setProjectName(e.target.value)
-        };
+    const onChangeProjectName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setProjectName(e.target.value)
+    };
 
-    const onChangeProjectDescription =
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            setProjectDescription(e.target.value)
-        };
+    const onChangeProjectDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setProjectDescription(e.target.value)
+    };
+
+    const saveProject = (e: React.FormEvent<HTMLFormElement>) => {
+        // console.log(projects[0])
+        // projects[projects.length] = [e.currentTarget.projectName.value, e.currentTarget.projectDescription.value]
+
+    }
 
     return (
         <Container component="main" maxWidth="md">
             <div className={classes.divProjectSelectionPage}>
                 <div className={classes.divProjectSelectionPageLine}>
-                    <Typography variant="h6" style={{marginTop:5}}>
+                    <Typography variant="h6" style={{marginTop: 5}}>
                         Проекты
                     </Typography>
                     <IconButton
@@ -60,9 +64,10 @@ const ProjectSelection: React.FC = () => {
                         marginBottom: 20,
                         marginTop: 10,
                         marginLeft: 5,
-                        marginRight: 5
+                        marginRight: 5,
+                        minWidth: 750
                     }}>
-                        <div style={{
+                        <form onSubmit={saveProject} style={{
                             alignItems: 'center',
                             flexDirection: 'column',
                             display: 'flex',
@@ -114,7 +119,6 @@ const ProjectSelection: React.FC = () => {
                                     id="projectDescription"
                                     name="projectDescription"
                                     autoComplete="on"
-                                    autoFocus
                                     value={projectDescription}
                                     onChange={onChangeProjectDescription}
                                 />
@@ -125,26 +129,20 @@ const ProjectSelection: React.FC = () => {
                                 marginTop: 10,
                             }}>
                                 <Button
+                                    type="submit"
                                     variant={'contained'}
                                     color={'secondary'}
-                                    style={{marginRight: 5}}
                                 >
                                     Сохранить
                                 </Button>
-                                <Button
-                                    variant={'contained'}
-                                    color={'secondary'}
-                                >
-                                    Отмена
-                                </Button>
                             </div>
-                        </div>
+                        </form>
 
                     </Card>
                 </Collapse>
 
                 {projects.map(([name, info]) =>
-                    <div className={classes.divProjectSelectionPageLine}>
+                    <div key={name} className={classes.divProjectSelectionPageLine}>
                         <Link href="/project" underline="none" style={{display: 'flex', color: '#282828'}}>
                             <BookIcon style={{marginTop: 0, fontSize: 30}}/>
                             <Typography variant="h6" style={{marginLeft: 16}}>

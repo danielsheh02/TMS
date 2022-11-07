@@ -46,9 +46,9 @@ export default makeStyles({
         },
     },
     rootLogin: {
-        // "& .MuiFormLabel-root": {
-        //     margin: 0
-        // }
+        "& .MuiFormLabel-root": {
+            margin: 0
+        }
     },
     divLogin: {
         margin: 20,
