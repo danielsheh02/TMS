@@ -12,6 +12,7 @@ import {Button} from "@material-ui/core";
 import LineChartComponent from "./charts/line.chart.component";
 import PieChartComponent from "./charts/pie.chart.component";
 import AreaChartComponent from "./charts/area.chart.component";
+import {testsData} from "./dataExample";
 
 
 const Projects: React.FC = () => {
@@ -22,25 +23,15 @@ const Projects: React.FC = () => {
     "                    тестов", "График сравнения ожидаемого время и\n" +
     "                    результата"]
     const charts = [<LineChartComponent/>, <PieChartComponent/>, <AreaChartComponent/>]
-    const testsData = [['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий'],
-        ['Тест-план 1', '13', '10', '1', '0', '2', '10.10.2022', 'Георгий']]
 
     return (
         <div style={{display: "flex", flexDirection: "column"}}>
-            <Grid sx={{display: 'flex', justifyContent: 'center', mt: "20px"}}>
-                {chartsLabels.map((label) =>
-                    <Typography variant={"h6"} width={"30%"} align={"center"}>{label}</Typography>)
-                }
-            </Grid>
-            <Grid sx={{display: 'flex', justifyContent: 'center'}}>
+            {/*<Grid sx={{display: 'flex', justifyContent: 'center', mt: "20px"}}>*/}
+            {/*    {chartsLabels.map((label) =>*/}
+            {/*        <Typography variant={"h6"} width={"30%"} align={"center"}>{label}</Typography>)*/}
+            {/*    }*/}
+            {/*</Grid>*/}
+            <Grid sx={{display: 'flex', justifyContent: 'center', mt: '20px'}}>
                 {charts.map((chart) =>
                     <div style={{width: "30%"}}>
                         {chart}
@@ -52,18 +43,15 @@ const Projects: React.FC = () => {
                 justifyContent: 'center',
                 backgroundColor: "#858585",
                 margin: "50px auto",
-                width: "90%",
+                width: "100%",
                 padding: "10px 10px 10px 10px"
             }}>
                 <Stack
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center'
-                    }}>
+                    sx={{}}>
                     <Typography color={"white"} fontWeight={700} fontSize={24} mb={'20px'} align={'center'}>
                         Активность проекта
                     </Typography>
-                    <TableContainer component={Paper} sx={{maxHeight: '300px'}}>
+                    <TableContainer component={Paper}>
                         <Table stickyHeader>
                             <TableHead sx={{mb: '20px'}}>
                                 <TableRow>
@@ -76,7 +64,7 @@ const Projects: React.FC = () => {
                                 </TableRow>
                             </TableHead>
 
-                            <TableBody sx={{overflowY: "scroll"}}>
+                            <TableBody>
                                 {testsData.map((row) =>
                                     <TableRow>
                                         {row.map((value) =>

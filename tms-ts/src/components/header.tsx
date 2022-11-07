@@ -75,7 +75,7 @@ const Header = () => {
                             textDecoration: 'none',
                         }}
                     >
-                        TMS
+                        TestY
                     </Typography>
 
                     <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
@@ -138,7 +138,7 @@ const Header = () => {
                             textDecoration: 'none',
                         }}
                     >
-                        TMS
+                        TestY
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, justifyContent: "center"}}>
                         <React.Fragment>

@@ -1,14 +1,8 @@
 import React from 'react';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from "recharts";
+import {pieData} from "../dataExample";
 
 const PieChartComponent: React.FC = () => {
-    const pieData = [
-        {name: 'Георгий', value: 14},
-        {name: 'Андрей', value: 15},
-        {name: 'Павел', value: 30},
-        {name: 'Илья', value: 20},
-    ];
-
     return (
         <ResponsiveContainer height={200}>
             <PieChart>
