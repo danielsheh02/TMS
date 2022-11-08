@@ -17,9 +17,9 @@ const SuitesComponent: React.FC = () => {
     const handleShowCreationCase = () => setShowCreationCase(true)
 
     const handleShowCreationSuite = () => setShowCreationSuite(true)
-    console.log(selected)
     return (
         <Grid container style={{
+            marginTop: 0,
             position: "absolute",
             height: "91%",
             width: "100%"

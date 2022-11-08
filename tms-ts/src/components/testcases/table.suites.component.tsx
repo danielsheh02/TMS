@@ -4,7 +4,10 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import React from "react";
+import React, {useEffect, useRef} from "react";
+import useStyles from "../../styles/styles";
+import useMediaQuery from '@mui/material/useMediaQuery';
+
 
 function createSuite(
     name: string,
@@ -18,10 +21,56 @@ function createSuite(
     };
 }
 
+function CaseTagsField(props: { tags: any[] }) {
+    const {tags} = props
+    const classes = useStyles()
+    const [showMore, setShowMore] = React.useState(false);
+    const [showLink, setShowLink] = React.useState(false);
+    const gridTagsRef = useRef<any>(null);
+    useEffect(() => {
+        if (gridTagsRef.current && gridTagsRef.current.clientHeight < gridTagsRef.current.scrollHeight) {
+            setShowLink(true);
+        }
+    })
+
+    const onClickMore = () => {
+        setShowMore(!showMore);
+    }
+    return (
+        <Grid>
+            <Grid ref={gridTagsRef}
+                  className={showMore ? "" : classes.gridTags}
+            >
+                {tags.map((tag, index) => (
+
+                    <Chip className={classes.chipTagsStatusInSuites} key={index}
+                          style={{
+                              margin: 5,
+                              borderRadius: 10,
+                              maxWidth: 300
+                          }} label={tag}/>
+
+                ))
+                }
+            </Grid>
+            <Grid style={{display: "flex", justifyContent: "left", marginLeft: 35}}>
+                {(showLink && showMore && <Link component="button" onClick={() => onClickMore()}>
+                    Свернуть
+                </Link>)
+                ||
+                (showLink && !showMore && <Link component="button" onClick={() => onClickMore()}>
+                    Развернуть
+                </Link>)}
+            </Grid>
+        </Grid>
+    )
+}
+
 function Row(props: {
     row: ReturnType<typeof createSuite>, selected: readonly string[], setSelected: (array: readonly string[]
     ) => void, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void, open2: boolean
 }) {
+    const classes = useStyles()
     const {row, selected, setSelected, setShowCreationCase, setShowCreationSuite, open2} = props;
     const [open, setOpen] = React.useState(false);
     // const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -38,7 +87,6 @@ function Row(props: {
     const isSelected = (name: string) => {
         return selected.indexOf(name) !== -1
     };
-    console.log(selected)
     const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
         const selectedIndex = selected.indexOf(name);
         let newSelected: readonly string[] = [];
@@ -64,31 +112,29 @@ function Row(props: {
             <TableRow>
                 <TableCell colSpan={4}>
                     <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1}}>
-                        <IconButton
-                            style={{marginLeft: 9}}
+                        <Chip onClick={() => setOpen(!open)} icon={<IconButton
+                            style={{marginLeft: 1}}
                             aria-label="expand row"
                             size="small"
-                            onClick={() => setOpen(!open)}
                         >
                             <KeyboardArrowUpIcon sx={{
                                 transform: open ? 'rotate(0deg)' : 'rotate(180deg)',
                                 transition: '0.2s',
                             }}/>
-                        </IconButton>
-                        <Chip style={{marginTop: 7}} label={row.name}/>
-
+                        </IconButton>} style={{marginTop: 7}} label={row.name}/>
                     </Grid>
                 </TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{paddingBottom: 0, paddingTop: 0, paddingRight: 0, marginRight: 10}} colSpan={4}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Collapse in={open} unmountOnExit mountOnEnter>
                         <Grid>
                             <Table size="small">
-                                <TableBody>
-                                    <TableRow style={{backgroundColor: "#eeeeee", border: '1px solid'}}>
+                                <TableBody style={{border: '1px solid'}}>
+                                    <TableRow style={{backgroundColor: "#eeeeee"}}>
                                         <TableCell style={{width: "1%"}}>
                                             <Checkbox
+                                                style={{height: 20}}
                                                 indeterminate={selected.length > 0 && selected.length < row.cases.length}
                                                 checked={selected.length > 0 && selected.length === row.cases.length}
                                                 onChange={(e) => handleSelectAllClick(e)}
@@ -103,14 +149,12 @@ function Row(props: {
                                         <TableCell align={"center"} style={{width: "auto"}}>Статус</TableCell>
                                     </TableRow>
                                 </TableBody>
-
-                                <TableBody sx={{
-                                    border: '1px solid',
-                                }}>
+                                <TableBody style={{border: '1px solid'}}>
                                     {row.cases.map((onecase, index) => (
                                         <TableRow key={index}>
                                             <TableCell>
                                                 <Checkbox
+                                                    style={{height: 25}}
                                                     onClick={(event) => handleClick(event, onecase.name)}
                                                     color="primary"
                                                     checked={isSelected(onecase.name)}
@@ -122,51 +166,41 @@ function Row(props: {
                                                        padding="none">
                                                 {onecase.name}
                                             </TableCell>
-                                            <TableCell align={"center"} sx={{width: "50%"}}
+                                            <TableCell  align={"center"} sx={{width: "50%"}}
                                             >
-                                                <Grid sx={{overflowY: "auto", maxHeight: 90}}>
-                                                    {onecase.tags.map((tag, index) => (<Chip key={index} style={{
-                                                        margin: 5,
-                                                        borderRadius: 10
-                                                    }} label={tag}/>))}
-                                                </Grid>
+                                                <CaseTagsField tags={onecase.tags}/>
                                             </TableCell>
                                             <TableCell align={"center"}>
-                                                {onecase.status == "Failed" && <Chip style={{
-                                                    width: 90,
-                                                    padding: 3,
+                                                {onecase.status == "Failed" &&
+                                                <Chip className={classes.chipTagsStatusInSuites} style={{
                                                     backgroundColor: alpha("#ff0000", 0.75),
                                                     color: "#ffffff",
-                                                    borderRadius: 10
+                                                    borderRadius: 10,
                                                 }} label={onecase.status}/>
                                                 ||
-                                                onecase.status == "Passed" && <Chip style={{
-                                                    width: 90,
-                                                    padding: 3,
+                                                onecase.status == "Passed" &&
+                                                <Chip className={classes.chipTagsStatusInSuites} style={{
                                                     backgroundColor: alpha("#1da900", 0.75),
                                                     color: "#ffffff",
                                                     borderRadius: 10
                                                 }} label={onecase.status}/>
                                                 ||
-                                                onecase.status == "Skipped" && <Chip style={{
-                                                    width: 90,
-                                                    padding: 3,
+                                                onecase.status == "Skipped" &&
+                                                <Chip className={classes.chipTagsStatusInSuites} style={{
                                                     backgroundColor: alpha("#d3c100", 0.75),
                                                     color: "#ffffff",
                                                     borderRadius: 10
                                                 }} label={onecase.status}/>
                                                 ||
-                                                onecase.status == "Retest" && <Chip style={{
-                                                    width: 90,
-                                                    padding: 3,
+                                                onecase.status == "Retest" &&
+                                                <Chip className={classes.chipTagsStatusInSuites} style={{
                                                     backgroundColor: alpha("#3a3939", 0.75),
                                                     color: "#ffffff",
                                                     borderRadius: 10
                                                 }} label={onecase.status}/>
                                                 ||
-                                                onecase.status == "Untested" && <Chip style={{
-                                                    width: 90,
-                                                    padding: 3,
+                                                onecase.status == "Untested" &&
+                                                <Chip className={classes.chipTagsStatusInSuites} style={{
                                                     borderRadius: 10,
                                                     backgroundColor: alpha("#9f9f9f", 0.75),
                                                     color: "#ffffff"
@@ -176,20 +210,22 @@ function Row(props: {
                                         </TableRow>
                                     ))}
                                 </TableBody>
-                                <TableRow>
-                                    <TableCell colSpan={4}>
-                                        <Grid style={{display: "flex", flexDirection: "row"}}>
-                                            <Link component="button" onClick={() => setShowCreationCase(true)}>
-                                                Добавить тест-кейс
-                                            </Link>
-                                            <Link underline="none">&nbsp;&nbsp;|&nbsp;&nbsp;</Link>
-                                            <Link component="button"
-                                                  onClick={() => setShowCreationSuite(true)}>
-                                                Добавить сьюту
-                                            </Link>
-                                        </Grid>
-                                    </TableCell>
-                                </TableRow>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell colSpan={4}>
+                                            <Grid style={{display: "flex", flexDirection: "row"}}>
+                                                <Link component="button" onClick={() => setShowCreationCase(true)}>
+                                                    Добавить тест-кейс
+                                                </Link>
+                                                <Link underline="none">&nbsp;&nbsp;|&nbsp;&nbsp;</Link>
+                                                <Link component="button"
+                                                      onClick={() => setShowCreationSuite(true)}>
+                                                    Добавить сьюту
+                                                </Link>
+                                            </Grid>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
                                 {row && row.suites &&
                                 <TableBody>
                                     {row.suites.map((suite: any, index: number) => (
@@ -242,7 +278,7 @@ const TableSuites = (props: {
     const suiteChildChild = [createSuite('Уведомления на почту', [
         {
             name: 'Добавление пользователя',
-            tags: ['СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
+            tags: ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
                 "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
                 "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
                 "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
@@ -272,13 +308,14 @@ const TableSuites = (props: {
                 [
                     {
                         name: 'Добавление пользователя3',
-                        tags: ['СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
+                        tags: ['СРОЧСРОЧСРОЧСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
                             "СРОЧНО", "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"],
                         status: 'Passed',
                     },
                     {
                         name: 'Удаление пользователя3',
-                        tags: ['НЕ НАДО ЭТО ТЕСТИРОВАТЬ'],
+                        tags: ['СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
+                            "СРОЧНО", "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"],
                         status: 'Failed',
                     }
                 ], suiteChild
