@@ -15,15 +15,18 @@ const Suites: React.FC = () => {
     const handleShowCreationCase = () => setShowCreationCase(true)
 
     const handleShowCreationSuite = () => setShowCreationSuite(true)
-    console.log(selected)
     return (
         <Grid container style={{
+            marginTop: 0,
             position: "absolute",
             height: "91%",
             width: "100%"
         }}>
-            <Grid xs={10} item style={{backgroundColor: "#4d4d4d"}}>
-                <TableSuites selected={selected} setSelected={setSelected}/>
+            <Grid xs={10} item >
+                <TableSuites selected={selected} setSelected={setSelected}
+                             setShowCreationCase={setShowCreationCase}
+                             setShowCreationSuite={setShowCreationSuite}
+                />
             </Grid>
             <Grid xs={2} item style={{
                 backgroundColor: "#eeeeee"
