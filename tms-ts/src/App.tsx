@@ -1,25 +1,25 @@
 import React from "react";
 import './App.css';
-import {Route, Routes, BrowserRouter} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import Suites from "./components/testcases/suites";
 import Projects from "./components/projects/projects";
-import HeaderComponent from "./components/header";
+import Header from "./components/header";
 import Login from "./components/login"
-import ProjectSelection from "./components/projects/projectSelection";
+import ProjectSelection from "./components/projects/project-selection";
+import NotExist from "./components/not-exist";
 
 
 function App() {
     return (
         <div>
-            {window.location.pathname !== '/login' && <HeaderComponent/>}
-            <BrowserRouter>
-                <Routes>
-                    <Route path={"/"} element={<ProjectSelection/>}/>
-                    <Route path={"/project"} element={<Projects/>}/>
-                    <Route path={"/login"} element={<Login/>}/>
-                    <Route path={"/testcases"} element={<Suites/>}/>
-                </Routes>
-            </BrowserRouter>
+            {window.location.pathname !== '/login' && <Header/>}
+            <Routes>
+                <Route path={"/"} element={<ProjectSelection/>}/>
+                <Route path={"/project"} element={<Projects/>}/>
+                <Route path={"/login"} element={<Login/>}/>
+                <Route path={"/testcases"} element={<Suites/>}/>
+                <Route path={"*"} element={<NotExist/>}/>
+            </Routes>
 
         </div>
     );

@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -8,19 +9,22 @@ import useStyles from "../styles/styles";
 
 const Login: React.FC = () => {
     const classes = useStyles()
-    const [username, setUsername] = useState ("")
-    const [password, setPassword] = useState ("")
-    const [message, setMessage]   = useState ("")
+    const navigate = useNavigate();
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [message, setMessage] = useState("")
 
-    const onChangeUsername =
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            setUsername(e.target.value)
+    const onChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(e.target.value)
     };
 
-    const onChangePassword =
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value)
     };
+
+    const handleLogin = (e: React.FormEvent) => {
+        navigate("/", {replace: true});
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -30,7 +34,7 @@ const Login: React.FC = () => {
                         Вход
                     </Typography>
                     <form className={classes.formLogin}
-                          // onSubmit={handleLogin}
+                          onSubmit={handleLogin}
                     >
                         <TextField
                             className={classes.rootLogin}

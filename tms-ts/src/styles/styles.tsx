@@ -1,4 +1,5 @@
 import {makeStyles} from "@material-ui/core/styles";
+import {alpha} from "@mui/material";
 
 
 export default makeStyles({
@@ -46,9 +47,9 @@ export default makeStyles({
         },
     },
     rootLogin: {
-        // "& .MuiFormLabel-root": {
-        //     margin: 0
-        // }
+        "& .MuiFormLabel-root": {
+            margin: 0
+        }
     },
     divLogin: {
         margin: 20,
@@ -82,5 +83,14 @@ export default makeStyles({
     },
     paperCreationProject: {
         borderRadius: 10
+    },
+    chipTagsStatusInSuites: {
+        minWidth: 90,
+        maxHeight: 25,
+        padding: 3,
+    },
+    gridTags: {
+        overflowY: "hidden",
+        maxHeight: 70,
     },
 });

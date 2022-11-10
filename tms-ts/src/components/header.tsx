@@ -13,10 +13,11 @@ import MenuItem from '@mui/material/MenuItem';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {NotificationsActive} from "@mui/icons-material";
 
-const settings = [['Профиль', "/"], ['Настройки', "/"], ['Выход', "/login"]];
+const settings = [['Профиль', "/profile"], ['Настройки', "/settings"], ['Выход', "/login"]];
 const buttons = [['Тест-кейсы', "/testcases"], ['Тест-планы', "/"]];
 
-const Header = () => {
+const Header: React.FC = () => {
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -115,10 +116,21 @@ const Header = () => {
                                         color: 'inherit',
                                         textDecoration: 'none',
                                     }}
-                                >Тест-кейсы</Typography>
+                                >
+                                    Тест-кейсы
+                                </Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseNavMenu}>
-                                <Typography textAlign="center">Тест-планы</Typography>
+                                <Typography
+                                    textAlign="center"
+                                    component="a"
+                                    href="/test-plans"
+                                    sx={{
+                                        color: 'inherit',
+                                        textDecoration: 'none',
+                                    }}>
+                                    Тест-планы
+                                </Typography>
                             </MenuItem>
                         </Menu>
                     </Box>
@@ -146,7 +158,6 @@ const Header = () => {
                         </React.Fragment>
                     </Box>
 
-
                     <Box sx={{flexGrow: 0}}>
                         <Tooltip title="Уведомления">
                             <IconButton>
@@ -173,7 +184,7 @@ const Header = () => {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map(([setting_name, path]) => (
-                                <MenuItem key={setting_name}>
+                                <MenuItem key={setting_name} onClick={handleCloseUserMenu}>
                                     <Typography
                                         textAlign="center"
                                         component="a"
