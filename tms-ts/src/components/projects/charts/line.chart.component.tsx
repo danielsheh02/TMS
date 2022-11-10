@@ -1,44 +1,17 @@
 import React from 'react';
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {testsData} from "../dataExample";
 
 const LineChartComponent: React.FC = () => {
-    const lineData = [
-        {
-            name: '20.10.2022',
-            failed: 10,
-            passed: 24,
-            skipped: 1,
-            retest: 0,
-        },
-        {
-            name: '22.10.2022',
-            failed: 30,
-            passed: 13,
-            skipped: 4,
-            retest: 10,
-        },
-        {
-            name: '23.10.2022',
-            failed: 20,
-            passed: 9,
-            skipped: 0,
-            retest: 3,
-        },
-        {
-            name: '25.10.2022',
-            failed: 27,
-            passed: 3,
-            skipped: 7,
-            retest: 15,
-        },
-        {
-            name: '28.10.2022',
-            failed: 23,
-            passed: 38,
-            skipped: 3,
-            retest: 7,
-        },
-    ];
+    const lineData = testsData.map(([, , passed, skipped, failed, retest, date]) => {
+        return {
+            name: date,
+            failed: failed,
+            passed: passed,
+            skipped: skipped,
+            retest: retest
+        }
+    })
 
     return (
         <ResponsiveContainer height={200}>
