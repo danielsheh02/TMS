@@ -1,28 +1,68 @@
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {
+    Checkbox,
+    FormControlLabel, FormGroup,
     Grid,
     Paper,
-    Stack,
+    Stack, Switch,
     Table,
     TableBody, TableCell,
-    TableContainer, TableHead, TableRow
+    TableContainer, TableHead, TableRow, TextField, Zoom
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {Button} from "@material-ui/core";
 import LineChartComponent from "./charts/line.chart.component";
 import PieChartComponent from "./charts/pie.chart.component";
 import AreaChartComponent from "./charts/area.chart.component";
-import {testsData} from "./dataExample";
+import {personalTestsData, testsData} from "./dataExample";
+import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
+import moment, {Moment} from "moment";
+import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 
 
 const Projects: React.FC = () => {
     const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
-        ['ДАТА', '#000000'], ['ЗАПУСКАЛ', '#000000']]
+        ['ДАТА', '#000000'], ['ЗАПУСКАЛ', '#000000']];
     const chartsLabels = ["График результатов тестов по дням", "Диаграмма кол-ва назначенных\n" +
     "                    тестов", "График сравнения ожидаемого время и\n" +
-    "                    результата"]
-    const charts = [<LineChartComponent/>, <PieChartComponent/>, <AreaChartComponent/>]
+    "                    результата"];
+    const charts = [<LineChartComponent/>, <PieChartComponent/>, <AreaChartComponent/>];
+    const [isSwitched, setSwitch] = React.useState(false);
+    const handleOnSwitch = (event: ChangeEvent<HTMLInputElement>) => setSwitch(event.target.checked);
+    const [showFilter, setShowFilter] = React.useState(false);
+    const handleOnOpenFilter = () => setShowFilter(!showFilter);
+    const [value, setValue] = React.useState<Moment | null>(moment(),);
+    const handleChange = (newValue: Moment | null) => {
+        setValue(newValue);
+    };
+
+    const activityTitle = <>
+        <Zoom in={!isSwitched}>
+            <Typography fontWeight={600} fontSize={24} mr={'5px'} ml={'5px'}>
+                Активность проекта
+            </Typography>
+        </Zoom>
+        <Switch checked={isSwitched} onChange={handleOnSwitch}/>
+        <Zoom in={!isSwitched}>
+            <Typography fontWeight={600} fontSize={24} mr={'5px'} ml={'5px'} color={'grey'}>
+                Моя
+            </Typography>
+        </Zoom>
+    </>
+    const switchedActivityTitle = <>
+        <Zoom in={isSwitched}>
+            <Typography fontWeight={600} fontSize={24} mr={'5px'} ml={'5px'} color={'grey'}>
+                Проекта
+            </Typography>
+        </Zoom>
+        <Switch checked={isSwitched} onChange={handleOnSwitch}/>
+        <Zoom in={isSwitched}>
+            <Typography fontWeight={600} fontSize={24} mr={'5px'} ml={'5px'}>
+                Моя активность
+            </Typography>
+        </Zoom>
+    </>
 
     return (
         <div style={{display: "flex", flexDirection: "column"}}>
@@ -38,51 +78,79 @@ const Projects: React.FC = () => {
                     </div>)
                 }
             </Grid>
-            <Paper sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                backgroundColor: "#858585",
-                margin: "50px auto",
-                width: "100%",
-                padding: "10px 10px 10px 10px"
-            }}>
-                <Stack
-                    sx={{}}>
-                    <Typography color={"white"} fontWeight={700} fontSize={24} mb={'20px'} align={'center'}>
-                        Активность проекта
-                    </Typography>
-                    <TableContainer component={Paper}>
-                        <Table stickyHeader>
-                            <TableHead sx={{mb: '20px'}}>
-                                <TableRow>
-                                    {labels.map(([value, color]) => (
-                                        <TableCell>
-                                            <Typography color={color} fontWeight={'bold'}
-                                                        align={'center'}>{value}</Typography>
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {testsData.map((row) =>
+            <Paper sx={{display: 'flex', justifyContent: 'center', pt: '50px'}} elevation={0}>
+                <Paper
+                    elevation={5}
+                    sx={{
+                        alignSelf: 'flex-start',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        padding: "20px 10px 10px 10px",
+                        mr: '10px'
+                    }}>
+                    <Stack>
+                        <Stack direction={"row"} justifyContent={"center"}>
+                            {isSwitched ? switchedActivityTitle : activityTitle}
+                        </Stack>
+                        <TableContainer component={Paper}>
+                            <Table stickyHeader>
+                                <TableHead sx={{mb: '20px'}}>
                                     <TableRow>
-                                        {row.map((value) =>
+                                        {labels.map(([value, color]) => (
                                             <TableCell>
-                                                <Typography align={'center'}>{value}</Typography>
+                                                <Typography color={color} fontWeight={'bold'}
+                                                            align={'center'}>{value}</Typography>
                                             </TableCell>
-                                        )}
+                                        ))}
                                     </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                </TableHead>
+
+                                <TableBody>
+                                    {(isSwitched ? personalTestsData : testsData).map(
+                                        (row) =>
+                                            <TableRow>
+                                                {row.map((value) =>
+                                                    <TableCell>
+                                                        <Typography align={'center'}>{value}</Typography>
+                                                    </TableCell>
+                                                )}
+                                            </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Stack>
+                </Paper>
+                <Stack>
+                    <Button variant="contained"
+                            style={{alignSelf: "flex-start", marginLeft: '10px'}}
+                            onClick={handleOnOpenFilter}>Фильтр</Button>
+                    <Zoom in={showFilter}>
+                        <Paper sx={{display: 'flex', justifyContent: 'center'}}>
+                            <FormGroup sx={{display: 'flex', justifyContent: 'center'}}>
+                                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                                                  label="Passed"/>
+                                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                                                  label="Skipped"/>
+                                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                                                  label="Failed"/>
+                                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                                                  label="Retest"/>
+                                <LocalizationProvider dateAdapter={AdapterMoment}>
+                                    <DesktopDatePicker
+                                        label="Choose date"
+                                        inputFormat="DD/MM/YYYY"
+                                        value={value}
+                                        onChange={handleChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                </LocalizationProvider>
+                            </FormGroup>
+                        </Paper>
+                    </Zoom>
                 </Stack>
-                <Button variant="contained"
-                        style={{alignSelf: 'flex-start', marginLeft: '20px'}}>Моя активность</Button>
-                <Button variant="contained"
-                        style={{alignSelf: 'flex-start', marginLeft: '20px'}}>Фильтр</Button>
             </Paper>
+
         </div>
     );
 };
