@@ -83,4 +83,13 @@ export default makeStyles({
     paperCreationProject: {
         borderRadius: 10
     },
+    chipTagsStatusInSuites: {
+        minWidth: 90,
+        maxHeight: 25,
+        padding: 3,
+    },
+    gridTags: {
+        overflowY: "hidden",
+        maxHeight: 70,
+    },
 });

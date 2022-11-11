@@ -7,6 +7,7 @@ import Header from "./components/header";
 import Login from "./components/login"
 import ProjectSelection from "./components/projects/project-selection";
 import NotExist from "./components/not-exist";
+import TestPlansComponent from "./components/testplans/testplans";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                 <Route path={"/project"} element={<Projects/>}/>
                 <Route path={"/login"} element={<Login/>}/>
                 <Route path={"/testcases"} element={<Suites/>}/>
+                <Route path={"/testplans"} element={<TestPlansComponent/>}/>
                 <Route path={"*"} element={<NotExist/>}/>
             </Routes>
 
