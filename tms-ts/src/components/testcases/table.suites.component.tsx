@@ -7,7 +7,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React, {useEffect, useRef} from "react";
 import useStyles from "../../styles/styles";
 import useMediaQuery from '@mui/material/useMediaQuery';
-
+import SuiteCaseService from "../../services/suite.case.service";
+import Divider from '@mui/material/Divider';
 
 function createSuite(
     name: string,
@@ -166,7 +167,7 @@ function Row(props: {
                                                        padding="none">
                                                 {onecase.name}
                                             </TableCell>
-                                            <TableCell  align={"center"} sx={{width: "50%"}}
+                                            <TableCell align={"center"} sx={{width: "50%"}}
                                             >
                                                 <CaseTagsField tags={onecase.tags}/>
                                             </TableCell>
@@ -251,6 +252,7 @@ const TableSuites = (props: {
     setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void
 }) => {
     const {selected, setSelected, setShowCreationCase, setShowCreationSuite} = props;
+
     // const suiteChildChildChildChild = [createSuite('Уведомления на почту', [
     //     {
     //         name: 'Добавление пользователя',

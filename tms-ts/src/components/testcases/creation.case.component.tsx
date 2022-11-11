@@ -1,15 +1,25 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {Chip, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import useStyles from "../../styles/styles";
 import {Grid, Button, Dialog, IconButton, TextField, InputAdornment, Typography} from "@mui/material";
+import SuiteCaseService from "../../services/suite.case.service";
+
+interface suite {
+    id: number;
+    name: string;
+    parent: null | number;
+    project: number;
+    url: string;
+}
 
 interface Props {
     show: boolean;
-    setShow: (show: boolean) => void
+    setShow: (show: boolean) => void;
+    suites: suite []
 }
 
-const CreationCase: React.FC<Props> = ({show, setShow}) => {
+const CreationCase: React.FC<Props> = ({show, setShow, suites}) => {
     const classes = useStyles()
 
     const [tagInput, setTagInput] = useState("")
@@ -21,8 +31,25 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
     const [links, setLinks] = useState<string []>([])
     const [linkPresence, setLinkPresence] = useState(false)
 
-    const [suites, setSuites] = useState<string []>(["a", "b", "c", "d"])
-    const [selectedSuite, setSelectedSuite] = useState("a")
+    const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string }>({
+        id: suites[0].id,
+        name: suites[0].name
+    })
+
+    const [name, setName] = useState("")
+    const [namePresence, setNamePresence] = useState(false)
+
+    const [scenario, setScenario] = useState("")
+    const [scenarioPresence, setScenarioPresence] = useState(false)
+
+    useEffect(() => {
+        if (suites.length > 0) {
+            setSelectedSuite({
+                id: suites[0].id,
+                name: suites[0].name
+            })
+        }
+    }, suites)
 
     const handleClose = () => {
         setTag("")
@@ -33,6 +60,10 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
         setLinkPresence(false)
         setLinks([])
         setShow(false)
+        setName("")
+        setNamePresence(false)
+        setScenario("")
+        setScenarioPresence(false)
     }
 
     const handleDelete = (index: number) => {
@@ -66,7 +97,6 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
     }
 
     const keyPressLink = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        console.log(linkPresence)
         if (e.key === "Enter" && linkPresence) {
             createLink()
         }
@@ -96,10 +126,31 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
         }
     }
 
-    const chooseSuite = (e: SelectChangeEvent) => {
-        // const index: number = parseInt(e.target.value)
-        // const name = suites[index]
-        setSelectedSuite(e.target.value)
+    const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        let str = e.target.value
+        setName(str)
+        setNamePresence(true)
+    }
+
+    const onChangeScenario = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        let str = e.target.value
+        setScenario(str)
+        setScenarioPresence(true)
+    }
+
+    const createCase = () => {
+        const myCase = {
+            name: name,
+            project: 1,
+            suite: selectedSuite.id,
+            scenario: scenario,
+        }
+        SuiteCaseService.createCase(myCase)
+        handleClose()
+    }
+
+    const chooseSuite = (e: any) => {
+        setSelectedSuite({id: e.target.value.id, name: e.target.value.name})
     }
 
     return (
@@ -129,8 +180,10 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                         </Typography>
                         <TextField
                             className={classes.textFieldCreationCase}
+                            onChange={(content) => onChangeName(content)}
                             variant="outlined"
                             margin="normal"
+                            autoComplete="off"
                             required
                             fullWidth
                             label="Введите название тест-кейса"
@@ -143,10 +196,12 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                         </Typography>
                         <TextField
                             className={classes.textFieldCreationCase}
+                            onChange={(content) => onChangeScenario(content)}
                             variant="outlined"
                             margin="normal"
                             fullWidth
                             label="Введите описание тест-кейса"
+                            autoComplete="off"
                             multiline
                             minRows={4}
                             maxRows={5}
@@ -162,6 +217,7 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                             className={classes.textFieldCreationCase}
                             variant="outlined"
                             margin="normal"
+                            autoComplete="off"
                             fullWidth
                             label="Введите тэг"
                             onKeyPress={(key) => keyPress(key)}
@@ -201,13 +257,13 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                                 <InputLabel id="select-suite">Выберите сьюту</InputLabel>
                                 <Select
                                     labelId="select-suite"
-                                    value={selectedSuite}
+                                    value={selectedSuite.name}
                                     label="Выберите сьюту"
                                     onChange={(e) => chooseSuite(e)}
                                     renderValue={(selected) => <Grid>{selected}</Grid>}
                                 >
                                     {suites.map((suite, index) => <MenuItem key={index}
-                                                                            value={suite}>{suite}</MenuItem>)}
+                                                                            value={suite as any}>{suite.name}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -220,6 +276,7 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                                 className={classes.textFieldCreationCase}
                                 variant="outlined"
                                 margin="normal"
+                                autoComplete="off"
                                 fullWidth
                                 label="Введите время"
                             />
@@ -235,6 +292,7 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                                 className={classes.textFieldCreationCase}
                                 variant="outlined"
                                 margin="normal"
+                                autoComplete="off"
                                 fullWidth
                                 label="Введите URL"
                                 onKeyPress={(key) => keyPressLink(key)}
@@ -286,14 +344,16 @@ const CreationCase: React.FC<Props> = ({show, setShow}) => {
                             >
                                 Отменить
                             </Button>
-                            <Button style={{
-                                marginLeft: 7,
-                                marginBottom: 20,
-                                width: "40%",
-                                height: "45%",
-                                backgroundColor: "#696969",
-                                color: "#FFFFFF",
-                            }}
+                            <Button
+                                onClick={createCase}
+                                style={{
+                                    marginLeft: 7,
+                                    marginBottom: 20,
+                                    width: "40%",
+                                    height: "45%",
+                                    backgroundColor: "#696969",
+                                    color: "#FFFFFF",
+                                }}
                             >
                                 Сохранить
                             </Button>
