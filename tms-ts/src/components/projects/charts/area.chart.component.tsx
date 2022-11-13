@@ -11,7 +11,7 @@ const AreaChartComponent: React.FC = () => {
                 <YAxis/>
                 <Tooltip formatter={(value, name) => [value + " ms", name]}/>
                 <Legend/>
-                <Area name={"Ожидалось"} type="monotone" dataKey="expected" fill={"#8884d8"}
+                <Area name={"Ожидание"} type="monotone" dataKey="expected" fill={"#8884d8"}
                       stroke={"#8884d8"}/>
                 <Area name={"Результат"} type="monotone" dataKey="result" fill={"#82ca9d"}
                       stroke={"#82ca9d"}/>
