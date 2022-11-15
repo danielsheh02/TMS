@@ -18,9 +18,11 @@ import {personalTestsData, testsData} from "./dataExample";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
+import {useNavigate} from "react-router-dom";
 
 
 const Projects: React.FC = () => {
+    const navigate = useNavigate();
     const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
         ['ДАТА', '#000000'], ['ЗАПУСКАЛ', '#000000']];
@@ -29,14 +31,11 @@ const Projects: React.FC = () => {
     const handleOnSwitch = (event: ChangeEvent<HTMLInputElement>) => setSwitch(event.target.checked);
     const [showFilter, setShowFilter] = React.useState(false);
     const handleOnOpenFilter = () => setShowFilter(!showFilter);
-    const [startValue, setStartValue] = React.useState<Moment | null>(moment("01.01.1970"),);
-    const [endValue, setEndValue] = React.useState<Moment | null>(moment(),);
-    const handleChangeStartValue = (newValue: Moment | null) => {
-        setStartValue(newValue);
-    };
-    const handleChangeEndValue = (newValue: Moment | null) => {
-        setEndValue(newValue);
-    };
+    const [startDate, setStartDate] = React.useState<Moment | null>(moment("01.01.1970"));
+    const [endDate, setEndDate] = React.useState<Moment | null>(moment());
+    const handleChangeStartDate = (newValue: Moment | null) => setStartDate(newValue);
+    const handleChangeEndDate = (newValue: Moment | null) => setEndDate(newValue);
+    const handleOnOpenProjectSettings = () => navigate('/projectSettings');
 
     const activityTitle = <Stack direction={"row"}>
         <Zoom in={!isSwitched}>
@@ -64,30 +63,31 @@ const Projects: React.FC = () => {
             </Typography>
         </Zoom>
     </Stack>
+
     const filter = <Zoom in={showFilter} style={{marginBottom: '10px'}}>
         <Grid sx={{display: 'flex', justifyContent: 'center'}}>
             <FormGroup sx={{display: 'flex', justifyContent: 'center', flexDirection: 'row'}}>
-                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                <FormControlLabel control={<Checkbox defaultChecked/>}
                                   label="Passed"/>
-                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                <FormControlLabel control={<Checkbox defaultChecked/>}
                                   label="Skipped"/>
-                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                <FormControlLabel control={<Checkbox defaultChecked/>}
                                   label="Failed"/>
-                <FormControlLabel sx={{alignSelf: 'center'}} control={<Checkbox defaultChecked/>}
+                <FormControlLabel control={<Checkbox defaultChecked/>}
                                   label="Retest"/>
                 <LocalizationProvider dateAdapter={AdapterMoment}>
                     <DesktopDatePicker
-                        label="Choose start date"
+                        label="Выберите дату начала"
                         inputFormat="DD/MM/YYYY"
-                        value={startValue}
-                        onChange={handleChangeStartValue}
+                        value={startDate}
+                        onChange={handleChangeStartDate}
                         renderInput={(params) => <TextField {...params} />}
                     />
                     <DesktopDatePicker
-                        label="Choose end date"
+                        label="Выберите дату окончания"
                         inputFormat="DD/MM/YYYY"
-                        value={endValue}
-                        onChange={handleChangeEndValue}
+                        value={endDate}
+                        onChange={handleChangeEndDate}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
@@ -120,6 +120,7 @@ const Projects: React.FC = () => {
                                     onClick={handleOnOpenFilter}>Фильтр</Button>
                             <Button variant="contained"
                                     style={{marginLeft: '10px'}}
+                                    onClick={handleOnOpenProjectSettings}
                             >Настройки</Button>
                         </Stack>
                         {showFilter ? filter : null}
@@ -139,7 +140,7 @@ const Projects: React.FC = () => {
                                 <TableBody>
                                     {(isSwitched ? personalTestsData : testsData)?.map(
                                         ([title, all, passed, skipped, failed, retest, date, tester]) =>
-                                            (!moment(date, "DD.MM.YYYY").isBetween(startValue, endValue, undefined, "[]")) ? null :
+                                            (!moment(date, "DD.MM.YYYY").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
                                                     {[title, all, passed, skipped, failed, retest, date, tester].map(
                                                         (value) =>
