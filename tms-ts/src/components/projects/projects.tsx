@@ -118,6 +118,9 @@ const Projects: React.FC = () => {
                             <Button variant="contained"
                                     style={{marginLeft: '10px'}}
                                     onClick={handleOnOpenFilter}>Фильтр</Button>
+                            <Button variant="contained"
+                                    style={{marginLeft: '10px'}}
+                            >Настройки</Button>
                         </Stack>
                         {showFilter ? filter : null}
                         <TableContainer component={Paper}>
@@ -134,15 +137,17 @@ const Projects: React.FC = () => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {(isSwitched ? personalTestsData : testsData).map(
-                                        (row) =>
-                                            <TableRow>
-                                                {row.map((value) =>
-                                                    <TableCell>
-                                                        <Typography align={'center'}>{value}</Typography>
-                                                    </TableCell>
-                                                )}
-                                            </TableRow>
+                                    {(isSwitched ? personalTestsData : testsData)?.map(
+                                        ([title, all, passed, skipped, failed, retest, date, tester]) =>
+                                            (!moment(date, "DD.MM.YYYY").isBetween(startValue, endValue, undefined, "[]")) ? null :
+                                                (<TableRow>
+                                                    {[title, all, passed, skipped, failed, retest, date, tester].map(
+                                                        (value) =>
+                                                            <TableCell>
+                                                                <Typography align={'center'}>{value}</Typography>
+                                                            </TableCell>
+                                                    )}
+                                                </TableRow>)
                                     )}
                                 </TableBody>
                             </Table>
