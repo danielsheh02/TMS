@@ -21,7 +21,7 @@ const API_URL = process.env.REACT_APP_API_URL + '/api/profile/';
 export default class SuiteCaseService {
 
     static authorize() {
-        return axios.post("http://localhost:8001/api/token/", {username: "daniel", password: "daniel"})
+        return axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"})
     }
 
     static getSuites(token: string) {
@@ -32,8 +32,12 @@ export default class SuiteCaseService {
         return axios.get("http://localhost:8001/api/v1/cases/", {headers: {Authorization: 'Bearer ' + token}})
     }
 
+    static getTreeSuites(token: string) {
+        return axios.get("http://localhost:8001/api/v1/projects/1/suites/", {headers: {Authorization: 'Bearer ' + token}})
+    }
+
     static createCase(myCase: { name: string; project: number; suite: number; scenario: string; }) {
-        axios.post("http://localhost:8001/api/token/", {username: "daniel", password: "daniel"}).then((res) => {
+        axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"}).then((res) => {
             const token = res.data.access;
             axios.post("http://localhost:8001/api/v1/cases/", myCase, {headers: {Authorization: 'Bearer ' + token}})
                 .then((response) => console.log(response))
@@ -41,7 +45,7 @@ export default class SuiteCaseService {
     }
 
     static createSuite(suite: { parent: number | null; name: string }) {
-        axios.post("http://localhost:8001/api/token/", {username: "daniel", password: "daniel"}).then((res) => {
+        axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"}).then((res) => {
             const token = res.data.access;
             axios.post("http://localhost:8001/api/v1/suites/", suite, {headers: {Authorization: 'Bearer ' + token}})
                 .then((response) => console.log(response))

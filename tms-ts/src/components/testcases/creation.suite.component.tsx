@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import useStyles from "../../styles/styles";
 import {
     Button,
@@ -10,30 +10,29 @@ import {
     Typography
 } from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
+import {suite} from "./suites.component";
 
-interface suite {
-    id: number;
-    name: string;
-    parent: null | number;
-    project: number;
-    url: string;
-}
+
 
 interface Props {
     show: boolean;
     setShow: (show: boolean) => void;
-    suites: suite []
+    suites: suite [],
+    selectedSuiteCome: { id: number, name: string } | null
 }
 
-const CreationSuite: React.FC<Props> = ({show, setShow, suites}) => {
+const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome}) => {
     const classes = useStyles()
-    const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string } | null>(null)
+    const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string } | null>(selectedSuiteCome)
     const [name, setName] = useState("")
     const [namePresence, setNamePresence] = useState(false)
-
     const handleClose = () => {
         setShow(false)
     }
+
+    useEffect(() => {
+        setSelectedSuite(selectedSuiteCome)
+    }, [selectedSuiteCome])
 
     const chooseSuite = (e: any) => {
         setSelectedSuite(e.target.value ? {id: e.target.value.id, name: e.target.value.name} : null)
@@ -136,13 +135,13 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites}) => {
                                     // type={"submit"}
                                     onClick={createSuite}
                                     style={{
-                                    marginLeft: 7,
-                                    marginBottom: 20,
-                                    width: "40%",
-                                    height: "45%",
-                                    backgroundColor: "#696969",
-                                    color: "#FFFFFF",
-                                }}
+                                        marginLeft: 7,
+                                        marginBottom: 20,
+                                        width: "40%",
+                                        height: "45%",
+                                        backgroundColor: "#696969",
+                                        color: "#FFFFFF",
+                                    }}
                                 >
                                     Сохранить
                                 </Button>

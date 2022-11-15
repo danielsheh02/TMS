@@ -1,25 +1,19 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {Chip, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import useStyles from "../../styles/styles";
 import {Grid, Button, Dialog, IconButton, TextField, InputAdornment, Typography} from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
-
-interface suite {
-    id: number;
-    name: string;
-    parent: null | number;
-    project: number;
-    url: string;
-}
+import {suite} from "./suites.component";
 
 interface Props {
     show: boolean;
     setShow: (show: boolean) => void;
     suites: suite []
+    selectedSuiteCome: { id: number, name: string } | null
 }
 
-const CreationCase: React.FC<Props> = ({show, setShow, suites}) => {
+const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome}) => {
     const classes = useStyles()
 
     const [tagInput, setTagInput] = useState("")
@@ -33,7 +27,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites}) => {
 
     const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string }>({
         id: suites[0].id,
-        name: suites[0].name
+        name: suites[0].name,
     })
 
     const [name, setName] = useState("")
@@ -43,13 +37,10 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites}) => {
     const [scenarioPresence, setScenarioPresence] = useState(false)
 
     useEffect(() => {
-        if (suites.length > 0) {
-            setSelectedSuite({
-                id: suites[0].id,
-                name: suites[0].name
-            })
+        if (selectedSuiteCome) {
+            setSelectedSuite(selectedSuiteCome)
         }
-    }, suites)
+    }, [selectedSuiteCome])
 
     const handleClose = () => {
         setTag("")
