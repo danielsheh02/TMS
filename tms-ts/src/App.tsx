@@ -1,7 +1,7 @@
 import React from "react";
 import './App.css';
 import {Route, Routes} from "react-router-dom";
-import Suites from "./components/testcases/suites";
+import Suites from "./components/testcases/suites.component";
 import Projects from "./components/projects/projects";
 import Header from "./components/header";
 import Login from "./components/login"
