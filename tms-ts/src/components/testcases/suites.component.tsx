@@ -59,21 +59,21 @@ const SuitesComponent: React.FC = () => {
     console.log(selectedSuiteCome)
     // console.log(cases)
     useEffect(() => {
-        SuiteCaseService.authorize().then((response) => {
-            const token = response.data.access
-            SuiteCaseService.getSuites(token).then((response) => {
-                const localSuites = response.data
+        // SuiteCaseService.authorize().then((response) => {
+        //     const token = response.data.access
+            SuiteCaseService.getSuites().then((response) => {
+                // const localSuites = response.data
                 setSuites(response.data)
-                SuiteCaseService.getCases(token).then((response) => {
-                    const localCases = response.data
+                SuiteCaseService.getCases().then((response) => {
+                    // const localCases = response.data
                     setCases(response.data)
-                    SuiteCaseService.getTreeSuites(token).then((response) => {
-                        const localTreeSuites = response.data
+                    SuiteCaseService.getTreeSuites().then((response) => {
+                        // const localTreeSuites = response.data
                         setTreeSuites(response.data)
                     })
                 })
             })
-        })
+        // })
             .catch((e) => {
                 console.log(e);
             });
