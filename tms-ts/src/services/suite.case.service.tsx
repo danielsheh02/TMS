@@ -1,6 +1,7 @@
 import axios from "axios";
+import authHeader from "./Authorization/auth.header";
 
-const API_URL = process.env.REACT_APP_API_URL + '/api/profile/';
+const API_URL = process.env.REACT_APP_API_URL;
 
 // function getCookie(name: string) {
 //     let cookieValue = null;
@@ -20,35 +21,25 @@ const API_URL = process.env.REACT_APP_API_URL + '/api/profile/';
 
 export default class SuiteCaseService {
 
-    static authorize() {
-        return axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"})
+    static getSuites() {
+        return axios.get(API_URL + "/api/v1/suites/", {headers: authHeader()})
     }
 
-    static getSuites(token: string) {
-        return axios.get("http://localhost:8001/api/v1/suites/", {headers: {Authorization: 'Bearer ' + token}})
+    static getCases() {
+        return axios.get(API_URL + "/api/v1/cases/", {headers: authHeader()})
     }
 
-    static getCases(token: string) {
-        return axios.get("http://localhost:8001/api/v1/cases/", {headers: {Authorization: 'Bearer ' + token}})
-    }
-
-    static getTreeSuites(token: string) {
-        return axios.get("http://localhost:8001/api/v1/projects/1/suites/", {headers: {Authorization: 'Bearer ' + token}})
+    static getTreeSuites() {
+        return axios.get(API_URL + "/api/v1/projects/1/suites/", {headers: authHeader()})
     }
 
     static createCase(myCase: { name: string; project: number; suite: number; scenario: string; }) {
-        axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"}).then((res) => {
-            const token = res.data.access;
-            axios.post("http://localhost:8001/api/v1/cases/", myCase, {headers: {Authorization: 'Bearer ' + token}})
-                .then((response) => console.log(response))
-        })
+        axios.post(API_URL + "/api/v1/cases/", myCase, {headers: authHeader()})
+            .then(() => {})
     }
 
     static createSuite(suite: { parent: number | null; name: string }) {
-        axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"}).then((res) => {
-            const token = res.data.access;
-            axios.post("http://localhost:8001/api/v1/suites/", suite, {headers: {Authorization: 'Bearer ' + token}})
-                .then((response) => console.log(response))
-        })
+        axios.post(API_URL + "/api/v1/suites/", suite, {headers: authHeader()})
+            .then(() => {})
     }
 }

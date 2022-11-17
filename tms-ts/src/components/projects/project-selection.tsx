@@ -133,7 +133,7 @@ const ProjectSelection: React.FC = () => {
                                     variant={'contained'}
                                     color={'secondary'}
                                 >
-                                    Сохранить
+                                    Создать
                                 </Button>
                             </div>
                         </form>
