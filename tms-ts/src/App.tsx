@@ -12,7 +12,9 @@ import NotExist from "./components/not-exist";
 function App() {
     return (
         <div>
-            {window.location.pathname !== '/login' && <Header/>}
+            {/*{window.location.pathname !== '/login' && */}
+            <Header/>
+            {/*}*/}
             <Routes>
                 <Route path={"/"} element={<ProjectSelection/>}/>
                 <Route path={"/project"} element={<Projects/>}/>

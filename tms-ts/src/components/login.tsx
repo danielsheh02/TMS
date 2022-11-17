@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {Card} from "@material-ui/core";
 import useStyles from "../styles/styles";
+import AuthService from "../services/Authorization/auth.service";
 
 const Login: React.FC = () => {
     const classes = useStyles()
@@ -22,8 +23,20 @@ const Login: React.FC = () => {
         setPassword(e.target.value)
     };
 
-    const handleLogin = (e: React.FormEvent) => {
-        navigate("/", {replace: true});
+    // const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    //     navigate("/", {replace: true});
+    // }
+
+    const handleLogin = () => {
+        AuthService.login(username, password)
+            .then(
+                () => {
+                    navigate("/", {replace: true});
+                }
+            )
+            .catch(() => {
+                setMessage("Ошибка! Введен неверный пароль");
+            });
     }
 
     return (
@@ -33,9 +46,10 @@ const Login: React.FC = () => {
                     <Typography component="h1" variant="h5">
                         Вход
                     </Typography>
-                    <form className={classes.formLogin}
-                          onSubmit={handleLogin}
-                    >
+                    {/*<form className={classes.formLogin}*/}
+                    {/*      onSubmit={handleLogin}*/}
+                    {/*>*/}
+                    <div>
                         <TextField
                             className={classes.rootLogin}
                             variant="outlined"
@@ -65,7 +79,8 @@ const Login: React.FC = () => {
                             onChange={onChangePassword}
                         />
                         <Button
-                            type="submit"
+                            // type="submit"
+                            onClick={handleLogin}
                             fullWidth
                             variant="contained"
                             color="primary"
@@ -80,7 +95,14 @@ const Login: React.FC = () => {
                                 </div>
                             </div>
                         )}
-                    </form>
+                        <Typography component="h1" variant="h5">
+                            {username}
+                        </Typography>
+                        <Typography component="h1" variant="h5">
+                            {password}
+                        </Typography>
+                    {/*</form>*/}
+                    </div>
                 </div>
             </Card>
         </Container>
