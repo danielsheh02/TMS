@@ -10,8 +10,7 @@ import {
     Typography
 } from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
-import {suite} from "./suites.component";
-
+import {suite, treeSuite} from "./suites.component";
 
 
 interface Props {
@@ -19,9 +18,10 @@ interface Props {
     setShow: (show: boolean) => void;
     suites: suite [],
     selectedSuiteCome: { id: number, name: string } | null
+    setTreeSuites: (treeSuites: treeSuite[]) => void
 }
 
-const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome}) => {
+const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome, setTreeSuites}) => {
     const classes = useStyles()
     const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string } | null>(selectedSuiteCome)
     const [name, setName] = useState("")
@@ -81,7 +81,7 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                             </Typography>
                             <TextField
                                 onChange={(content) => onChangeName(content)}
-                                className={classes.textFieldCreationCase}
+                                className={classes.textFieldSelectCreationCaseSuite}
                                 variant="outlined"
                                 margin="normal"
                                 required
@@ -101,7 +101,7 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                                 Родительская сьюта
                             </Typography>
 
-                            <FormControl style={{minWidth: "90%"}}>
+                            <FormControl style={{minWidth: "90%"}} className={classes.textFieldSelectCreationCaseSuite}>
                                 <InputLabel id="select-suite">Выберите сьюту</InputLabel>
                                 <Select
                                     labelId="select-suite"

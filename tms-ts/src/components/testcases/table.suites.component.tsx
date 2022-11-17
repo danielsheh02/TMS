@@ -15,7 +15,8 @@ const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ'
     "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
     "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"];
 
-const stat = "Failed"
+const stat1 = "Failed"
+const stat2 = "Failed"
 
 function createSuite(
     name: string,
@@ -74,13 +75,48 @@ function CaseTagsField(props: { tags: any[] }) {
     )
 }
 
+function CaseScenarioField(props: { scenario: string }) {
+    const {scenario} = props
+    const classes = useStyles()
+    const [showMore, setShowMore] = React.useState(false);
+    const [showLink, setShowLink] = React.useState(false);
+    const gridTagsRef = useRef<any>(null);
+    useEffect(() => {
+        if (gridTagsRef.current && gridTagsRef.current.clientHeight < gridTagsRef.current.scrollHeight) {
+            setShowLink(true);
+        }
+    })
+
+    const onClickMore = () => {
+        setShowMore(!showMore);
+    }
+    return (
+        <Grid>
+            <Grid ref={gridTagsRef}
+                  className={showMore ? "" : classes.gridScenario}
+            >
+                {scenario}
+            </Grid>
+            <Grid style={{display: "flex", justifyContent: "left", marginLeft: 35}}>
+                {(showLink && showMore && <Link component="button" onClick={() => onClickMore()}>
+                    Свернуть
+                </Link>)
+                ||
+                (showLink && !showMore && <Link component="button" onClick={() => onClickMore()}>
+                    Развернуть
+                </Link>)}
+            </Grid>
+        </Grid>
+    )
+}
+
 function Row(props: {
     row: treeSuite, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
     setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
 }) {
     const classes = useStyles()
     const {row, setShowCreationCase, setShowCreationSuite, setSelectedSuiteCome} = props;
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
     const [selected, setSelected] = React.useState<number []>([]);
     // const [selected, setSelected] = React.useState<readonly string[]>([]);
     const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,8 +170,8 @@ function Row(props: {
                 </TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{paddingBottom: 0, paddingTop: 0, paddingRight: 0, marginRight: 10}} colSpan={4}>
-                    <Collapse in={open} unmountOnExit mountOnEnter>
+                <TableCell style={{paddingBottom: 0, paddingTop: 7, paddingRight: 0, marginRight: 10}} colSpan={4}>
+                    <Collapse in={open} mountOnEnter>
                         <Grid>
                             <Table size="small">
                                 <TableBody style={{border: '1px solid'}}>
@@ -153,8 +189,10 @@ function Row(props: {
                                         <TableCell component="th"
                                                    scope="row"
                                                    padding="none" style={{width: "25%"}}>Название</TableCell>
-                                        <TableCell align={"center"} style={{width: "40%"}}>Тэги</TableCell>
-                                        <TableCell align={"center"} style={{width: "auto"}}>Статус</TableCell>
+                                        <TableCell align={"center"} style={{width: "40%"}}>Описание</TableCell>
+                                        <TableCell align={"center"} style={{width: "40%"}}>Время прохождения</TableCell>
+                                        {/*<TableCell align={"center"} style={{width: "40%"}}>Тэги</TableCell>*/}
+                                        {/*<TableCell align={"center"} style={{width: "auto"}}>Статус</TableCell>*/}
                                     </TableRow>
                                 </TableBody>
                                 <TableBody style={{border: '1px solid'}}>
@@ -176,15 +214,30 @@ function Row(props: {
                                             </TableCell>
                                             <TableCell align={"center"} sx={{width: "50%"}}
                                             >
-                                                <CaseTagsField tags={tags}/>
+                                                <CaseScenarioField scenario={onecase.scenario}/>
+                                                {/*<CaseTagsField tags={tags}/>*/}
                                             </TableCell>
                                             <TableCell align={"center"}>
                                                 {
-                                                    <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                        backgroundColor: alpha("#ff0000", 0.75),
-                                                        color: "#ffffff",
-                                                        borderRadius: 10,
-                                                    }} label={onecase.estimate}/>
+                                                    (onecase.estimate &&
+                                                    <Chip className={classes.chipTagsStatusInSuites} key={index}
+                                                          style={{
+                                                              margin: 5,
+                                                              borderRadius: 10,
+                                                              maxWidth: 300
+                                                          }} label={onecase.estimate}/>) ||
+                                                    <Chip className={classes.chipTagsStatusInSuites} key={index}
+                                                          style={{
+                                                              margin: 5,
+                                                              borderRadius: 10,
+                                                              maxWidth: 300
+                                                          }} label="-----"/>
+                                                    // stat1 == "Failed" &&
+                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
+                                                    //     backgroundColor: alpha("#ff0000", 0.75),
+                                                    //     color: "#ffffff",
+                                                    //     borderRadius: 10,
+                                                    // }} label={stat1}/>
                                                     // ||
                                                     // stat == "Passed" &&
                                                     // <Chip className={classes.chipTagsStatusInSuites} style={{
@@ -266,6 +319,7 @@ const TableSuites = (props: {
     suites: treeSuite[], setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
 }) => {
     const {setShowCreationCase, setShowCreationSuite, suites, setSelectedSuiteCome} = props;
+    console.log(suites)
     return (
         <Grid style={{justifyContent: "center", display: "flex"}}>
             <TableContainer style={{maxWidth: "80%", margin: 30, padding: 20}}>

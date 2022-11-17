@@ -8,7 +8,7 @@ import CreationSuite from "./creation.suite.component";
 import TableSuites from "./table.suites.component";
 import SuiteCaseService from "../../services/suite.case.service";
 import TreeView from '@mui/lab/TreeView';
-import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
+import TreeItem, {TreeItemProps, treeItemClasses} from '@mui/lab/TreeItem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FolderSuites from "./folder.suites.component";
@@ -27,7 +27,7 @@ export interface treeSuite {
     id: number;
     level: number;
     name: string;
-    children: suite[];
+    children: treeSuite[];
     test_cases: myCase [];
 }
 
@@ -46,7 +46,7 @@ const SuitesComponent: React.FC = () => {
     const [showCreationSuite, setShowCreationSuite] = useState(false)
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [suites, setSuites] = useState<suite []>([])
-    const [treeSuites, setTreeSuites] = useState([])
+    const [treeSuites, setTreeSuites] = useState<treeSuite[]>([])
     const [cases, setCases] = useState([])
     const [selectedSuiteCome, setSelectedSuiteCome] = useState<{ id: number, name: string } | null>(null)
 
@@ -80,10 +80,12 @@ const SuitesComponent: React.FC = () => {
     }, [])
 
     const handleShowCreationCase = () => {
-        setShowCreationCase(true)
-        setSelectedSuiteCome({id: suites[0].id, name: suites[0].name})
+        if (suites.length > 0) {
+            setShowCreationCase(true)
+            setSelectedSuiteCome({id: suites[0].id, name: suites[0].name})
+        }
     }
-
+    console.log(showCreationCase)
     const handleShowCreationSuite = () => {
         setShowCreationSuite(true)
         setSelectedSuiteCome(null)
@@ -124,9 +126,9 @@ const SuitesComponent: React.FC = () => {
                         <FolderSuites suites={treeSuites}/>
                         {suites.length > 0 &&
                         <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
-                                      selectedSuiteCome={selectedSuiteCome}/>}
+                                      selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>}
                         <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
-                                       selectedSuiteCome={selectedSuiteCome}/>
+                                       selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>
                     </Grid>
                 </Grid>
             </Grid>
