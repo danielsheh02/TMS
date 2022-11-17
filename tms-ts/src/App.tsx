@@ -7,7 +7,7 @@ import Header from "./components/header";
 import Login from "./components/login"
 import ProjectSelection from "./components/projects/project-selection";
 import NotExist from "./components/not-exist";
-import TestPlansComponent from "./components/testplans/testplans";
+import TestPlansComponent from "./components/testplans/testplans.component";
 
 
 function App() {

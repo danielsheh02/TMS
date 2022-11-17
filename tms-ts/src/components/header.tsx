@@ -14,7 +14,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {NotificationsActive} from "@mui/icons-material";
 
 const settings = [['Профиль', "/profile"], ['Настройки', "/settings"], ['Выход', "/login"]];
-const buttons = [['Тест-кейсы', "/testcases"], ['Тест-планы', "/"]];
+const buttons = [['Тест-кейсы', "/testcases"], ['Тест-планы', "/testplans"]];
 
 const Header: React.FC = () => {
 
@@ -124,7 +124,7 @@ const Header: React.FC = () => {
                                 <Typography
                                     textAlign="center"
                                     component="a"
-                                    href="/test-plans"
+                                    href="/testplans"
                                     sx={{
                                         color: 'inherit',
                                         textDecoration: 'none',

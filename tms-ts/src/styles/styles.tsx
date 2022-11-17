@@ -21,6 +21,9 @@ export default makeStyles({
         marginTop: -20
     },
     textFieldCreationCase: {
+        "& .MuiFormLabel-root": {
+            margin: 0
+        },
         maxWidth: "90%",
     },
     gridContent: {
@@ -93,4 +96,7 @@ export default makeStyles({
         overflowY: "hidden",
         maxHeight: 70,
     },
+    icons: {
+        color: "#8956FF",
+    }
 });

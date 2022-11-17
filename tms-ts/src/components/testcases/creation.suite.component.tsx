@@ -13,7 +13,6 @@ import SuiteCaseService from "../../services/suite.case.service";
 import {suite} from "./suites.component";
 
 
-
 interface Props {
     show: boolean;
     setShow: (show: boolean) => void;
@@ -101,7 +100,7 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                                 Родительская сьюта
                             </Typography>
 
-                            <FormControl style={{minWidth: "90%"}}>
+                            <FormControl style={{minWidth: "90%"}} className={classes.textFieldCreationCase}>
                                 <InputLabel id="select-suite">Выберите сьюту</InputLabel>
                                 <Select
                                     labelId="select-suite"

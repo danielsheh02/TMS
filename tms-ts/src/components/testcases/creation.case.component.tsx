@@ -244,7 +244,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 Сьюта
                             </Typography>
 
-                            <FormControl required style={{minWidth: "90%"}}>
+                            <FormControl required style={{minWidth: "90%"}} className={classes.textFieldCreationCase}>
                                 <InputLabel id="select-suite">Выберите сьюту</InputLabel>
                                 <Select
                                     labelId="select-suite"
