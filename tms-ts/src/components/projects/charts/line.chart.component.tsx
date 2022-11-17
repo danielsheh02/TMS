@@ -21,11 +21,11 @@ const LineChartComponent: React.FC = () => {
                 <YAxis/>
                 <Tooltip/>
                 <Legend/>
-                <Line name={"Passed"} type="monotone" dataKey="passed" stroke={"#12ab00"} strokeWidth={3}/>
-                <Line name={"Failed"} type="monotone" dataKey="failed" stroke={"#b90000"} strokeWidth={3}/>
+                <Line name={"Passed"} type="monotone" dataKey="passed" stroke={"#12ab00"} strokeWidth={3} dot={false}/>
+                <Line name={"Failed"} type="monotone" dataKey="failed" stroke={"#b90000"} strokeWidth={3} dot={false}/>
                 <Line name={"Skipped"} type="monotone" dataKey="skipped" stroke={"#e0d729"}
-                      strokeWidth={3}/>
-                <Line name={"Retest"} type="monotone" dataKey="retest" stroke={"#646464"} strokeWidth={3}/>
+                      strokeWidth={3} dot={false}/>
+                <Line name={"Retest"} type="monotone" dataKey="retest" stroke={"#646464"} strokeWidth={3} dot={false}/>
             </LineChart>
         </ResponsiveContainer>
     );
