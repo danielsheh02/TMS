@@ -15,10 +15,7 @@ export const personalTestsData = [['Тест-план 11', '13', '8', '1', '2', 
     ['Тест-план 14', '9', '7', '2', '0', '0', '23.10.2022', 'Дмитрий']]
 
 export const pieData = [
-    {name: 'Георгий', value: 14},
-    {name: 'Андрей', value: 15},
-    {name: 'Павел', value: 30},
-    {name: 'Илья', value: 20},
+    {name: 'Назначено', value: 14},
     {name: 'Не назначено', value: 10},
 ];
 
