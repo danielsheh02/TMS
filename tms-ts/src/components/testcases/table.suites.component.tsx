@@ -7,7 +7,15 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React, {useEffect, useRef} from "react";
 import useStyles from "../../styles/styles";
 import useMediaQuery from '@mui/material/useMediaQuery';
+import SuiteCaseService from "../../services/suite.case.service";
+import Divider from '@mui/material/Divider';
+import {treeSuite} from "./suites.component";
 
+const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
+    "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
+    "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"];
+
+const stat = "Failed"
 
 function createSuite(
     name: string,
@@ -67,32 +75,32 @@ function CaseTagsField(props: { tags: any[] }) {
 }
 
 function Row(props: {
-    row: ReturnType<typeof createSuite>, selected: readonly string[], setSelected: (array: readonly string[]
-    ) => void, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void, open2: boolean
+    row: treeSuite, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
+    setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
 }) {
     const classes = useStyles()
-    const {row, selected, setSelected, setShowCreationCase, setShowCreationSuite, open2} = props;
+    const {row, setShowCreationCase, setShowCreationSuite, setSelectedSuiteCome} = props;
     const [open, setOpen] = React.useState(false);
+    const [selected, setSelected] = React.useState<number []>([]);
     // const [selected, setSelected] = React.useState<readonly string[]>([]);
-
     const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            const newSelected = row.cases.map((n) => n.name);
+            const newSelected = row.test_cases.map((n) => n.id);
             setSelected(newSelected);
             return;
         }
         setSelected([]);
     };
 
-    const isSelected = (name: string) => {
-        return selected.indexOf(name) !== -1
-    };
-    const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-        const selectedIndex = selected.indexOf(name);
-        let newSelected: readonly string[] = [];
+    // const isSelected = (id: number) => {
+    //     return selected.indexOf(name) !== -1
+    // };
+    const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+        const selectedIndex = selected.indexOf(id);
+        let newSelected: number[] = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -135,8 +143,8 @@ function Row(props: {
                                         <TableCell style={{width: "1%"}}>
                                             <Checkbox
                                                 style={{height: 20}}
-                                                indeterminate={selected.length > 0 && selected.length < row.cases.length}
-                                                checked={selected.length > 0 && selected.length === row.cases.length}
+                                                indeterminate={selected.length > 0 && selected.length < row.test_cases.length}
+                                                checked={selected.length > 0 && selected.length === row.test_cases.length}
                                                 onChange={(e) => handleSelectAllClick(e)}
                                                 color="primary"
 
@@ -150,14 +158,14 @@ function Row(props: {
                                     </TableRow>
                                 </TableBody>
                                 <TableBody style={{border: '1px solid'}}>
-                                    {row.cases.map((onecase, index) => (
+                                    {row.test_cases.map((onecase, index) => (
                                         <TableRow key={index}>
                                             <TableCell>
                                                 <Checkbox
                                                     style={{height: 25}}
-                                                    onClick={(event) => handleClick(event, onecase.name)}
+                                                    onClick={(event) => handleClick(event, onecase.id)}
                                                     color="primary"
-                                                    checked={isSelected(onecase.name)}
+                                                    checked={selected.indexOf(onecase.id) !== -1}
                                                 />
                                             </TableCell>
                                             <TableCell component="th"
@@ -166,45 +174,45 @@ function Row(props: {
                                                        padding="none">
                                                 {onecase.name}
                                             </TableCell>
-                                            <TableCell  align={"center"} sx={{width: "50%"}}
+                                            <TableCell align={"center"} sx={{width: "50%"}}
                                             >
-                                                <CaseTagsField tags={onecase.tags}/>
+                                                <CaseTagsField tags={tags}/>
                                             </TableCell>
                                             <TableCell align={"center"}>
-                                                {onecase.status == "Failed" &&
-                                                <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    backgroundColor: alpha("#ff0000", 0.75),
-                                                    color: "#ffffff",
-                                                    borderRadius: 10,
-                                                }} label={onecase.status}/>
-                                                ||
-                                                onecase.status == "Passed" &&
-                                                <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    backgroundColor: alpha("#1da900", 0.75),
-                                                    color: "#ffffff",
-                                                    borderRadius: 10
-                                                }} label={onecase.status}/>
-                                                ||
-                                                onecase.status == "Skipped" &&
-                                                <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    backgroundColor: alpha("#d3c100", 0.75),
-                                                    color: "#ffffff",
-                                                    borderRadius: 10
-                                                }} label={onecase.status}/>
-                                                ||
-                                                onecase.status == "Retest" &&
-                                                <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    backgroundColor: alpha("#3a3939", 0.75),
-                                                    color: "#ffffff",
-                                                    borderRadius: 10
-                                                }} label={onecase.status}/>
-                                                ||
-                                                onecase.status == "Untested" &&
-                                                <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    borderRadius: 10,
-                                                    backgroundColor: alpha("#9f9f9f", 0.75),
-                                                    color: "#ffffff"
-                                                }} label={onecase.status}/>
+                                                {
+                                                    <Chip className={classes.chipTagsStatusInSuites} style={{
+                                                        backgroundColor: alpha("#ff0000", 0.75),
+                                                        color: "#ffffff",
+                                                        borderRadius: 10,
+                                                    }} label={onecase.estimate}/>
+                                                    // ||
+                                                    // stat == "Passed" &&
+                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
+                                                    //     backgroundColor: alpha("#1da900", 0.75),
+                                                    //     color: "#ffffff",
+                                                    //     borderRadius: 10
+                                                    // }} label={stat}/>
+                                                    // ||
+                                                    // stat == "Skipped" &&
+                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
+                                                    //     backgroundColor: alpha("#d3c100", 0.75),
+                                                    //     color: "#ffffff",
+                                                    //     borderRadius: 10
+                                                    // }} label={stat}/>
+                                                    // ||
+                                                    // stat == "Retest" &&
+                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
+                                                    //     backgroundColor: alpha("#3a3939", 0.75),
+                                                    //     color: "#ffffff",
+                                                    //     borderRadius: 10
+                                                    // }} label={stat}/>
+                                                    // ||
+                                                    // stat == "Untested" &&
+                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
+                                                    //     borderRadius: 10,
+                                                    //     backgroundColor: alpha("#9f9f9f", 0.75),
+                                                    //     color: "#ffffff"
+                                                    // }} label={stat}/>
                                                 }
                                             </TableCell>
                                         </TableRow>
@@ -214,25 +222,31 @@ function Row(props: {
                                     <TableRow>
                                         <TableCell colSpan={4}>
                                             <Grid style={{display: "flex", flexDirection: "row"}}>
-                                                <Link component="button" onClick={() => setShowCreationCase(true)}>
+                                                <Link component="button" onClick={() => {
+                                                    setShowCreationCase(true)
+                                                    setSelectedSuiteCome({id: row.id, name: row.name})
+                                                }}>
                                                     Добавить тест-кейс
                                                 </Link>
                                                 <Link underline="none">&nbsp;&nbsp;|&nbsp;&nbsp;</Link>
                                                 <Link component="button"
-                                                      onClick={() => setShowCreationSuite(true)}>
+                                                      onClick={() => {
+                                                          setShowCreationSuite(true)
+                                                          setSelectedSuiteCome({id: row.id, name: row.name})
+                                                      }}>
                                                     Добавить сьюту
                                                 </Link>
                                             </Grid>
                                         </TableCell>
                                     </TableRow>
                                 </TableBody>
-                                {row && row.suites &&
+                                {row && row.children &&
                                 <TableBody>
-                                    {row.suites.map((suite: any, index: number) => (
-                                        <Row key={index} row={suite} selected={selected} setSelected={setSelected}
+                                    {row.children.map((suite: any, index: number) => (
+                                        <Row key={index} row={suite}
                                              setShowCreationCase={setShowCreationCase}
                                              setShowCreationSuite={setShowCreationSuite}
-                                             open2={true}
+                                             setSelectedSuiteCome={setSelectedSuiteCome}
                                         />
                                     ))}
                                 </TableBody>}
@@ -248,94 +262,10 @@ function Row(props: {
 
 const TableSuites = (props: {
     selected: readonly string[], setSelected: (array: readonly string[]) => void,
-    setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void
+    setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
+    suites: treeSuite[], setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
 }) => {
-    const {selected, setSelected, setShowCreationCase, setShowCreationSuite} = props;
-    // const suiteChildChildChildChild = [createSuite('Уведомления на почту', [
-    //     {
-    //         name: 'Добавление пользователя',
-    //         tags: 'СРОЧНО',
-    //         status: 'Passed',
-    //     },
-    //     {
-    //         name: 'Удаление пользователя',
-    //         tags: 'НЕ НАДО ЭТО ТЕСТИРОВАТЬ',
-    //         status: 'Failed',
-    //     }
-    // ],),]
-    // const suiteChildChildChild = [createSuite('Уведомления на почту', [
-    //     {
-    //         name: 'Добавление пользователя',
-    //         tags: 'СРОЧНО',
-    //         status: 'Passed',
-    //     },
-    //     {
-    //         name: 'Удаление пользователя',
-    //         tags: 'НЕ НАДО ЭТО ТЕСТИРОВАТЬ',
-    //         status: 'Failed',
-    //     }
-    // ],suiteChildChildChildChild,),]
-    const suiteChildChild = [createSuite('Уведомления на почту', [
-        {
-            name: 'Добавление пользователя',
-            tags: ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
-                "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
-                "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
-                "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
-                "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"],
-            status: 'Passed',
-        },
-        {
-            name: 'Удаление пользователя',
-            tags: ['НЕ НАДО ЭТО ТЕСТИРОВАТЬ'],
-            status: 'Failed',
-        }
-    ],),]
-    const suiteChild = [createSuite('Уведомления на почту', [
-        {
-            name: 'Добавление пользователя2',
-            tags: ['СРОЧНО', 'ОЧЕНЬ'],
-            status: 'Untested',
-        },
-        {
-            name: 'Удаление пользователя2',
-            tags: ['НЕ НАДО ЭТО ТЕСТИРОВАТЬ'],
-            status: 'Failed',
-        }
-    ], suiteChildChild),]
-    const suites = [
-            createSuite('Система уведомлений',
-                [
-                    {
-                        name: 'Добавление пользователя3',
-                        tags: ['СРОЧСРОЧСРОЧСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОСРОЧСРОЧСРОЧСРОЧССРОЧСРОЧСРОРОЧСРОЧНОНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
-                            "СРОЧНО", "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"],
-                        status: 'Passed',
-                    },
-                    {
-                        name: 'Удаление пользователя3',
-                        tags: ['СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
-                            "СРОЧНО", "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО"],
-                        status: 'Failed',
-                    }
-                ], suiteChild
-            ),
-            createSuite('Регистрация пользователя',
-                [
-                    {
-                        name: 'Сохранение пользователя в БД',
-                        tags: ['СРОЧНО', 'ОЧЕНЬ'],
-                        status: 'Skipped',
-                    },
-                    {
-                        name: 'Удаление пользователя из БД',
-                        tags: ['НЕ НАДО ЭТО ТЕСТИРОВАТЬ'],
-                        status: 'Retest',
-                    }
-                ], suiteChild
-            ),
-        ]
-    ;
+    const {setShowCreationCase, setShowCreationSuite, suites, setSelectedSuiteCome} = props;
     return (
         <Grid style={{justifyContent: "center", display: "flex"}}>
             <TableContainer style={{maxWidth: "80%", margin: 30, padding: 20}}>
@@ -346,9 +276,11 @@ const TableSuites = (props: {
                 }}>
                     <TableBody>
                         {suites.map((suite, index) => (
-                            <Row key={index} row={suite} selected={selected} setSelected={setSelected}
+                            <Row key={index} row={suite}
                                  setShowCreationCase={setShowCreationCase}
-                                 setShowCreationSuite={setShowCreationSuite} open2={true}/>
+                                 setShowCreationSuite={setShowCreationSuite}
+                                 setSelectedSuiteCome={setSelectedSuiteCome}
+                            />
                         ))}
                     </TableBody>
                 </Table>
