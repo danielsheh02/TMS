@@ -4,16 +4,17 @@ import React, {useEffect, useState} from "react";
 import useStyles from "../../styles/styles";
 import {Grid, Button, Dialog, IconButton, TextField, InputAdornment, Typography} from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
-import {suite} from "./suites.component";
+import {suite, treeSuite} from "./suites.component";
 
 interface Props {
     show: boolean;
     setShow: (show: boolean) => void;
-    suites: suite []
-    selectedSuiteCome: { id: number, name: string } | null
+    suites: suite [];
+    selectedSuiteCome: { id: number, name: string } | null;
+    setTreeSuites: (treeSuites: treeSuite[]) => void
 }
 
-const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome}) => {
+const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome, setTreeSuites}) => {
     const classes = useStyles()
 
     const [tagInput, setTagInput] = useState("")
@@ -32,6 +33,10 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
 
     const [name, setName] = useState("")
     const [namePresence, setNamePresence] = useState(false)
+
+    const [estimate, setEstimate] = useState("")
+    const [estimateNumber, setEstimateNumber] = useState<number | null>(null)
+    const [estimatePresence, setEstimatePresence] = useState(false)
 
     const [scenario, setScenario] = useState("")
     const [scenarioPresence, setScenarioPresence] = useState(false)
@@ -55,6 +60,8 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         setNamePresence(false)
         setScenario("")
         setScenarioPresence(false)
+        setEstimate("")
+        setEstimateNumber(null)
     }
 
     const handleDelete = (index: number) => {
@@ -117,6 +124,19 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         }
     }
 
+    const onChangeEstimateContent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const strInput = e.target.value
+        if (strInput.charCodeAt(strInput.length - 1) >= 48 && strInput.charCodeAt(strInput.length - 1) <= 57) {
+            setEstimate(strInput)
+            setEstimateNumber(parseInt(strInput, 10))
+            setEstimatePresence(true)
+        } else if (strInput.length == 0) {
+            setEstimate("")
+            setEstimateNumber(null)
+            setEstimatePresence(false)
+        }
+    }
+
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let str = e.target.value
         setName(str)
@@ -135,8 +155,13 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
             project: 1,
             suite: selectedSuite.id,
             scenario: scenario,
+            estimate: estimateNumber
         }
-        SuiteCaseService.createCase(myCase)
+        SuiteCaseService.createCase(myCase).then(() => {
+            SuiteCaseService.getTreeSuites().then((response) => {
+                setTreeSuites(response.data)
+            })
+        })
         handleClose()
     }
 
@@ -170,7 +195,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                             Название тест-кейса
                         </Typography>
                         <TextField
-                            className={classes.textFieldCreationCase}
+                            className={classes.textFieldSelectCreationCaseSuite}
                             onChange={(content) => onChangeName(content)}
                             variant="outlined"
                             margin="normal"
@@ -186,7 +211,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                             Описание
                         </Typography>
                         <TextField
-                            className={classes.textFieldCreationCase}
+                            className={classes.textFieldSelectCreationCaseSuite}
                             onChange={(content) => onChangeScenario(content)}
                             variant="outlined"
                             margin="normal"
@@ -205,7 +230,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                         <TextField
                             value={tagInput}
                             onChange={(content) => onChangeTagContent(content)}
-                            className={classes.textFieldCreationCase}
+                            className={classes.textFieldSelectCreationCaseSuite}
                             variant="outlined"
                             margin="normal"
                             autoComplete="off"
@@ -244,8 +269,10 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 Сьюта
                             </Typography>
 
-                            <FormControl required style={{minWidth: "90%"}}>
-                                <InputLabel id="select-suite">Выберите сьюту</InputLabel>
+                            <FormControl required style={{minWidth: "90%"}}
+                                         className={classes.textFieldSelectCreationCaseSuite}>
+                                <InputLabel id="select-suite">Выберите
+                                    сьюту</InputLabel>
                                 <Select
                                     labelId="select-suite"
                                     value={selectedSuite.name}
@@ -263,8 +290,10 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 Время выполнения
                             </Typography>
                             <TextField
+                                value={estimate}
                                 style={{marginTop: 10}}
-                                className={classes.textFieldCreationCase}
+                                className={classes.textFieldSelectCreationCaseSuite}
+                                onChange={(content) => onChangeEstimateContent(content)}
                                 variant="outlined"
                                 margin="normal"
                                 autoComplete="off"
@@ -280,7 +309,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 value={link}
                                 onChange={(content) => onChangeLinkContent(content)}
                                 style={{marginTop: 10}}
-                                className={classes.textFieldCreationCase}
+                                className={classes.textFieldSelectCreationCaseSuite}
                                 variant="outlined"
                                 margin="normal"
                                 autoComplete="off"
