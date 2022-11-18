@@ -34,6 +34,10 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
     const [name, setName] = useState("")
     const [namePresence, setNamePresence] = useState(false)
 
+    const [estimate, setEstimate] = useState("")
+    const [estimateNumber, setEstimateNumber] = useState<number | null>(null)
+    const [estimatePresence, setEstimatePresence] = useState(false)
+
     const [scenario, setScenario] = useState("")
     const [scenarioPresence, setScenarioPresence] = useState(false)
 
@@ -56,6 +60,8 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         setNamePresence(false)
         setScenario("")
         setScenarioPresence(false)
+        setEstimate("")
+        setEstimateNumber(null)
     }
 
     const handleDelete = (index: number) => {
@@ -118,6 +124,19 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         }
     }
 
+    const onChangeEstimateContent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const strInput = e.target.value
+        if (strInput.charCodeAt(strInput.length - 1) >= 48 && strInput.charCodeAt(strInput.length - 1) <= 57) {
+            setEstimate(strInput)
+            setEstimateNumber(parseInt(strInput, 10))
+            setEstimatePresence(true)
+        } else if (strInput.length == 0) {
+            setEstimate("")
+            setEstimateNumber(null)
+            setEstimatePresence(false)
+        }
+    }
+
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let str = e.target.value
         setName(str)
@@ -136,8 +155,13 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
             project: 1,
             suite: selectedSuite.id,
             scenario: scenario,
+            estimate: estimateNumber
         }
-        SuiteCaseService.createCase(myCase)
+        SuiteCaseService.createCase(myCase).then(() => {
+            SuiteCaseService.getTreeSuites().then((response) => {
+                setTreeSuites(response.data)
+            })
+        })
         handleClose()
     }
 
@@ -266,8 +290,10 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 Время выполнения
                             </Typography>
                             <TextField
+                                value={estimate}
                                 style={{marginTop: 10}}
                                 className={classes.textFieldSelectCreationCaseSuite}
+                                onChange={(content) => onChangeEstimateContent(content)}
                                 variant="outlined"
                                 margin="normal"
                                 autoComplete="off"

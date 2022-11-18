@@ -19,9 +19,10 @@ interface Props {
     suites: suite [],
     selectedSuiteCome: { id: number, name: string } | null
     setTreeSuites: (treeSuites: treeSuite[]) => void
+    setSuites: (suites: suite[]) => void
 }
 
-const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome, setTreeSuites}) => {
+const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome, setTreeSuites, setSuites}) => {
     const classes = useStyles()
     const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string } | null>(selectedSuiteCome)
     const [name, setName] = useState("")
@@ -44,7 +45,14 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
             parent: selectedSuite ? selectedSuite.id : null,
             project: 1,
         }
-        SuiteCaseService.createSuite(suite)
+        SuiteCaseService.createSuite(suite).then(() => {
+            SuiteCaseService.getTreeSuites().then((response) => {
+                setTreeSuites(response.data)
+                SuiteCaseService.getSuites().then((response) => {
+                    setSuites(response.data)
+                })
+            })
+        })
         setShow(false)
         setName("")
         setNamePresence(false)

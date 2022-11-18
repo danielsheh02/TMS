@@ -1,14 +1,10 @@
 import {
-    Grid, Paper, TableContainer, Table, TableBody,
-    TableCell, TableRow, Collapse, IconButton, Chip, tableCellClasses, Checkbox, Typography, Link, Button, alpha
+    Grid, TableContainer, Table, TableBody,
+    TableCell, TableRow, Collapse, IconButton, Chip, tableCellClasses, Checkbox, Link
 } from "@mui/material";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import useStyles from "../../styles/styles";
-import useMediaQuery from '@mui/material/useMediaQuery';
-import SuiteCaseService from "../../services/suite.case.service";
-import Divider from '@mui/material/Divider';
 import {treeSuite} from "./suites.component";
 
 const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
@@ -112,11 +108,19 @@ function CaseScenarioField(props: { scenario: string }) {
 
 function Row(props: {
     row: treeSuite, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
-    setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
+    setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void, treeSuitesOpenMap: Map<number, boolean>,
+    setTreeSuitesOpenMap: (newMap: (prev: Map<number, boolean>) => any) => void
 }) {
     const classes = useStyles()
-    const {row, setShowCreationCase, setShowCreationSuite, setSelectedSuiteCome} = props;
-    const [open, setOpen] = React.useState(true);
+    const {
+        row,
+        setShowCreationCase,
+        setShowCreationSuite,
+        setSelectedSuiteCome,
+        treeSuitesOpenMap,
+        setTreeSuitesOpenMap
+    } = props;
+    const [localOpen, setLocalOpen] = React.useState<boolean | undefined>(undefined);
     const [selected, setSelected] = React.useState<number []>([]);
     // const [selected, setSelected] = React.useState<readonly string[]>([]);
     const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,9 +132,6 @@ function Row(props: {
         setSelected([]);
     };
 
-    // const isSelected = (id: number) => {
-    //     return selected.indexOf(name) !== -1
-    // };
     const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
         const selectedIndex = selected.indexOf(id);
         let newSelected: number[] = [];
@@ -151,18 +152,33 @@ function Row(props: {
         setSelected(newSelected);
     };
 
+    useEffect(() => {
+        if (treeSuitesOpenMap.get(row.id) === undefined) {
+            setTreeSuitesOpenMap(prev => (prev.set(row.id, true)))
+            setLocalOpen(true)
+        } else {
+            setLocalOpen(treeSuitesOpenMap.get(row.id))
+        }
+    })
+
+    const setOpenClose = () => {
+        const flag = treeSuitesOpenMap.get(row.id)
+        setTreeSuitesOpenMap(prev => (prev.set(row.id, !flag)))
+        setLocalOpen(!flag)
+    }
+
     return (
         <React.Fragment>
             <TableRow>
                 <TableCell colSpan={4}>
-                    <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1}}>
-                        <Chip onClick={() => setOpen(!open)} icon={<IconButton
+                    <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1}} id={row.id.toString()}>
+                        <Chip onClick={setOpenClose} icon={<IconButton
                             style={{marginLeft: 1}}
                             aria-label="expand row"
                             size="small"
                         >
                             <KeyboardArrowUpIcon sx={{
-                                transform: open ? 'rotate(0deg)' : 'rotate(180deg)',
+                                transform: treeSuitesOpenMap.get(row.id) ? 'rotate(0deg)' : 'rotate(180deg)',
                                 transition: '0.2s',
                             }}/>
                         </IconButton>} style={{marginTop: 7}} label={row.name}/>
@@ -171,7 +187,7 @@ function Row(props: {
             </TableRow>
             <TableRow>
                 <TableCell style={{paddingBottom: 0, paddingTop: 7, paddingRight: 0, marginRight: 10}} colSpan={4}>
-                    <Collapse in={open} mountOnEnter>
+                    {(localOpen == true || localOpen == false) && <Collapse in={localOpen} mountOnEnter>
                         <Grid>
                             <Table size="small">
                                 <TableBody style={{border: '1px solid'}}>
@@ -220,12 +236,12 @@ function Row(props: {
                                             <TableCell align={"center"}>
                                                 {
                                                     (onecase.estimate &&
-                                                    <Chip className={classes.chipTagsStatusInSuites} key={index}
-                                                          style={{
-                                                              margin: 5,
-                                                              borderRadius: 10,
-                                                              maxWidth: 300
-                                                          }} label={onecase.estimate}/>) ||
+                                                        <Chip className={classes.chipTagsStatusInSuites} key={index}
+                                                              style={{
+                                                                  margin: 5,
+                                                                  borderRadius: 10,
+                                                                  maxWidth: 300
+                                                              }} label={onecase.estimate}/>) ||
                                                     <Chip className={classes.chipTagsStatusInSuites} key={index}
                                                           style={{
                                                               margin: 5,
@@ -300,13 +316,14 @@ function Row(props: {
                                              setShowCreationCase={setShowCreationCase}
                                              setShowCreationSuite={setShowCreationSuite}
                                              setSelectedSuiteCome={setSelectedSuiteCome}
-                                        />
+                                             treeSuitesOpenMap={treeSuitesOpenMap}
+                                             setTreeSuitesOpenMap={setTreeSuitesOpenMap}/>
                                     ))}
                                 </TableBody>}
                             </Table>
                         </Grid>
 
-                    </Collapse>
+                    </Collapse>}
                 </TableCell>
             </TableRow>
         </React.Fragment>
@@ -319,7 +336,8 @@ const TableSuites = (props: {
     suites: treeSuite[], setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
 }) => {
     const {setShowCreationCase, setShowCreationSuite, suites, setSelectedSuiteCome} = props;
-    console.log(suites)
+    const [treeSuitesOpenMap, setTreeSuitesOpenMap] = useState(new Map())
+
     return (
         <Grid style={{justifyContent: "center", display: "flex"}}>
             <TableContainer style={{maxWidth: "80%", margin: 30, padding: 20}}>
@@ -334,6 +352,8 @@ const TableSuites = (props: {
                                  setShowCreationCase={setShowCreationCase}
                                  setShowCreationSuite={setShowCreationSuite}
                                  setSelectedSuiteCome={setSelectedSuiteCome}
+                                 treeSuitesOpenMap={treeSuitesOpenMap}
+                                 setTreeSuitesOpenMap={setTreeSuitesOpenMap}
                             />
                         ))}
                     </TableBody>

@@ -7,10 +7,6 @@ import CreationCase from "./creation.case.component";
 import CreationSuite from "./creation.suite.component";
 import TableSuites from "./table.suites.component";
 import SuiteCaseService from "../../services/suite.case.service";
-import TreeView from '@mui/lab/TreeView';
-import TreeItem, {TreeItemProps, treeItemClasses} from '@mui/lab/TreeItem';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FolderSuites from "./folder.suites.component";
 
 interface myCase {
@@ -50,20 +46,15 @@ const SuitesComponent: React.FC = () => {
     const [cases, setCases] = useState([])
     const [selectedSuiteCome, setSelectedSuiteCome] = useState<{ id: number, name: string } | null>(null)
 
-    // const createTreeStructureSuitesCases = (localSuites: any, localCases: any) => {
-    //     const treeOfSuites: suite [] = []
-    //     const newArray = localSuites.filter((st: suite) => st.parent == null)
-    //     // console.log(newArray)
-    //     // console.log(localSuites)
-    // }
-    console.log(selectedSuiteCome)
-    // console.log(cases)
     useEffect(() => {
         // SuiteCaseService.authorize().then((response) => {
         //     const token = response.data.access
             SuiteCaseService.getSuites().then((response) => {
                 // const localSuites = response.data
                 setSuites(response.data)
+                // for (let i = 0; i< response.data.length; i++){
+                //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
+                // }
                 SuiteCaseService.getCases().then((response) => {
                     // const localCases = response.data
                     setCases(response.data)
@@ -85,19 +76,22 @@ const SuitesComponent: React.FC = () => {
             setSelectedSuiteCome({id: suites[0].id, name: suites[0].name})
         }
     }
-    console.log(showCreationCase)
+
     const handleShowCreationSuite = () => {
         setShowCreationSuite(true)
         setSelectedSuiteCome(null)
     }
     return (
-        <Grid container style={{
+        <Grid  style={{
             marginTop: 0,
             position: "absolute",
+            display: "flex",
             height: "91%",
             width: "100%"
         }}>
-            <Grid xs={10} item>
+            <Grid   style={{
+                overflowY: "auto", maxHeight: "100%", width: "80%"
+            }}>
                 <TableSuites selected={selected} setSelected={setSelected}
                              setShowCreationCase={setShowCreationCase}
                              setShowCreationSuite={setShowCreationSuite}
@@ -105,8 +99,9 @@ const SuitesComponent: React.FC = () => {
                              suites={treeSuites}
                 />
             </Grid>
-            <Grid xs={2} item style={{
-                backgroundColor: "#eeeeee"
+            <Grid   style={{
+                backgroundColor: "#eeeeee",
+                width: "20%"
             }}>
                 <Grid style={{display: "flex", flexDirection: "column"}}>
                     <Grid style={{textAlign: "center",}}>
@@ -123,13 +118,17 @@ const SuitesComponent: React.FC = () => {
                             backgroundColor: "#696969",
                             color: "#FFFFFF",
                         }} onClick={handleShowCreationSuite}>Создать сьюту</Button>
-                        <FolderSuites suites={treeSuites}/>
                         {suites.length > 0 &&
                         <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
                                       selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>}
                         <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
+                                       setSuites={setSuites}
                                        selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>
                     </Grid>
+                </Grid>
+                <Grid style={{backgroundColor: "white", borderRadius: 10, margin: 13,
+                    height: 400, maxHeight: 500, overflowY: "auto", overflowX: "auto"}}>
+                    <FolderSuites suites={treeSuites}/>
                 </Grid>
             </Grid>
         </Grid>
