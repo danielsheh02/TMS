@@ -1,13 +1,14 @@
 import axios from "axios";
 import authHeader from "./auth.header";
+import axiosTMS from "../axiosTMS";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 
 export default class AuthService {
     static login(username: string, password: string) {
-        return axios
-            .post(API_URL + "api/token/", {username: username, password: password})
+        return axiosTMS
+            .post("api/token/", {username: username, password: password})
             .then((response) => {
                 if (response.data.access) {
                     localStorage.setItem("accessToken", response.data.access);
@@ -18,8 +19,8 @@ export default class AuthService {
 
     static refreshToken() {
         const token = localStorage.getItem("refreshToken");
-        return axios
-            .post(API_URL + "api/token/refresh/", {refresh: token})
+        return axiosTMS
+            .post("api/token/refresh/", {refresh: token})
             .then((response) => {
                 if (response.data.access) {
                     localStorage.setItem("accessToken", response.data.access);

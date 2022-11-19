@@ -35,7 +35,14 @@ class axiosTMS {
             .use(function (response) {
                 return response;
             }, async function (error) {
-                if (401 == error.response.status) {
+                if (error.response.status == 401) {
+                    if (error.config.url == "api/token/refresh/") {
+                        localStorage.removeItem("accessToken");
+                        localStorage.removeItem("refreshToken");
+                        window.location.assign("/login");
+                        return Promise.reject(error);
+                    }
+
                     await AuthService.refreshToken()
                     return axios(error.config);
                 }

@@ -23,11 +23,7 @@ const Login: React.FC = () => {
         setPassword(e.target.value)
     };
 
-    // const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    //     navigate("/", {replace: true});
-    // }
-
-    const handleLogin = () => {
+    const handleLogin = (/*e: React.FormEvent<HTMLFormElement>*/) => {
         AuthService.login(username, password)
             .then(
                 () => {
@@ -96,14 +92,8 @@ const Login: React.FC = () => {
                                 </div>
                             </div>
                         )}
-                        <Typography component="h1" variant="h5">
-                            {username}
-                        </Typography>
-                        <Typography component="h1" variant="h5">
-                            {password}
-                        </Typography>
-                    {/*</form>*/}
                     </div>
+                    {/*</form>*/}
                 </div>
             </Card>
         </Container>
