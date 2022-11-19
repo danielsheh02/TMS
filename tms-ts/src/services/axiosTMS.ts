@@ -25,7 +25,7 @@ class axiosTMS {
 
         axios.interceptors.request
             .use(function (config) {
-                if (config.url?.includes("/api/v1/")) {
+                if (config.url?.includes("api/v1/")) {
                     config.headers = authHeader()
                 }
                 return config;

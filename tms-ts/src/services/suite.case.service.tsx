@@ -19,26 +19,26 @@ import axiosTMS from "./axiosTMS";
 export default class SuiteCaseService {
 
     static getSuites() {
-        return axiosTMS.get("/api/v1/suites/")
+        return axiosTMS.get("api/v1/suites/")
     }
 
     static getCases() {
-        return axiosTMS.get("/api/v1/cases/")
+        return axiosTMS.get("api/v1/cases/")
     }
 
     static getTreeSuites() {
-        return axiosTMS.get("/api/v1/projects/1/suites/")
+        return axiosTMS.get("api/v1/projects/1/suites/")
     }
 
     static deleteSuite(idSuite: number) {
-        return axiosTMS.delete("/api/v1/suites/" + idSuite + "/")
+        return axiosTMS.delete("api/v1/suites/" + idSuite + "/")
     }
 
     static createCase(myCase: { name: string; project: number; suite: number; scenario: string; }) {
-        return axiosTMS.post("/api/v1/cases/", myCase)
+        return axiosTMS.post("api/v1/cases/", myCase)
     }
 
     static createSuite(suite: { parent: number | null; name: string }) {
-        return axiosTMS.post("/api/v1/suites/", suite)
+        return axiosTMS.post("api/v1/suites/", suite)
     }
 }
