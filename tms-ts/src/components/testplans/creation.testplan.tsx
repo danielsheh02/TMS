@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import useStyles from "../../styles/styles";
 import {
     Button,
@@ -9,7 +9,6 @@ import {
     InputLabel,
     MenuItem,
     Select,
-    SelectChangeEvent,
     TextField,
     Typography
 } from "@mui/material";
@@ -17,8 +16,19 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
-import {testPlan, param, treeTestPlan} from "./testplans.component";
+import {testPlan, param} from "./testplans.component";
 import TestPlanService from "../../services/testplan.service";
+import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import FolderCopyOutlinedIcon from '@mui/icons-material/FolderCopyOutlined';
+import BlockIcon from '@mui/icons-material/Block';
+import {alpha} from "@material-ui/core";
 
 
 interface Props {
@@ -28,6 +38,13 @@ interface Props {
     params: param[] | null;
 }
 
+interface Node {
+    label: string;
+    value: string;
+    children?: Array<Node>;
+    disabled?: boolean;
+}
+
 const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) => {
     const classes = useStyles()
 
@@ -35,7 +52,10 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
     const [links, setLinks] = useState<string []>([])
     const [linkPresence, setLinkPresence] = useState(false)
 
-    const [selectedTestPlan, setSelectedTestPlan] = useState<{ id: number | null, name: string }>({id: null, name: "Не выбрано"})
+    const [selectedTestPlan, setSelectedTestPlan] = useState<{ id: number | null, name: string }>({
+        id: null,
+        name: "Не выбрано"
+    })
 
     // console.log(testPlans)
     /*useEffect(() => {
@@ -45,12 +65,14 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
     }, [testPlans])*/
 
     const [name, setName] = useState("")
-    const [namePresence, setNamePresence] = useState(false)
+    // const [namePresence, setNamePresence] = useState(false)
 
-    const [selectedParams, setSelectedParams] = useState<{ id: number, name: string }[]>([])
+    const [startDate, setStartDate] = React.useState<Moment | null>(moment())
+    const [endDate, setEndDate] = React.useState<Moment | null>(moment())
 
-    const [startDate, setStartDate] = React.useState<Moment | null>(moment());
-    const [endDate, setEndDate] = React.useState<Moment | null>(moment());
+    const [paramsChecked, setParamsChecked] = useState<Array<string>>([])
+    const [paramsExpanded, setParamsExpanded] = useState<Array<string>>([])
+    const [disable, setDisable] = useState(false)
 
     const handleStartDate = (newValue: Moment | null) => {
         setStartDate(newValue);
@@ -66,10 +88,12 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
         setLinks([])
         setShow(false)
         setName("")
-        setNamePresence(false)
-        setSelectedParams([])
+        // setNamePresence(false)
         setStartDate(moment())
         setEndDate(moment())
+        setParamsChecked([])
+        setParamsExpanded([])
+        setDisable(false)
     }
 
     const handleDeleteLink = (index: number) => {
@@ -99,16 +123,10 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
         setSelectedTestPlan({id: e.target.value.id, name: e.target.value.name})
     }
 
-    const chooseParam = (e: any) => {
-        let selParams = selectedParams
-        selParams.push({id: e.target.value.id, name: e.target.value.name})
-        setSelectedParams(selParams)
-    }
-
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let str = e.target.value
         setName(str)
-        setNamePresence(true)
+        // setNamePresence(true)
     }
 
     const keyPressLink = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -119,13 +137,12 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
 
     const createTestPlan = () => {
         let params = null
-        if (selectedParams != null) {
-            params = [];
-            selectedParams.forEach((el) => {
-                params.push(el.id)
-            })
+        if (!paramsChecked.includes('no') && paramsChecked.length != 0) {
+            params = []
+            for (let i of paramsChecked) {
+                params.push(Number(i))
+            }
         }
-
         const testPlan = {
             name: name,
             project: 1,
@@ -138,6 +155,35 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
         TestPlanService.createTestPlan(testPlan)
         handleClose()
     }
+
+    function nodesChildren() {
+        let arr: Node[] = [];
+        params?.map((param) => {
+            let flag = false
+            for (let node in arr) {
+                if (arr[node].label == param.group_name) {
+                    if (arr[node].children) {/*а это всегда true, но пусть будет*/
+                        // @ts-ignore
+                        arr[node].children.push({value: String(param.id), label: param.data, disabled: disable})
+                    }
+                    flag = true
+                }
+            }
+            if (!flag) {
+                arr.push({
+                    value: param.group_name,
+                    label: param.group_name,
+                    children: [{value: String(param.id), label: param.data, disabled: disable}],
+                    disabled: disable
+                })
+            }
+        })
+
+        return arr
+    }
+
+    const nodes = [{value: 'no', label: 'Без параметров', icon: <BlockIcon className={classes.icons}/>},
+        {value: 'all', label: 'Все параметры', children: nodesChildren(), disabled: disable}];
 
     return (
         <Dialog
@@ -179,17 +225,43 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                         </Grid>
                         <Grid item xs={7}>
                             <FormControl style={{minWidth: "50%"}} className={classes.textFieldCreationCase}>
-                                <InputLabel id="select-params">Выбор параметров</InputLabel>
-                                {/*<Select*/}
-                                {/*    labelId="select-params"*/}
-                                {/*    value={selectedParams.name}*/}
-                                {/*    label="Выберите параметры"*/}
-                                {/*    onChange={(e) => chooseParam(e)}*/}
-                                {/*    renderValue={(selected) => <Grid>{selected}</Grid>}*/}
-                                {/*>*/}
-                                {/*    {params.map((param, index) => <MenuItem key={index}*/}
-                                {/*                                            value={param}>{param}</MenuItem>)}*/}
-                                {/*</Select>*/}
+                                {params ? (<CheckboxTree
+                                        nodes={nodes}
+                                        checked={paramsChecked}
+                                        expanded={paramsExpanded}
+                                        onCheck={(paramsChecked) => {
+                                            setParamsChecked(paramsChecked)
+                                            if (paramsChecked.find(x => x == 'no')) {
+                                                setDisable(true)
+                                                setParamsChecked(['no'])
+                                                setParamsExpanded([])
+                                            } else {
+                                                setDisable(false)
+                                            }
+                                        }}
+                                        onExpand={(paramsExpanded) => setParamsExpanded(paramsExpanded)}
+                                        icons={{
+                                            check: <CheckBoxOutlinedIcon className={classes.icons}/>,
+                                            uncheck: <CheckBoxOutlineBlankIcon className={classes.icons}/>,
+                                            halfCheck: <CheckBoxOutlinedIcon style={{color: alpha("#8956FF", 0.6)}}/>,
+                                            expandClose: <ExpandMoreOutlinedIcon className={classes.icons}/>,
+                                            expandOpen: <KeyboardArrowUpIcon className={classes.icons}/>,
+                                            expandAll: <IndeterminateCheckBoxOutlinedIcon className={classes.icons}/>,
+                                            collapseAll: <IndeterminateCheckBoxOutlinedIcon className={classes.icons}/>,
+                                            parentClose: <FolderCopyOutlinedIcon className={classes.icons}/>,
+                                            parentOpen: <FolderCopyOutlinedIcon className={classes.icons}/>,
+                                            leaf: <ArticleOutlinedIcon className={classes.icons}/>,
+                                        }}/>) :
+                                    (<CheckboxTree nodes={[{
+                                        value: 'no_params',
+                                        label: 'Без параметров',
+                                        disabled: true,
+                                        showCheckbox: false,
+                                        icon: <BlockIcon className={classes.icons}/>
+                                    }]}
+                                    />)
+                                }
+
                             </FormControl>
                         </Grid>
                     </Grid>
@@ -208,7 +280,7 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                                 Родительский тест-план
                             </Typography>
 
-                            <FormControl required style={{minWidth: "90%"}} className={classes.textFieldCreationCase}>
+                            <FormControl style={{minWidth: "90%"}} className={classes.textFieldCreationCase}>
                                 <InputLabel id="select-test-plan">Выберите тест-план</InputLabel>
                                 <Select
                                     labelId="select-suite"
