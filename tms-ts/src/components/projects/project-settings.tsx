@@ -66,7 +66,6 @@ const ProjectSettings: React.FC<Props> = ({show, setShow}) => {
     }
 
     const keyPressLink = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        console.log(linkPresence)
         if (e.key === "Enter" && linkPresence) {
             createLink()
         }
@@ -128,7 +127,7 @@ const ProjectSettings: React.FC<Props> = ({show, setShow}) => {
                             Название тест-кейса
                         </Typography>
                         <TextField
-                            className={classes.textFieldCreationCase}
+                            className={classes.textFieldSelectCreationCaseSuite}
                             variant="outlined"
                             margin="normal"
                             required
@@ -142,7 +141,7 @@ const ProjectSettings: React.FC<Props> = ({show, setShow}) => {
                             Описание
                         </Typography>
                         <TextField
-                            className={classes.textFieldCreationCase}
+                            className={classes.textFieldSelectCreationCaseSuite}
                             variant="outlined"
                             margin="normal"
                             fullWidth
@@ -159,7 +158,7 @@ const ProjectSettings: React.FC<Props> = ({show, setShow}) => {
                         <TextField
                             value={tagInput}
                             onChange={(content) => onChangeTagContent(content)}
-                            className={classes.textFieldCreationCase}
+                            className={classes.textFieldSelectCreationCaseSuite}
                             variant="outlined"
                             margin="normal"
                             fullWidth
@@ -217,7 +216,7 @@ const ProjectSettings: React.FC<Props> = ({show, setShow}) => {
                             </Typography>
                             <TextField
                                 style={{marginTop: 10}}
-                                className={classes.textFieldCreationCase}
+                                className={classes.textFieldSelectCreationCaseSuite}
                                 variant="outlined"
                                 margin="normal"
                                 fullWidth
@@ -232,7 +231,7 @@ const ProjectSettings: React.FC<Props> = ({show, setShow}) => {
                                 value={link}
                                 onChange={(content) => onChangeLinkContent(content)}
                                 style={{marginTop: 10}}
-                                className={classes.textFieldCreationCase}
+                                className={classes.textFieldSelectCreationCaseSuite}
                                 variant="outlined"
                                 margin="normal"
                                 fullWidth

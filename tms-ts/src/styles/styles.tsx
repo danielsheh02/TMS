@@ -20,12 +20,18 @@ export default makeStyles({
         alignItems: "center",
         marginTop: -20
     },
+    textFieldSelectCreationCaseSuite: {
+        maxWidth: "90%",
+        "& .MuiFormLabel-root": {
+            marginTop: 0
+        }
+    },
     textFieldCreationCase: {
         "& .MuiFormLabel-root": {
             margin: 0
         },
         maxWidth: "90%",
-    },
+    }, /*TODO переименовать в для тестпланов*/
     gridContent: {
         marginTop: 20,
     },
@@ -95,6 +101,10 @@ export default makeStyles({
     gridTags: {
         overflowY: "hidden",
         maxHeight: 70,
+    },
+    gridScenario: {
+        overflowY: "hidden",
+        maxHeight: 43,
     },
     icons: {
         color: "#8956FF",

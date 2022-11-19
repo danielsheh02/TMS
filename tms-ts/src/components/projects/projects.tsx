@@ -26,6 +26,10 @@ const Projects: React.FC = () => {
     const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
         ['ДАТА', '#000000'], ['ЗАПУСКАЛ', '#000000']];
+    const checkboxesLabels = ["passed", "skipped", "failed", "retest"];
+    const getMinStatusIndex = () => labels.findIndex((value) => checkboxesLabels.includes(value[0].toLowerCase()))
+    const minStatusIndex = getMinStatusIndex();
+    const maxStatusIndex = minStatusIndex + checkboxesLabels.length - 1;
     const charts = [<LineChartComponent/>, <PieChartComponent/>, <AreaChartComponent/>];
     const [isSwitched, setSwitch] = React.useState(false);
     const handleOnSwitch = (event: ChangeEvent<HTMLInputElement>) => setSwitch(event.target.checked);
@@ -36,6 +40,17 @@ const Projects: React.FC = () => {
     const handleChangeStartDate = (newValue: Moment | null) => setStartDate(newValue);
     const handleChangeEndDate = (newValue: Moment | null) => setEndDate(newValue);
     const handleOnOpenProjectSettings = () => navigate('/projectSettings');
+    const handleOnShowStatus = (status: string) => {
+        setStatusesToShow({...statusesShow, [status]: !statusesShow[status]})
+    };
+    const [statusesShow, setStatusesToShow] = React.useState<{ [key: string]: boolean; }>(
+        {
+            "passed": true,
+            "skipped": true,
+            "failed": true,
+            "retest": true
+        }
+    );
 
     const activityTitle = <Stack direction={"row"}>
         <Zoom in={!isSwitched}>
@@ -67,29 +82,30 @@ const Projects: React.FC = () => {
     const filter = <Zoom in={showFilter} style={{marginBottom: '10px'}}>
         <Grid sx={{display: 'flex', justifyContent: 'center'}}>
             <FormGroup sx={{display: 'flex', justifyContent: 'center', flexDirection: 'row'}}>
-                <FormControlLabel control={<Checkbox defaultChecked/>}
-                                  label="Passed"/>
-                <FormControlLabel control={<Checkbox defaultChecked/>}
-                                  label="Skipped"/>
-                <FormControlLabel control={<Checkbox defaultChecked/>}
-                                  label="Failed"/>
-                <FormControlLabel control={<Checkbox defaultChecked/>}
-                                  label="Retest"/>
+                {checkboxesLabels.map((value) =>
+                    <FormControlLabel
+                        control={<Checkbox checked={statusesShow[value]} onClick={() => handleOnShowStatus(value)}/>}
+                        label={value.toUpperCase()}/>
+                )}
                 <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <DesktopDatePicker
-                        label="Выберите дату начала"
-                        inputFormat="DD/MM/YYYY"
-                        value={startDate}
-                        onChange={handleChangeStartDate}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                    <DesktopDatePicker
-                        label="Выберите дату окончания"
-                        inputFormat="DD/MM/YYYY"
-                        value={endDate}
-                        onChange={handleChangeEndDate}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
+                    <div style={{marginLeft: '10px'}}>
+                        <DesktopDatePicker
+                            label="Выберите дату начала"
+                            inputFormat="DD/MM/YYYY"
+                            value={startDate}
+                            onChange={handleChangeStartDate}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </div>
+                    <div style={{marginLeft: '10px'}}>
+                        <DesktopDatePicker
+                            label="Выберите дату окончания"
+                            inputFormat="DD/MM/YYYY"
+                            value={endDate}
+                            onChange={handleChangeEndDate}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </div>
                 </LocalizationProvider>
             </FormGroup>
         </Grid>
@@ -128,12 +144,21 @@ const Projects: React.FC = () => {
                             <Table stickyHeader>
                                 <TableHead sx={{mb: '20px'}}>
                                     <TableRow>
-                                        {labels.map(([value, color]) => (
-                                            <TableCell>
-                                                <Typography color={color} fontWeight={'bolder'}
-                                                            align={'center'}>{value}</Typography>
-                                            </TableCell>
-                                        ))}
+                                        {labels.map(([value, color]) => {
+                                            if (!checkboxesLabels.includes(value.toLowerCase())) {
+                                                return <TableCell>
+                                                    <Typography color={color} fontWeight={'bolder'}
+                                                                align={'center'}>{value}</Typography>
+                                                </TableCell>
+                                            }
+                                            if (statusesShow[value.toLowerCase()]) {
+                                                return <TableCell>
+                                                    <Typography color={color} fontWeight={'bolder'}
+                                                                align={'center'}>{value}</Typography>
+                                                </TableCell>
+                                            }
+                                            return <></>;
+                                        })}
                                     </TableRow>
                                 </TableHead>
 
@@ -143,10 +168,19 @@ const Projects: React.FC = () => {
                                             (!moment(date, "DD.MM.YYYY").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
                                                     {[title, all, passed, skipped, failed, retest, date, tester].map(
-                                                        (value) =>
-                                                            <TableCell>
-                                                                <Typography align={'center'}>{value}</Typography>
-                                                            </TableCell>
+                                                        (value, index) => {
+                                                            if (index < minStatusIndex || index > maxStatusIndex) {
+                                                                return <TableCell>
+                                                                    <Typography align={'center'}>{value}</Typography>
+                                                                </TableCell>
+                                                            }
+                                                            if (statusesShow[checkboxesLabels[index - minStatusIndex]]) {
+                                                                return <TableCell>
+                                                                    <Typography align={'center'}>{value}</Typography>
+                                                                </TableCell>
+                                                            }
+                                                            return <></>;
+                                                        }
                                                     )}
                                                 </TableRow>)
                                     )}
