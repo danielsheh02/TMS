@@ -32,10 +32,11 @@ const Login: React.FC = () => {
             .then(
                 () => {
                     navigate("/", {replace: true});
+                    window.location.reload();
                 }
             )
             .catch(() => {
-                setMessage("Ошибка! Введен неверный пароль");
+                setMessage("Введен неверный логин или пароль");
             });
     }
 

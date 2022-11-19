@@ -1,7 +1,4 @@
-import axios from "axios";
-import authHeader from "./Authorization/auth.header";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import axiosTMS from "./axiosTMS";
 
 // function getCookie(name: string) {
 //     let cookieValue = null;
@@ -21,35 +18,27 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 export default class SuiteCaseService {
 
-    static authorize() {
-        return axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"})
-    }
-
     static getSuites() {
-        return axios.get(API_URL + "/api/v1/suites/", {headers: authHeader()})
+        return axiosTMS.get("/api/v1/suites/")
     }
 
     static getCases() {
-        return axios.get(API_URL + "/api/v1/cases/", {headers: authHeader()})
+        return axiosTMS.get("/api/v1/cases/")
     }
 
     static getTreeSuites() {
-        return axios.get(API_URL + "/api/v1/projects/1/suites/", {headers: authHeader()})
+        return axiosTMS.get("/api/v1/projects/1/suites/")
     }
 
     static deleteSuite(idSuite: number) {
-        return axios.delete(API_URL + "/api/v1/suites/" + idSuite + "/", {headers: authHeader()})
+        return axiosTMS.delete("/api/v1/suites/" + idSuite + "/")
     }
 
     static createCase(myCase: { name: string; project: number; suite: number; scenario: string; }) {
-        return axios.post(API_URL + "/api/v1/cases/", myCase, {headers: authHeader()})
-            .then(() => {
-            })
+        return axiosTMS.post("/api/v1/cases/", myCase)
     }
 
     static createSuite(suite: { parent: number | null; name: string }) {
-        return axios.post(API_URL + "/api/v1/suites/", suite, {headers: authHeader()})
-            .then(() => {
-            })
+        return axiosTMS.post("/api/v1/suites/", suite)
     }
 }

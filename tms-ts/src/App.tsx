@@ -1,28 +1,27 @@
 import React from "react";
 import './App.css';
-import {Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Suites from "./components/testcases/suites.component";
 import Projects from "./components/projects/projects";
 import Header from "./components/header";
 import Login from "./components/login"
 import ProjectSelection from "./components/projects/project-selection";
 import NotExist from "./components/not-exist";
+import AuthService from "./services/Authorization/auth.service";
 
 
 function App() {
+    const token = AuthService.getCurrentAccessToken()
     return (
         <div>
-            {/*{window.location.pathname !== '/login' && */}
             <Header/>
-            {/*}*/}
             <Routes>
-                <Route path={"/"} element={<ProjectSelection/>}/>
-                <Route path={"/project"} element={<Projects/>}/>
-                <Route path={"/login"} element={<Login/>}/>
-                <Route path={"/testcases"} element={<Suites/>}/>
-                <Route path={"*"} element={<NotExist/>}/>
+                <Route path={"/login"} element={token ? <Navigate to="/"/> : <Login/>}/>
+                <Route path={"/"} element={token ? <ProjectSelection/> : <Navigate to="/login"/>}/>
+                <Route path={"/project"} element={token ? <Projects/> : <Navigate to="/login"/>}/>
+                <Route path={"/testcases"} element={token ? <Suites/> : <Navigate to="/login"/>}/>
+                <Route path={"*"} element={token ? <NotExist/> : <Navigate to="/login"/>}/>
             </Routes>
-
         </div>
     );
 }
