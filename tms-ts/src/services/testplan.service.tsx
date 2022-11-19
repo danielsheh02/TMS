@@ -1,29 +1,28 @@
 import axios from "axios";
+import authHeader from "./Authorization/auth.header";
 
-const API_URL = process.env.REACT_APP_API_URL + '/api/profile/';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default class TestPlanService {
-    static authorize() {
-        return axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"})
+
+    static getTestPlans() {
+        return axios.get(API_URL + "/api/v1/testplans/", {headers: authHeader()})
     }
 
-    static getTestPlans(token: string) {
-        return axios.get("http://localhost:8001/api/v1/testplans/", {headers: {Authorization: 'Bearer ' + token}})
+    static getTestPlan(id: number) {
+        return axios.get(API_URL + "/api/v1/testplans/" + id, {headers: authHeader()})
     }
 
-    static getTreeTestPlans(token: string) {
-        return axios.get("http://localhost:8001/api/v1/projects/1/testplans/", {headers: {Authorization: 'Bearer ' + token}})
+    static getTreeTestPlans() {
+        return axios.get(API_URL + "/api/v1/projects/1/testplans/", {headers: authHeader()})
     }
 
-    static getParameters(token: string) {
-        return axios.get("http://localhost:8001/api/v1/parameters/", {headers: {Authorization: 'Bearer ' + token}})
+    static getParameters() {
+        return axios.get(API_URL + "/api/v1/parameters/", {headers: authHeader()})
     }
 
-    static createTestPlan(testPlan: { name: string, project: number, parent: number | null, tests: number[], parameters: number[] | null, started_at: string, due_date : string}) {
-        axios.post("http://localhost:8001/api/token/", {username: "admin", password: "password"}).then((res) => {
-            const token = res.data.access;
-            axios.post("http://localhost:8001/api/v1/testplans/", testPlan, {headers: {Authorization: 'Bearer ' + token}})
-                .then((response) => console.log(response))
-        })
+    static createTestPlan(testPlan: { name: string, project: number, parent: number | null, tests: number[], parameters: number[] | null, started_at: string, due_date: string }) {
+        axios.post(API_URL + "/api/v1/testplans/", testPlan, {headers: authHeader()})
+            .then((response) => console.log(response))
     }
 }
