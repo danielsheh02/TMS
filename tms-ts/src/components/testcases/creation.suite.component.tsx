@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import useStyles from "../../styles/styles";
 import {
-    Button,
+    Alert, Box,
+    Button, Collapse,
     Dialog,
     FormControl,
     Grid,
@@ -10,7 +11,8 @@ import {
     Typography
 } from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
-import {suite, treeSuite} from "./suites.component";
+import {CustomWidthTooltip, suite, treeSuite} from "./suites.component";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 
 interface Props {
@@ -27,8 +29,13 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
     const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string } | null>(selectedSuiteCome)
     const [name, setName] = useState("")
     const [namePresence, setNamePresence] = useState(false)
+    const [fillFieldName, setFillFieldName] = useState(false)
+
     const handleClose = () => {
         setShow(false)
+        setName("")
+        setNamePresence(false)
+        setFillFieldName(false)
     }
 
     useEffect(() => {
@@ -40,28 +47,42 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
     }
 
     const createSuite = () => {
-        const suite = {
-            name: name,
-            parent: selectedSuite ? selectedSuite.id : null,
-            project: 1,
-        }
-        SuiteCaseService.createSuite(suite).then(() => {
-            SuiteCaseService.getTreeSuites().then((response) => {
-                setTreeSuites(response.data)
-                SuiteCaseService.getSuites().then((response) => {
-                    setSuites(response.data)
+        if (namePresence) {
+            const suite = {
+                name: name,
+                parent: selectedSuite ? selectedSuite.id : null,
+                project: 1,
+            }
+            SuiteCaseService.createSuite(suite).then(() => {
+                SuiteCaseService.getTreeSuites().then((response) => {
+                    setTreeSuites(response.data)
+                    SuiteCaseService.getSuites().then((response) => {
+                        setSuites(response.data)
+                    })
                 })
             })
-        })
-        setShow(false)
-        setName("")
-        setNamePresence(false)
+            setShow(false)
+            setName("")
+            setNamePresence(false)
+            setFillFieldName(false)
+
+        } else {
+            // @ts-ignore
+            document.getElementById("nameTextField").focus();
+            setFillFieldName(true)
+        }
     }
 
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let str = e.target.value
-        setName(str)
-        setNamePresence(true)
+        if (str.length > 0) {
+            setName(str)
+            setNamePresence(true)
+            setFillFieldName(false)
+        } else {
+            setName(str)
+            setNamePresence(false)
+        }
     }
 
     return (
@@ -87,17 +108,32 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                             <Typography variant="h6">
                                 Название сьюты
                             </Typography>
+
+                            {/*<Collapse in={fillFieldName}>*/}
+                            {/*    <Alert style={{borderRadius: "10px 10px 1px 10px"}} className={classes.alertNotFilled} severity="warning">Заполните это*/}
+                            {/*        поле.</Alert>*/}
+                            {/*    <Grid className={classes.triangle}/>*/}
+                            {/*</Collapse>*/}
+                            <CustomWidthTooltip
+                                title={<Grid style={{display: "flex", flexDirection: 'row'}}><WarningAmberIcon
+                                    sx={{fontSize: 25, marginRight: 1}}/> <Typography> Заполните это
+                                    поле.</Typography></Grid>} placement="top-start" arrow
+                                open={fillFieldName}>
                             <TextField
+                                id="nameTextField"
+                                // sx={{marginTop: fillFieldName ? 0.5 : ""}}
                                 onChange={(content) => onChangeName(content)}
                                 className={classes.textFieldSelectCreationCaseSuite}
                                 variant="outlined"
                                 margin="normal"
+                                // helperText={fillFieldName && "Заполните это поле."}
                                 required
                                 fullWidth
                                 autoComplete="off"
                                 value={name}
                                 label="Введите название сьюты"
                             />
+                            </CustomWidthTooltip>
                         </Grid>
                     </Grid>
                     <Grid xs={3} item style={{

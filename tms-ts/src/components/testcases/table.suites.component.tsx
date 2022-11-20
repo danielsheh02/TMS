@@ -1,11 +1,21 @@
 import {
     Grid, TableContainer, Table, TableBody,
-    TableCell, TableRow, Collapse, IconButton, Chip, tableCellClasses, Checkbox, Link
+    TableCell, TableRow, Collapse, IconButton, Chip, tableCellClasses, Checkbox, Link, Divider
 } from "@mui/material";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React, {useEffect, useRef, useState} from "react";
 import useStyles from "../../styles/styles";
-import {treeSuite} from "./suites.component";
+import {suite, treeSuite} from "./suites.component";
+import {Splitter, SplitterPanel} from 'primereact/splitter';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primereact/resources/primereact.css';
+import '../../index.css';
+import SplitterLayout from 'react-splitter-layout';
+import 'react-splitter-layout/lib/index.css';
+import {Button} from "@material-ui/core";
+import CreationCase from "./creation.case.component";
+import CreationSuite from "./creation.suite.component";
 
 const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
     "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
@@ -109,7 +119,8 @@ function CaseScenarioField(props: { scenario: string }) {
 function Row(props: {
     row: treeSuite, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
     setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void, treeSuitesOpenMap: Map<number, boolean>,
-    setTreeSuitesOpenMap: (newMap: (prev: Map<number, boolean>) => any) => void
+    setTreeSuitesOpenMap: (newMap: (prev: Map<number, boolean>) => any) => void, setDetailedCaseInfo: (myCase: { id: number, show: boolean }) => void,
+    detailedCaseInfo: { id: number, show: boolean }
 }) {
     const classes = useStyles()
     const {
@@ -118,7 +129,9 @@ function Row(props: {
         setShowCreationSuite,
         setSelectedSuiteCome,
         treeSuitesOpenMap,
-        setTreeSuitesOpenMap
+        setTreeSuitesOpenMap,
+        setDetailedCaseInfo,
+        detailedCaseInfo
     } = props;
     const [localOpen, setLocalOpen] = React.useState<boolean | undefined>(undefined);
     const [selected, setSelected] = React.useState<number []>([]);
@@ -167,18 +180,26 @@ function Row(props: {
         setLocalOpen(!flag)
     }
 
+    const showDetailedCaseInfo = () => {
+        const flag = detailedCaseInfo
+        // if (flag === true) {
+        setDetailedCaseInfo(detailedCaseInfo)
+        // }
+    }
+
     return (
         <React.Fragment>
             <TableRow>
                 <TableCell colSpan={4}>
-                    <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1}} id={row.id.toString()}>
+                    <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1, marginBottom: 0.32, maxWidth: 500}}
+                          id={row.id.toString()}>
                         <Chip onClick={setOpenClose} icon={<IconButton
                             style={{marginLeft: 1}}
                             aria-label="expand row"
                             size="small"
                         >
                             <KeyboardArrowUpIcon sx={{
-                                transform: treeSuitesOpenMap.get(row.id) ? 'rotate(0deg)' : 'rotate(180deg)',
+                                transform: localOpen ? 'rotate(0deg)' : 'rotate(180deg)',
                                 transition: '0.2s',
                             }}/>
                         </IconButton>} style={{marginTop: 7}} label={row.name}/>
@@ -186,13 +207,14 @@ function Row(props: {
                 </TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{paddingBottom: 0, paddingTop: 7, paddingRight: 0, marginRight: 10}} colSpan={4}>
+                <TableCell style={{paddingBottom: 0, paddingTop: 7, paddingRight: 0, marginRight: 10, minWidth: 300}}
+                           colSpan={4}>
                     {(localOpen == true || localOpen == false) && <Collapse in={localOpen} mountOnEnter>
                         <Grid>
                             <Table size="small">
-                                <TableBody style={{border: '1px solid'}}>
+                                <TableBody style={{border: "solid", borderWidth: "1px 1px 1px 1px"}}>
                                     <TableRow style={{backgroundColor: "#eeeeee"}}>
-                                        <TableCell style={{width: "1%"}}>
+                                        <TableCell style={{width: "5%"}}>
                                             <Checkbox
                                                 style={{height: 20}}
                                                 indeterminate={selected.length > 0 && selected.length < row.test_cases.length}
@@ -204,14 +226,15 @@ function Row(props: {
                                         </TableCell>
                                         <TableCell component="th"
                                                    scope="row"
-                                                   padding="none" style={{width: "25%"}}>Название</TableCell>
-                                        <TableCell align={"center"} style={{width: "40%"}}>Описание</TableCell>
-                                        <TableCell align={"center"} style={{width: "40%"}}>Время прохождения</TableCell>
+                                                   padding="none" style={{width: "5%"}}>ID</TableCell>
+                                        <TableCell style={{width: "auto"}} colSpan={2}>Название</TableCell>
+                                        {/*<TableCell align={"center"} style={{width: "40%"}}>Описание</TableCell>*/}
+                                        {/*<TableCell align={"center"} style={{width: "40%"}}>Время прохождения</TableCell>*/}
                                         {/*<TableCell align={"center"} style={{width: "40%"}}>Тэги</TableCell>*/}
                                         {/*<TableCell align={"center"} style={{width: "auto"}}>Статус</TableCell>*/}
                                     </TableRow>
                                 </TableBody>
-                                <TableBody style={{border: '1px solid'}}>
+                                <TableBody style={{border: "solid", borderWidth: "0px 1px 1px 1px"}}>
                                     {row.test_cases.map((onecase, index) => (
                                         <TableRow key={index}>
                                             <TableCell>
@@ -226,64 +249,87 @@ function Row(props: {
                                                 // id={`enhanced-table-checkbox-${index}`}
                                                        scope="row"
                                                        padding="none">
+                                                {onecase.id}
+                                            </TableCell>
+                                            <TableCell>
                                                 {onecase.name}
                                             </TableCell>
-                                            <TableCell align={"center"} sx={{width: "50%"}}
-                                            >
-                                                <CaseScenarioField scenario={onecase.scenario}/>
-                                                {/*<CaseTagsField tags={tags}/>*/}
+                                            <TableCell style={{textAlign: "end"}}>
+                                                <IconButton onClick={() => {
+                                                    if (onecase.id == detailedCaseInfo.id) {
+                                                        setDetailedCaseInfo({
+                                                            id: onecase.id,
+                                                            show: !detailedCaseInfo.show
+                                                        })
+                                                    } else {
+                                                        setDetailedCaseInfo({
+                                                            id: onecase.id,
+                                                            show: true
+                                                        })
+                                                    }
+                                                }}>
+                                                    <KeyboardArrowRightIcon sx={{
+                                                        transform: (onecase.id == detailedCaseInfo.id && detailedCaseInfo.show) ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                        transition: '0.2s',
+                                                    }}/>
+                                                </IconButton>
                                             </TableCell>
-                                            <TableCell align={"center"}>
-                                                {
-                                                    (onecase.estimate &&
-                                                        <Chip className={classes.chipTagsStatusInSuites} key={index}
-                                                              style={{
-                                                                  margin: 5,
-                                                                  borderRadius: 10,
-                                                                  maxWidth: 300
-                                                              }} label={onecase.estimate}/>) ||
-                                                    <Chip className={classes.chipTagsStatusInSuites} key={index}
-                                                          style={{
-                                                              margin: 5,
-                                                              borderRadius: 10,
-                                                              maxWidth: 300
-                                                          }} label="-----"/>
-                                                    // stat1 == "Failed" &&
-                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    //     backgroundColor: alpha("#ff0000", 0.75),
-                                                    //     color: "#ffffff",
-                                                    //     borderRadius: 10,
-                                                    // }} label={stat1}/>
-                                                    // ||
-                                                    // stat == "Passed" &&
-                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    //     backgroundColor: alpha("#1da900", 0.75),
-                                                    //     color: "#ffffff",
-                                                    //     borderRadius: 10
-                                                    // }} label={stat}/>
-                                                    // ||
-                                                    // stat == "Skipped" &&
-                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    //     backgroundColor: alpha("#d3c100", 0.75),
-                                                    //     color: "#ffffff",
-                                                    //     borderRadius: 10
-                                                    // }} label={stat}/>
-                                                    // ||
-                                                    // stat == "Retest" &&
-                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    //     backgroundColor: alpha("#3a3939", 0.75),
-                                                    //     color: "#ffffff",
-                                                    //     borderRadius: 10
-                                                    // }} label={stat}/>
-                                                    // ||
-                                                    // stat == "Untested" &&
-                                                    // <Chip className={classes.chipTagsStatusInSuites} style={{
-                                                    //     borderRadius: 10,
-                                                    //     backgroundColor: alpha("#9f9f9f", 0.75),
-                                                    //     color: "#ffffff"
-                                                    // }} label={stat}/>
-                                                }
-                                            </TableCell>
+                                            {/*<TableCell align={"center"} sx={{width: "50%"}}*/}
+                                            {/*>*/}
+                                            {/*    <CaseScenarioField scenario={onecase.scenario}/>*/}
+                                            {/*    /!*<CaseTagsField tags={tags}/>*!/*/}
+                                            {/*</TableCell>*/}
+                                            {/*<TableCell align={"center"}>*/}
+                                            {/*    {*/}
+                                            {/*        (onecase.estimate &&*/}
+                                            {/*            <Chip className={classes.chipTagsStatusInSuites} key={index}*/}
+                                            {/*                  style={{*/}
+                                            {/*                      margin: 5,*/}
+                                            {/*                      borderRadius: 10,*/}
+                                            {/*                      maxWidth: 300*/}
+                                            {/*                  }} label={onecase.estimate}/>) ||*/}
+                                            {/*        <Chip className={classes.chipTagsStatusInSuites} key={index}*/}
+                                            {/*              style={{*/}
+                                            {/*                  margin: 5,*/}
+                                            {/*                  borderRadius: 10,*/}
+                                            {/*                  maxWidth: 300*/}
+                                            {/*              }} label="-----"/>*/}
+                                            {/*        // stat1 == "Failed" &&*/}
+                                            {/*        // <Chip className={classes.chipTagsStatusInSuites} style={{*/}
+                                            {/*        //     backgroundColor: alpha("#ff0000", 0.75),*/}
+                                            {/*        //     color: "#ffffff",*/}
+                                            {/*        //     borderRadius: 10,*/}
+                                            {/*        // }} label={stat1}/>*/}
+                                            {/*        // ||*/}
+                                            {/*        // stat == "Passed" &&*/}
+                                            {/*        // <Chip className={classes.chipTagsStatusInSuites} style={{*/}
+                                            {/*        //     backgroundColor: alpha("#1da900", 0.75),*/}
+                                            {/*        //     color: "#ffffff",*/}
+                                            {/*        //     borderRadius: 10*/}
+                                            {/*        // }} label={stat}/>*/}
+                                            {/*        // ||*/}
+                                            {/*        // stat == "Skipped" &&*/}
+                                            {/*        // <Chip className={classes.chipTagsStatusInSuites} style={{*/}
+                                            {/*        //     backgroundColor: alpha("#d3c100", 0.75),*/}
+                                            {/*        //     color: "#ffffff",*/}
+                                            {/*        //     borderRadius: 10*/}
+                                            {/*        // }} label={stat}/>*/}
+                                            {/*        // ||*/}
+                                            {/*        // stat == "Retest" &&*/}
+                                            {/*        // <Chip className={classes.chipTagsStatusInSuites} style={{*/}
+                                            {/*        //     backgroundColor: alpha("#3a3939", 0.75),*/}
+                                            {/*        //     color: "#ffffff",*/}
+                                            {/*        //     borderRadius: 10*/}
+                                            {/*        // }} label={stat}/>*/}
+                                            {/*        // ||*/}
+                                            {/*        // stat == "Untested" &&*/}
+                                            {/*        // <Chip className={classes.chipTagsStatusInSuites} style={{*/}
+                                            {/*        //     borderRadius: 10,*/}
+                                            {/*        //     backgroundColor: alpha("#9f9f9f", 0.75),*/}
+                                            {/*        //     color: "#ffffff"*/}
+                                            {/*        // }} label={stat}/>*/}
+                                            {/*    }*/}
+                                            {/*</TableCell>*/}
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -310,16 +356,23 @@ function Row(props: {
                                     </TableRow>
                                 </TableBody>
                                 {row && row.children &&
-                                <TableBody>
+                                <TableBody sx={{borderLeft: "1px dashed", borderCollapse: "collapse"}}>
+                                    {/*<Grid >*/}
                                     {row.children.map((suite: any, index: number) => (
                                         <Row key={index} row={suite}
                                              setShowCreationCase={setShowCreationCase}
                                              setShowCreationSuite={setShowCreationSuite}
                                              setSelectedSuiteCome={setSelectedSuiteCome}
                                              treeSuitesOpenMap={treeSuitesOpenMap}
-                                             setTreeSuitesOpenMap={setTreeSuitesOpenMap}/>
+                                             setTreeSuitesOpenMap={setTreeSuitesOpenMap}
+                                             detailedCaseInfo={detailedCaseInfo}
+                                             setDetailedCaseInfo={setDetailedCaseInfo}
+                                        />
                                     ))}
-                                </TableBody>}
+                                    {/*</Grid>*/}
+                                </TableBody>
+
+                                }
                             </Table>
                         </Grid>
 
@@ -333,33 +386,82 @@ function Row(props: {
 const TableSuites = (props: {
     selected: readonly string[], setSelected: (array: readonly string[]) => void,
     setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
-    suites: treeSuite[], setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
+    treeSuites: treeSuite[], setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
+    suites: suite []
 }) => {
-    const {setShowCreationCase, setShowCreationSuite, suites, setSelectedSuiteCome} = props;
+    const classes = useStyles()
+    const {setShowCreationCase, setShowCreationSuite, suites, setSelectedSuiteCome, treeSuites} = props;
     const [treeSuitesOpenMap, setTreeSuitesOpenMap] = useState(new Map())
+    const [detailedCaseInfo, setDetailedCaseInfo] = useState<{ id: number, show: boolean }>({id: -1, show: false})
+
+    const openAll = () => {
+        let newMap = new Map()
+        suites.map((suite) => {
+            newMap.set(suite.id, true)
+        })
+        setTreeSuitesOpenMap(newMap)
+    }
+
+    const closeAll = () => {
+        let newMap = new Map()
+        suites.map((suite) => {
+            newMap.set(suite.id, false)
+        })
+        setTreeSuitesOpenMap(newMap)
+    }
 
     return (
-        <Grid style={{justifyContent: "center", display: "flex"}}>
-            <TableContainer style={{maxWidth: "80%", margin: 30, padding: 20}}>
-                <Table size="small" sx={{
-                    [`& .${tableCellClasses.root}`]: {
-                        borderBottom: "none",
-                    }
-                }}>
-                    <TableBody>
-                        {suites.map((suite, index) => (
-                            <Row key={index} row={suite}
-                                 setShowCreationCase={setShowCreationCase}
-                                 setShowCreationSuite={setShowCreationSuite}
-                                 setSelectedSuiteCome={setSelectedSuiteCome}
-                                 treeSuitesOpenMap={treeSuitesOpenMap}
-                                 setTreeSuitesOpenMap={setTreeSuitesOpenMap}
-                            />
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Grid>
+
+            <SplitterLayout customClassName={classes.splitter} primaryIndex={0} primaryMinSize={40} secondaryMinSize={35} percentage>
+                {/*<SplitterPanel>*/}
+                {/*<Grid>*/}
+                    <TableContainer style={{ padding: 20}}>
+                        <Grid style={{display: "flex", flexDirection: "row", marginLeft: 17}}>
+                            <Link component="button" onClick={() => {
+                                openAll()
+                            }}>
+                                Раскрыть все
+                            </Link>
+                            <Link underline="none">&nbsp;&nbsp;|&nbsp;&nbsp;</Link>
+                            <Link component="button"
+                                  onClick={() => {
+                                      closeAll()
+                                  }}>
+                                Закрыть все
+                            </Link>
+                        </Grid>
+                        <Table size="small" sx={{
+                            [`& .${tableCellClasses.root}`]: {
+                                borderBottom: "none",
+                            }
+                        }}>
+                            <TableBody>
+                                {treeSuites.map((suite, index) => (
+                                    <Row key={index} row={suite}
+                                         setShowCreationCase={setShowCreationCase}
+                                         setShowCreationSuite={setShowCreationSuite}
+                                         setSelectedSuiteCome={setSelectedSuiteCome}
+                                         treeSuitesOpenMap={treeSuitesOpenMap}
+                                         setTreeSuitesOpenMap={setTreeSuitesOpenMap}
+                                         detailedCaseInfo={detailedCaseInfo}
+                                         setDetailedCaseInfo={setDetailedCaseInfo}
+                                    />
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                {/*</Grid>*/}
+                {/*</SplitterPanel>*/}
+                {/*<SplitterPanel>*/}
+                {detailedCaseInfo.show &&
+                <Grid>
+
+                <Grid>{detailedCaseInfo.id}</Grid>
+                </Grid>
+                }
+                {/*</SplitterPanel>*/}
+            </SplitterLayout>
+
     );
 }
 export default TableSuites

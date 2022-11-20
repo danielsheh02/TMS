@@ -95,7 +95,7 @@ const CustomContent = React.forwardRef(function CustomContent(
                 [classes.focused]: focused,
                 [classes.disabled]: disabled,
             })}
-            style={{width: "inherit"}}
+            style={{width: "max-content"}}
             onMouseDown={handleMouseDown}
             ref={ref as React.Ref<HTMLDivElement>}
         >
@@ -107,8 +107,8 @@ const CustomContent = React.forwardRef(function CustomContent(
                 <Typography
                     onClick={(e) => handleSelectionClick(e)}
                     component="div"
-                    sx={{fontSize: 13, wordBreak: "break-word"}}
-                    className={classes.label}
+                    sx={{fontSize: 15}}
+                    // className={classes.label}
                 >
                     {label}
                 </Typography>
