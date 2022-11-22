@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
     Checkbox,
     FormControlLabel, FormGroup,
@@ -19,7 +19,44 @@ import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {useNavigate} from "react-router-dom";
+import SuiteCaseService from "../../services/suite.case.service";
+import axiosTMS from "../../services/axiosTMS";
 
+interface testResult {
+    id: number;
+    test: number;
+    user: number;
+    status: string;
+}
+
+interface myCase {
+    id: number;
+    name: string;
+    suite: number;
+    scenario: string;
+    project: number;
+    estimate: number
+    url?: string;
+}
+
+interface test {
+    id: number;
+    case: myCase;
+    plan: number;
+    test_results: testResult[];
+    current_result: testResult;
+    user: number;
+}
+
+interface testPlan {
+    id: number;
+    name: string;
+    parent?: number;
+    tests: test[];
+    started_at: string;
+    due_date: string;
+    project: number;
+}
 
 const Projects: React.FC = () => {
     const navigate = useNavigate();
@@ -43,6 +80,30 @@ const Projects: React.FC = () => {
     const handleOnShowStatus = (status: string) => {
         setStatusesToShow({...statusesShow, [status]: !statusesShow[status]})
     };
+    const [testPlans, setTestPlans] = useState<testPlan[]>([])
+    const testsData1 = testPlans.map((value) => {
+        const results: { [key: string]: number; } = {
+            "all": value.tests.length,
+            "passed": 0,
+            "skipped": 0,
+            "failed": 0,
+            "retest": 0,
+        }
+        const users: number[] = []
+        value.tests.map((test) => {
+            results[test.current_result?.status]++
+            axiosTMS.get("api/v1/tests/" + test.id + "/").then((response) => {
+                const currentTest: test = response.data
+                users.push(currentTest.user)
+                console.log(currentTest.user)
+            })
+                .catch((e) => {
+                    console.log(e);
+                });
+            console.log("cur user" + users.length)
+        });
+        return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, value.started_at, ""]
+    });
     const [statusesShow, setStatusesToShow] = React.useState<{ [key: string]: boolean; }>(
         {
             "passed": true,
@@ -51,6 +112,14 @@ const Projects: React.FC = () => {
             "retest": true
         }
     );
+    useEffect(() => {
+        SuiteCaseService.getTestPlans().then((response) => {
+            setTestPlans(response.data)
+        })
+            .catch((e) => {
+                console.log(e);
+            });
+    }, [])
 
     const activityTitle = <Stack direction={"row"}>
         <Zoom in={!isSwitched}>
@@ -163,7 +232,7 @@ const Projects: React.FC = () => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {(isSwitched ? personalTestsData : testsData)?.map(
+                                    {(isSwitched ? personalTestsData : testsData1)?.map(
                                         ([title, all, passed, skipped, failed, retest, date, tester]) =>
                                             (!moment(date, "DD.MM.YYYY").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
