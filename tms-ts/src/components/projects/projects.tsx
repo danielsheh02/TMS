@@ -14,55 +14,20 @@ import {Button} from "@material-ui/core";
 import LineChartComponent from "./charts/line.chart.component";
 import PieChartComponent from "./charts/pie.chart.component";
 import AreaChartComponent from "./charts/area.chart.component";
-import {personalTestsData, testsData} from "./dataExample";
+import {personalTestsData} from "./dataExample";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {useNavigate} from "react-router-dom";
 import SuiteCaseService from "../../services/suite.case.service";
 import axiosTMS from "../../services/axiosTMS";
-
-interface testResult {
-    id: number;
-    test: number;
-    user: number;
-    status: string;
-}
-
-interface myCase {
-    id: number;
-    name: string;
-    suite: number;
-    scenario: string;
-    project: number;
-    estimate: number
-    url?: string;
-}
-
-interface test {
-    id: number;
-    case: myCase;
-    plan: number;
-    test_results: testResult[];
-    current_result: testResult;
-    user: number;
-}
-
-interface testPlan {
-    id: number;
-    name: string;
-    parent?: number;
-    tests: test[];
-    started_at: string;
-    due_date: string;
-    project: number;
-}
+import {test, testPlan} from "../models.interfaces";
 
 const Projects: React.FC = () => {
     const navigate = useNavigate();
     const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
-        ['ДАТА', '#000000'], ['ЗАПУСКАЛ', '#000000']];
+        ['ДАТА', '#000000'], ['КЕМ ИЗМЕНЕНО', '#000000']];
     const checkboxesLabels = ["passed", "skipped", "failed", "retest"];
     const getMinStatusIndex = () => labels.findIndex((value) => checkboxesLabels.includes(value[0].toLowerCase()))
     const minStatusIndex = getMinStatusIndex();
@@ -90,20 +55,21 @@ const Projects: React.FC = () => {
             "retest": 0,
         }
         const users: number[] = []
-        value.tests.map((test) => {
+        value.tests.forEach((test) => {
             results[test.current_result?.status]++
             axiosTMS.get("api/v1/tests/" + test.id + "/").then((response) => {
                 const currentTest: test = response.data
                 users.push(currentTest.user)
-                console.log(currentTest.user)
             })
                 .catch((e) => {
                     console.log(e);
                 });
-            console.log("cur user" + users.length)
         });
+        // Add displaying last editor
         return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, value.started_at, ""]
     });
+    testsData1.sort(([, , , , , , firstData, ,], [, , , , , , secondData, ,]) =>
+        (moment(secondData, "YYYY-MM-DDThh:mm").valueOf() - moment(firstData, "YYYY-MM-DDThh:mm").valueOf()))
     const [statusesShow, setStatusesToShow] = React.useState<{ [key: string]: boolean; }>(
         {
             "passed": true,
@@ -234,9 +200,11 @@ const Projects: React.FC = () => {
                                 <TableBody>
                                     {(isSwitched ? personalTestsData : testsData1)?.map(
                                         ([title, all, passed, skipped, failed, retest, date, tester]) =>
-                                            (!moment(date, "DD.MM.YYYY").isBetween(startDate, endDate, undefined, "[]")) ? null :
+                                            (!moment(date, "YYYY-MM-DDThh:mm").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
-                                                    {[title, all, passed, skipped, failed, retest, date, tester].map(
+                                                    {[title, all, passed, skipped, failed, retest,
+                                                        moment(date, "YYYY-MM-DDThh:mm")
+                                                            .format("DD.MM.YYYY"), tester].map(
                                                         (value, index) => {
                                                             if (index < minStatusIndex || index > maxStatusIndex) {
                                                                 return <TableCell>
