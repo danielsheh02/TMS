@@ -21,6 +21,7 @@ export interface test {
     id: number;
     case: myCase;
     plan: number;
+    project: number;
     test_results: testResult[];
     current_result: testResult;
     user: number;

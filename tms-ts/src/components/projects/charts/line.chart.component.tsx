@@ -8,11 +8,11 @@ const LineChartComponent = (props: {
 }) => {
     const sliceOfTests = props.tests.slice(0, 100)
     sliceOfTests.sort((a, b) =>
-        moment(b.updated_at, "YYYY-MM-DDThh:mm").valueOf() - moment(a.updated_at, "YYYY-MM-DDThh:mm").valueOf())
+        moment(a.updated_at, "YYYY-MM-DDThh:mm").valueOf() - moment(b.updated_at, "YYYY-MM-DDThh:mm").valueOf())
     const result: { [key: string]: number; }[] = []
     const dates: string[] = []
     sliceOfTests.forEach((test) => {
-        const testDate = moment(test.updated_at, "YYYY-MM-DDThh:mm").format("DD/MM/YYYYY")
+        const testDate = moment(test.updated_at, "YYYY-MM-DDThh:mm").format("DD/MM/YYYY")
         if (dates[dates.length - 1] !== testDate) {
             const currentResult: { [key: string]: number; } = {
                 failed: 0,

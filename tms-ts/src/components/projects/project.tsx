@@ -27,7 +27,7 @@ import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {useNavigate} from "react-router-dom";
 import {test, testPlan, user} from "../models.interfaces";
-import ProjectsService from "../../services/projects.service";
+import ProjectService from "../../services/project.service";
 
 const Project: React.FC = () => {
     const navigate = useNavigate();
@@ -56,6 +56,8 @@ const Project: React.FC = () => {
     const [users, setUsers] = useState<user[]>([])
     const testPlanDates: string[] = []
     const editorIds: (number | null)[] = ((new Array<number | null>(testPlans.length)).fill(null))
+
+    const projectValue = JSON.parse(localStorage.getItem("currentProject") ?? '')
 
     const tableData = testPlans.map((value, indexOfTestPlan) => {
         testPlanDates.push(value.started_at)
@@ -96,14 +98,15 @@ const Project: React.FC = () => {
     const charts = [<LineChartComponent tests={tests}/>, <PieChartComponent tests={tests}/>, <AreaChartComponent/>];
 
     useEffect(() => {
-        ProjectsService.getTestPlans().then((response) => {
-            const testsData: testPlan[] = response.data
-            setTestPlans(testsData.filter((value) => value.project === 1))
+        ProjectService.getTestPlans().then((response) => {
+            const testPlansData: testPlan[] = response.data
+            setTestPlans(testPlansData.filter((value) => value.project === projectValue.id))
 
-            ProjectsService.getTests().then((response) => {
-                setTests(response.data)
+            ProjectService.getTests().then((response) => {
+                const testsData: test[] = response.data
+                setTests(testsData.filter((value) => value.project === projectValue.id))
 
-                ProjectsService.getUsers().then((response) => {
+                ProjectService.getUsers().then((response) => {
                     setUsers(response.data)
 
                 })
@@ -176,11 +179,11 @@ const Project: React.FC = () => {
     return (
         <div style={{display: "flex", flexDirection: "column"}}>
             <Grid sx={{display: 'flex', justifyContent: 'center', mt: '20px'}}>
-                {charts.map((chart) =>
-                    <div style={{width: "30%"}}>
-                        {chart}
-                    </div>)
-                }
+                {tests.length > 0 ? charts.map((chart) =>
+                        <div style={{width: "30%"}}>
+                            {chart}
+                        </div>)
+                    : <></>}
             </Grid>
             <Grid sx={{width: '100%', justifyContent: 'center', pt: '50px'}}>
                 <Paper
