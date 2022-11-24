@@ -25,6 +25,7 @@ export interface test {
     current_result: testResult;
     user: number;
     is_archive: boolean;
+    updated_at?: string;
 }
 
 export interface testPlan {
@@ -35,4 +36,10 @@ export interface testPlan {
     started_at: string;
     due_date: string;
     project: number;
+}
+
+export interface user {
+    id: number;
+    first_name?: string;
+    username: string;
 }

@@ -26,10 +26,6 @@ export default class SuiteCaseService {
         return axiosTMS.get("api/v1/cases/")
     }
 
-    static getTestPlans() {
-        return axiosTMS.get("api/v1/testplans/")
-    }
-
     static getTreeSuites() {
         return axiosTMS.get("api/v1/projects/1/suites/")
     }

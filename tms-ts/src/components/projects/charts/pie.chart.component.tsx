@@ -1,24 +1,18 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip} from "recharts";
-import axiosTMS from "../../../services/axiosTMS";
 import {test} from "../../models.interfaces";
 
-const PieChartComponent: React.FC = () => {
-    const [tests, setTests] = useState<test[]>([])
-    axiosTMS.get("api/v1/tests/").then((response) => {
-        setTests(response.data)
-    })
-        .catch((e) => {
-            console.log(e);
-        });
+const PieChartComponent = (props: {
+    tests: test[]
+}) => {
     let nTestsWithoutUser = 0
-    tests.forEach((test) => {
+    props.tests.forEach((test) => {
         if (test.user == null) {
             nTestsWithoutUser++
         }
     })
     const pieData = [
-        {name: 'Назначено', value: tests.length - nTestsWithoutUser},
+        {name: 'Назначено', value: props.tests.length - nTestsWithoutUser},
         {name: 'Не назначено', value: nTestsWithoutUser},
     ];
 

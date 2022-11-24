@@ -1,13 +1,20 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
     Checkbox,
-    FormControlLabel, FormGroup,
+    FormControlLabel,
+    FormGroup,
     Grid,
     Paper,
-    Stack, Switch,
+    Stack,
+    Switch,
     Table,
-    TableBody, TableCell,
-    TableContainer, TableHead, TableRow, TextField, Zoom
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Zoom
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {Button} from "@material-ui/core";
@@ -19,20 +26,19 @@ import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {useNavigate} from "react-router-dom";
-import SuiteCaseService from "../../services/suite.case.service";
-import axiosTMS from "../../services/axiosTMS";
-import {test, testPlan} from "../models.interfaces";
+import {test, testPlan, user} from "../models.interfaces";
+import ProjectsService from "../../services/projects.service";
 
 const Projects: React.FC = () => {
     const navigate = useNavigate();
-    const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
+    const labels = [['НАЗВАНИЕ ТЕСТ-ПЛАНА', '#000000'], ['ВСЕГО ТЕСТОВ', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
-        ['ДАТА', '#000000'], ['КЕМ ИЗМЕНЕНО', '#000000']];
+        ['ДАТА ИЗМЕНЕНИЯ', '#000000'], ['КЕМ ИЗМЕНЕНО', '#000000']];
     const checkboxesLabels = ["passed", "skipped", "failed", "retest"];
     const getMinStatusIndex = () => labels.findIndex((value) => checkboxesLabels.includes(value[0].toLowerCase()))
     const minStatusIndex = getMinStatusIndex();
     const maxStatusIndex = minStatusIndex + checkboxesLabels.length - 1;
-    const charts = [<LineChartComponent/>, <PieChartComponent/>, <AreaChartComponent/>];
+
     const [isSwitched, setSwitch] = React.useState(false);
     const handleOnSwitch = (event: ChangeEvent<HTMLInputElement>) => setSwitch(event.target.checked);
     const [showFilter, setShowFilter] = React.useState(false);
@@ -45,8 +51,14 @@ const Projects: React.FC = () => {
     const handleOnShowStatus = (status: string) => {
         setStatusesToShow({...statusesShow, [status]: !statusesShow[status]})
     };
+    const [tests, setTests] = useState<test[]>([])
     const [testPlans, setTestPlans] = useState<testPlan[]>([])
-    const testsData1 = testPlans.map((value) => {
+    const [users, setUsers] = useState<user[]>([])
+    const testPlanDates: string[] = []
+    const editorIds: (number | null)[] = ((new Array<number | null>(testPlans.length)).fill(null))
+
+    const tableData = testPlans.map((value, indexOfTestPlan) => {
+        testPlanDates.push(value.started_at)
         const results: { [key: string]: number; } = {
             "all": value.tests.length,
             "passed": 0,
@@ -54,22 +66,25 @@ const Projects: React.FC = () => {
             "failed": 0,
             "retest": 0,
         }
-        const users: number[] = []
+        value.tests.sort((a, b) =>
+            moment(b.updated_at, "YYYY-MM-DDThh:mm").valueOf() - moment(a.updated_at, "YYYY-MM-DDThh:mm").valueOf())
+        testPlanDates[testPlanDates.length - 1] = value.tests[0]?.updated_at ?? testPlanDates[testPlanDates.length - 1]
+        if (value.tests.length > 0) {
+            const currentTest = tests.find((test) => test.id === value.tests[0].id)
+            editorIds[indexOfTestPlan] = currentTest?.user ?? editorIds[indexOfTestPlan]
+        }
+        const currentUser = (editorIds[indexOfTestPlan] != null) ?
+            users.find((value) => value.id === editorIds[indexOfTestPlan]) : null
+        const currentUserName = (currentUser != null) ?
+            (currentUser.first_name !== "" ? currentUser.first_name : currentUser.username) :
+            "Не назначен"
         value.tests.forEach((test) => {
             results[test.current_result?.status]++
-            axiosTMS.get("api/v1/tests/" + test.id + "/").then((response) => {
-                const currentTest: test = response.data
-                users.push(currentTest.user)
-            })
-                .catch((e) => {
-                    console.log(e);
-                });
         });
-        // Add displaying last editor
-        return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, value.started_at, ""]
+        return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, testPlanDates[testPlanDates.length - 1], currentUserName]
     });
-    testsData1.sort(([, , , , , , firstData, ,], [, , , , , , secondData, ,]) =>
-        (moment(secondData, "YYYY-MM-DDThh:mm").valueOf() - moment(firstData, "YYYY-MM-DDThh:mm").valueOf()))
+    tableData.sort(([, , , , , , firstDate, ,], [, , , , , , secondDate, ,]) =>
+        (moment(secondDate, "YYYY-MM-DDThh:mm").valueOf() - moment(firstDate, "YYYY-MM-DDThh:mm").valueOf()))
     const [statusesShow, setStatusesToShow] = React.useState<{ [key: string]: boolean; }>(
         {
             "passed": true,
@@ -78,9 +93,21 @@ const Projects: React.FC = () => {
             "retest": true
         }
     );
+    const charts = [<LineChartComponent tests={tests}/>, <PieChartComponent tests={tests}/>, <AreaChartComponent/>];
+
     useEffect(() => {
-        SuiteCaseService.getTestPlans().then((response) => {
-            setTestPlans(response.data)
+        ProjectsService.getTestPlans().then((response) => {
+            const testsData: testPlan[] = response.data
+            setTestPlans(testsData.filter((value) => value.project === 1))
+
+            ProjectsService.getTests().then((response) => {
+                setTests(response.data)
+
+                ProjectsService.getUsers().then((response) => {
+                    setUsers(response.data)
+
+                })
+            })
         })
             .catch((e) => {
                 console.log(e);
@@ -198,7 +225,7 @@ const Projects: React.FC = () => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {(isSwitched ? personalTestsData : testsData1)?.map(
+                                    {(isSwitched ? personalTestsData : tableData)?.map(
                                         ([title, all, passed, skipped, failed, retest, date, tester]) =>
                                             (!moment(date, "YYYY-MM-DDThh:mm").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
@@ -227,7 +254,6 @@ const Projects: React.FC = () => {
                     </Stack>
                 </Paper>
             </Grid>
-
         </div>
     );
 };
