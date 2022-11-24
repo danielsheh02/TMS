@@ -43,7 +43,7 @@ export const CustomWidthTooltip = styled(({className, ...props}: TooltipProps) =
     },
 }));
 
-interface myCase {
+export interface myCase {
     id: number;
     name: string;
     suite: number;

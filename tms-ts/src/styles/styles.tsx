@@ -20,6 +20,36 @@ export default makeStyles({
         alignItems: "center",
         marginTop: -20
     },
+    textFieldSelectCreationCaseSuiteNotFilled: {
+        maxWidth: "90%",
+        "& .MuiFormLabel-root": {
+            marginTop: 0,
+            color: '#000000',
+        },
+        "& .MuiFormHelperText-root": {
+            marginLeft: 3,
+            fontSize: 13,
+            color: '#000000',
+            fontWeight: 550
+        },
+        '& label.Mui-focused': {
+            color: '#000000',
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: '#000000',
+                borderWidth: "2px",
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: '#000000',
+                borderWidth: "3px",
+            },
+            '&:hover fieldset': {
+                borderColor: '#000000',
+                borderWidth: "3px",
+            },
+        },
+    },
     textFieldSelectCreationCaseSuite: {
         maxWidth: "90%",
         "& .MuiFormLabel-root": {
@@ -102,5 +132,84 @@ export default makeStyles({
     },
     icons: {
         color: "#8956FF",
+    },
+    collapse: {
+        "& .MuiCollapse-root": {
+            maxHeight: 40
+        }
+    },
+    alertNotFilled: {
+        // height: "50%",
+        // marginBottom: 100,
+        width: "max-content",
+        maxHeight: "50%",
+        // "& .MuiCollapse-wrapperInner":{
+        //     textAlign: "center"
+        // },
+        // "& .MuiPaper-root":{
+        //     height: "50%",
+        alignItems: "center",
+        // borderRadius: "20px 10px 10px 20px",
+        // },
+        "& .MuiAlert-message": {
+            fontSize: 12,
+            overflowY: "hidden",
+        },
+        "& .MuiAlert-icon": {
+            fontSize: 17
+        },
+        // '&::after': {
+        //     content: '',
+        //     position: "absolute",
+        //     left: 0,
+        //     right: 0,
+        //     margin: "0 auto",
+        //     borderBottom: "10px solid #6A0136",
+        //     width: 0,
+        //     height: 0,
+        //     borderTop: "25px solid #6A0136",
+        //     borderLeft: "50px solid transparent",
+        //     borderRight: "50px solid transparent",
+        //     // border-top: "25px solid #6A0136",
+        //     // border-left: "50px solid transparent",
+        //     // border-right: "50px solid transparent",
+        // },
+    },
+    triangle: {
+        width: 0,
+        height: 0,
+        marginLeft: 158.2,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        borderTopWidth: 15,
+        borderRightWidth: 10,
+        borderBottomWidth: 0,
+        borderLeftWidth: 10,
+        borderBottomColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderTopColor: '#fff4e5',
+        borderLeftColor: 'transparent',
+        borderTopRightRadius: 5,
+        marginTop: -1.9,
+    },
+    tooltip: {
+        background: "#fff",
+        color: "#000",
+        border: "1px solid #000",
+        borderRadius: 0,
+    },
+    arrow: {
+        fontSize: 16,
+        width: 17,
+        // marginBottom: 10,
+        "&::before": {
+            marginBottom: 10,
+            border: "1px solid #000",
+            backgroundColor: "#fff",
+            boxSizing: "border-box"
+        }
+    },
+    splitter: {
+        maxWidth: "80%"
     }
 });

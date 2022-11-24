@@ -1,21 +1,15 @@
 import {
-    Grid, TableContainer, Table, TableBody,
-    TableCell, TableRow, Collapse, IconButton, Chip, tableCellClasses, Checkbox, Link, Divider
+    Grid, Table, TableBody,
+    TableCell, TableRow, Collapse, IconButton, Chip, tableCellClasses, Checkbox, Link
 } from "@mui/material";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React, {useEffect, useRef, useState} from "react";
 import useStyles from "../../styles/styles";
-import {suite, treeSuite} from "./suites.component";
-import {Splitter, SplitterPanel} from 'primereact/splitter';
+import {myCase, suite, treeSuite} from "./suites.component";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
-import 'primereact/resources/primereact.css';
-import '../../index.css';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
-import {Button} from "@material-ui/core";
-import CreationCase from "./creation.case.component";
-import CreationSuite from "./creation.suite.component";
+import DetailedCaseInfo from "./detailed.case.info.component";
 
 const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
     "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
@@ -119,8 +113,8 @@ function CaseScenarioField(props: { scenario: string }) {
 function Row(props: {
     row: treeSuite, setShowCreationCase: (show: boolean) => void, setShowCreationSuite: (show: boolean) => void,
     setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void, treeSuitesOpenMap: Map<number, boolean>,
-    setTreeSuitesOpenMap: (newMap: (prev: Map<number, boolean>) => any) => void, setDetailedCaseInfo: (myCase: { id: number, show: boolean }) => void,
-    detailedCaseInfo: { id: number, show: boolean }
+    setTreeSuitesOpenMap: (newMap: (prev: Map<number, boolean>) => any) => void, setDetailedCaseInfo: (myCase: { show: boolean, myCase: myCase }) => void,
+    detailedCaseInfo: { show: boolean, myCase: myCase }
 }) {
     const classes = useStyles()
     const {
@@ -251,25 +245,25 @@ function Row(props: {
                                                        padding="none">
                                                 {onecase.id}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell style={{wordBreak: "break-word"}}>
                                                 {onecase.name}
                                             </TableCell>
                                             <TableCell style={{textAlign: "end"}}>
                                                 <IconButton onClick={() => {
-                                                    if (onecase.id == detailedCaseInfo.id) {
+                                                    if (onecase.id == detailedCaseInfo.myCase.id) {
                                                         setDetailedCaseInfo({
-                                                            id: onecase.id,
-                                                            show: !detailedCaseInfo.show
+                                                            show: !detailedCaseInfo.show,
+                                                            myCase: onecase
                                                         })
                                                     } else {
                                                         setDetailedCaseInfo({
-                                                            id: onecase.id,
-                                                            show: true
+                                                            show: true,
+                                                            myCase: onecase
                                                         })
                                                     }
                                                 }}>
                                                     <KeyboardArrowRightIcon sx={{
-                                                        transform: (onecase.id == detailedCaseInfo.id && detailedCaseInfo.show) ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                        transform: (onecase.id == detailedCaseInfo.myCase.id && detailedCaseInfo.show) ? 'rotate(180deg)' : 'rotate(0deg)',
                                                         transition: '0.2s',
                                                     }}/>
                                                 </IconButton>
@@ -392,7 +386,16 @@ const TableSuites = (props: {
     const classes = useStyles()
     const {setShowCreationCase, setShowCreationSuite, suites, setSelectedSuiteCome, treeSuites} = props;
     const [treeSuitesOpenMap, setTreeSuitesOpenMap] = useState(new Map())
-    const [detailedCaseInfo, setDetailedCaseInfo] = useState<{ id: number, show: boolean }>({id: -1, show: false})
+    const [detailedCaseInfo, setDetailedCaseInfo] = useState<{ show: boolean, myCase: myCase }>({
+        show: false, myCase: {
+            id: -1,
+            name: "",
+            suite: -1,
+            scenario: "",
+            project: -1,
+            estimate: -1
+        }
+    })
 
     const openAll = () => {
         let newMap = new Map()
@@ -412,55 +415,50 @@ const TableSuites = (props: {
 
     return (
 
-            <SplitterLayout customClassName={classes.splitter} primaryIndex={0} primaryMinSize={40} secondaryMinSize={35} percentage>
-                {/*<SplitterPanel>*/}
-                {/*<Grid>*/}
-                    <TableContainer style={{ padding: 20}}>
-                        <Grid style={{display: "flex", flexDirection: "row", marginLeft: 17}}>
-                            <Link component="button" onClick={() => {
-                                openAll()
-                            }}>
-                                Раскрыть все
-                            </Link>
-                            <Link underline="none">&nbsp;&nbsp;|&nbsp;&nbsp;</Link>
-                            <Link component="button"
-                                  onClick={() => {
-                                      closeAll()
-                                  }}>
-                                Закрыть все
-                            </Link>
-                        </Grid>
-                        <Table size="small" sx={{
-                            [`& .${tableCellClasses.root}`]: {
-                                borderBottom: "none",
-                            }
-                        }}>
-                            <TableBody>
-                                {treeSuites.map((suite, index) => (
-                                    <Row key={index} row={suite}
-                                         setShowCreationCase={setShowCreationCase}
-                                         setShowCreationSuite={setShowCreationSuite}
-                                         setSelectedSuiteCome={setSelectedSuiteCome}
-                                         treeSuitesOpenMap={treeSuitesOpenMap}
-                                         setTreeSuitesOpenMap={setTreeSuitesOpenMap}
-                                         detailedCaseInfo={detailedCaseInfo}
-                                         setDetailedCaseInfo={setDetailedCaseInfo}
-                                    />
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                {/*</Grid>*/}
-                {/*</SplitterPanel>*/}
-                {/*<SplitterPanel>*/}
-                {detailedCaseInfo.show &&
-                <Grid>
+        <SplitterLayout customClassName={classes.splitter} primaryIndex={0} primaryMinSize={40} secondaryMinSize={35}
+                        percentage>
 
-                <Grid>{detailedCaseInfo.id}</Grid>
+            <Grid style={{padding: 20}}>
+                <Grid style={{display: "flex", flexDirection: "row", marginLeft: 17}}>
+                    <Link component="button" onClick={() => {
+                        openAll()
+                    }}>
+                        Раскрыть все
+                    </Link>
+                    <Link underline="none">&nbsp;&nbsp;|&nbsp;&nbsp;</Link>
+                    <Link component="button"
+                          onClick={() => {
+                              closeAll()
+                          }}>
+                        Закрыть все
+                    </Link>
                 </Grid>
-                }
-                {/*</SplitterPanel>*/}
-            </SplitterLayout>
+                <Table size="small" sx={{
+                    [`& .${tableCellClasses.root}`]: {
+                        borderBottom: "none",
+                    }
+                }}>
+                    <TableBody>
+                        {treeSuites.map((suite, index) => (
+                            <Row key={index} row={suite}
+                                 setShowCreationCase={setShowCreationCase}
+                                 setShowCreationSuite={setShowCreationSuite}
+                                 setSelectedSuiteCome={setSelectedSuiteCome}
+                                 treeSuitesOpenMap={treeSuitesOpenMap}
+                                 setTreeSuitesOpenMap={setTreeSuitesOpenMap}
+                                 detailedCaseInfo={detailedCaseInfo}
+                                 setDetailedCaseInfo={setDetailedCaseInfo}
+                            />
+                        ))}
+                    </TableBody>
+                </Table>
+            </Grid>
+            {detailedCaseInfo.show &&
+            <Grid>
+                <DetailedCaseInfo myCase={detailedCaseInfo.myCase}/>
+            </Grid>
+            }
+        </SplitterLayout>
 
     );
 }
