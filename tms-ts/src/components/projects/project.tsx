@@ -21,7 +21,7 @@ import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {useNavigate} from "react-router-dom";
 
 
-const Projects: React.FC = () => {
+const Project: React.FC = () => {
     const navigate = useNavigate();
     const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
@@ -195,4 +195,4 @@ const Projects: React.FC = () => {
     );
 };
 
-export default Projects;
+export default Project;

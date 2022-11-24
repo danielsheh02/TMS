@@ -2,10 +2,10 @@ import React from "react";
 import './App.css';
 import {Navigate, Route, Routes} from "react-router-dom";
 import Suites from "./components/testcases/suites.component";
-import Projects from "./components/projects/projects";
+import Project from "./components/projects/project";
 import Header from "./components/header";
 import Login from "./components/login"
-import ProjectSelection from "./components/projects/project-selection";
+import ProjectSelection from "./components/projects/project.selection";
 import NotExist from "./components/not-exist";
 import AuthService from "./services/Authorization/auth.service";
 
@@ -14,11 +14,11 @@ function App() {
     const token = AuthService.getCurrentAccessToken()
     return (
         <div>
-            <Header/>
+            {token ? <Header/> : <div/>}
             <Routes>
                 <Route path={"/login"} element={token ? <Navigate to="/"/> : <Login/>}/>
                 <Route path={"/"} element={token ? <ProjectSelection/> : <Navigate to="/login"/>}/>
-                <Route path={"/project"} element={token ? <Projects/> : <Navigate to="/login"/>}/>
+                <Route path={"/project"} element={token ? <Project/> : <Navigate to="/login"/>}/>
                 <Route path={"/testcases"} element={token ? <Suites/> : <Navigate to="/login"/>}/>
                 <Route path={"*"} element={token ? <NotExist/> : <Navigate to="/login"/>}/>
             </Routes>
