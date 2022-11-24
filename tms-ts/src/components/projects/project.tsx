@@ -29,7 +29,7 @@ import {useNavigate} from "react-router-dom";
 import {test, testPlan, user} from "../models.interfaces";
 import ProjectsService from "../../services/projects.service";
 
-const Projects: React.FC = () => {
+const Project: React.FC = () => {
     const navigate = useNavigate();
     const labels = [['НАЗВАНИЕ ТЕСТ-ПЛАНА', '#000000'], ['ВСЕГО ТЕСТОВ', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
@@ -258,4 +258,4 @@ const Projects: React.FC = () => {
     );
 };
 
-export default Projects;
+export default Project;
