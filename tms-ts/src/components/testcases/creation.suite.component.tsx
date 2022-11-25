@@ -74,7 +74,7 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
     }
 
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        let str = e.target.value
+        let str = e.target.value.trimStart()
         if (str.length > 0) {
             setName(str)
             setNamePresence(true)
@@ -165,9 +165,9 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                         <Grid style={{textAlign: "center"}}>
                             <Grid>
                                 <Button onClick={handleClose} style={{
-                                    marginRight: 7,
-                                    marginBottom: 20,
-                                    width: "40%",
+                                    margin: "0px 4px 20px 5px",
+                                    width: "45%",
+                                    minWidth: 100,
                                     height: "45%",
                                     backgroundColor: "#FFFFFF",
                                     color: "#000000",
@@ -179,9 +179,9 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                                     // type={"submit"}
                                     onClick={createSuite}
                                     style={{
-                                        marginLeft: 7,
-                                        marginBottom: 20,
-                                        width: "40%",
+                                        margin: "0px 5px 20px 4px",
+                                        width: "45%",
+                                        minWidth: 100,
                                         height: "45%",
                                         backgroundColor: "#696969",
                                         color: "#FFFFFF",

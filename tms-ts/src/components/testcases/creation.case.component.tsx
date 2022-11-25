@@ -57,6 +57,9 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
     const [fillFieldName, setFillFieldName] = useState(false)
     const [fillFieldScenario, setFillFieldScenario] = useState(false)
 
+    const [setup, setSetup] = useState("")
+    const [teardown, setTeardown] = useState("")
+
     useEffect(() => {
         if (selectedSuiteCome) {
             setSelectedSuite(selectedSuiteCome)
@@ -80,6 +83,8 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         setEstimateNumber(null)
         setFillFieldName(false)
         setFillFieldScenario(false)
+        setSetup("")
+        setTeardown("")
     }
 
     const handleDelete = (index: number) => {
@@ -156,7 +161,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
     }
 
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        let str = e.target.value
+        let str = e.target.value.trimStart()
         if (str.length > 0) {
             setName(str)
             setNamePresence(true)
@@ -168,7 +173,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
     }
 
     const onChangeScenario = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        let str = e.target.value
+        let str = e.target.value.trimStart()
         if (str.length > 0) {
             setScenario(str)
             setScenarioPresence(true)
@@ -179,6 +184,24 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         }
     }
 
+    const onChangeSetup = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        let str = e.target.value
+        if (str.length > 0) {
+            setSetup(str)
+        } else {
+            setSetup(str)
+        }
+    }
+
+    const onChangeTeardown = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        let str = e.target.value
+        if (str.length > 0) {
+            setTeardown(str)
+        } else {
+            setTeardown(str)
+        }
+    }
+
     const createCase = () => {
         if (namePresence && scenarioPresence) {
             const myCase = {
@@ -186,7 +209,9 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                 project: 1,
                 suite: selectedSuite.id,
                 scenario: scenario,
-                estimate: estimateNumber
+                estimate: estimateNumber,
+                teardown: teardown,
+                setup: setup
             }
             SuiteCaseService.createCase(myCase).then(() => {
                 SuiteCaseService.getTreeSuites().then((response) => {
@@ -245,6 +270,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                             className={fillFieldName ? classes.textFieldSelectCreationCaseSuiteNotFilled : classes.textFieldSelectCreationCaseSuite}
                             onChange={(content) => onChangeName(content)}
                             variant="outlined"
+                            value={name}
                             margin="normal"
                             autoComplete="off"
                             helperText={fillFieldName && "Заполните это поле"}
@@ -274,6 +300,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 // sx={{marginTop: fillFieldScenario ? 0.5 : ""}}
                                 onChange={(content) => onChangeScenario(content)}
                                 variant="outlined"
+                                value={scenario}
                                 margin="normal"
                                 fullWidth
                                 required
@@ -284,6 +311,48 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 maxRows={5}
                             />
                         </CustomWidthTooltip>
+                    </Grid>
+                    <Grid className={classes.gridContent}>
+                        <Typography variant="h6">
+                            Предусловие
+                        </Typography>
+
+                            <TextField
+                                id="scenarioCaseTextField"
+                                className={classes.textFieldSelectCreationCaseSuite}
+                                onChange={(content) => onChangeSetup(content)}
+                                variant="outlined"
+                                value={setup}
+                                margin="normal"
+                                fullWidth
+                                required
+                                label="Введите предусловие тест-кейса"
+                                autoComplete="off"
+                                multiline
+                                minRows={2}
+                                maxRows={3}
+                            />
+                    </Grid>
+                    <Grid className={classes.gridContent}>
+                        <Typography variant="h6">
+                            Постусловие
+                        </Typography>
+
+                        <TextField
+                            id="scenarioCaseTextField"
+                            className={classes.textFieldSelectCreationCaseSuite}
+                            onChange={(content) => onChangeTeardown(content)}
+                            variant="outlined"
+                            value={teardown}
+                            margin="normal"
+                            fullWidth
+                            required
+                            label="Введите постусловие тест-кейса"
+                            autoComplete="off"
+                            multiline
+                            minRows={2}
+                            maxRows={3}
+                        />
                     </Grid>
                     <Grid className={classes.gridContent}>
                         <Typography variant="h6">
@@ -416,9 +485,9 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                     <Grid style={{textAlign: "center"}}>
                         <Grid>
                             <Button onClick={handleClose} style={{
-                                marginRight: 7,
-                                marginBottom: 20,
-                                width: "40%",
+                                margin: "0px 4px 20px 5px",
+                                width: "45%",
+                                minWidth: 100,
                                 height: "45%",
                                 backgroundColor: "#FFFFFF",
                                 color: "#000000",
@@ -429,9 +498,9 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                             <Button
                                 onClick={createCase}
                                 style={{
-                                    marginLeft: 7,
-                                    marginBottom: 20,
-                                    width: "40%",
+                                    margin: "0px 5px 20px 4px",
+                                    width: "45%",
+                                    minWidth: 100,
                                     height: "45%",
                                     backgroundColor: "#696969",
                                     color: "#FFFFFF",

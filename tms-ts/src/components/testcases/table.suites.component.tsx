@@ -393,6 +393,8 @@ const TableSuites = (props: {
             suite: -1,
             scenario: "",
             project: -1,
+            setup: "",
+            teardown: "",
             estimate: -1
         }
     })

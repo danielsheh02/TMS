@@ -49,7 +49,9 @@ export interface myCase {
     suite: number;
     scenario: string;
     project: number;
-    estimate: number
+    estimate: number;
+    teardown: string;
+    setup: string;
     url?: string;
 }
 
