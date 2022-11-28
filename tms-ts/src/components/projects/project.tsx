@@ -20,8 +20,6 @@ import Typography from "@mui/material/Typography";
 import {Button} from "@material-ui/core";
 import LineChartComponent from "./charts/line.chart.component";
 import PieChartComponent from "./charts/pie.chart.component";
-import AreaChartComponent from "./charts/area.chart.component";
-import {personalTestsData} from "./dataExample";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
@@ -58,6 +56,7 @@ const Project: React.FC = () => {
     const editorIds: (number | null)[] = ((new Array<number | null>(testPlans.length)).fill(null))
 
     const projectValue = JSON.parse(localStorage.getItem("currentProject") ?? '')
+    const currentUsername = localStorage.getItem('currentUsername')
 
     const tableData = testPlans.map((value, indexOfTestPlan) => {
         testPlanDates.push(value.started_at)
@@ -75,18 +74,18 @@ const Project: React.FC = () => {
             const currentTest = tests.find((test) => test.id === value.tests[0].id)
             editorIds[indexOfTestPlan] = currentTest?.user ?? editorIds[indexOfTestPlan]
         }
-        const currentUser = (editorIds[indexOfTestPlan] != null) ?
+        const editor = (editorIds[indexOfTestPlan] != null) ?
             users.find((value) => value.id === editorIds[indexOfTestPlan]) : null
-        const currentUserName = (currentUser != null) ?
-            (currentUser.first_name !== "" ? currentUser.first_name : currentUser.username) :
-            "Не назначен"
+        const editorName = (editor != null) ? editor.username : "Не назначен"
         value.tests.forEach((test) => {
             results[test.current_result?.status]++
         });
-        return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, testPlanDates[testPlanDates.length - 1], currentUserName]
+        return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, testPlanDates[testPlanDates.length - 1], editorName]
     });
-    tableData.sort(([, , , , , , firstDate, ,], [, , , , , , secondDate, ,]) =>
+    tableData.sort(([, , , , , , firstDate,], [, , , , , , secondDate,]) =>
         (moment(secondDate, "YYYY-MM-DDThh:mm").valueOf() - moment(firstDate, "YYYY-MM-DDThh:mm").valueOf()))
+    const personalTableData = tableData.filter((value) => value[value.length - 1] == currentUsername)
+
     const [statusesShow, setStatusesToShow] = React.useState<{ [key: string]: boolean; }>(
         {
             "passed": true,
@@ -95,7 +94,7 @@ const Project: React.FC = () => {
             "retest": true
         }
     );
-    const charts = [<LineChartComponent tests={tests}/>, <PieChartComponent tests={tests}/>, <AreaChartComponent/>];
+    const charts = [<LineChartComponent tests={tests}/>, <PieChartComponent tests={tests}/>];
 
     useEffect(() => {
         ProjectService.getTestPlans().then((response) => {
@@ -180,7 +179,7 @@ const Project: React.FC = () => {
         <div style={{display: "flex", flexDirection: "column"}}>
             <Grid sx={{display: 'flex', justifyContent: 'center', mt: '20px'}}>
                 {tests.length > 0 ? charts.map((chart) =>
-                        <div style={{width: "30%"}}>
+                        <div style={{width: "50%"}}>
                             {chart}
                         </div>)
                     : <></>}
@@ -228,7 +227,7 @@ const Project: React.FC = () => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {(isSwitched ? personalTestsData : tableData)?.map(
+                                    {(isSwitched ? personalTableData : tableData)?.map(
                                         ([title, all, passed, skipped, failed, retest, date, tester]) =>
                                             (!moment(date, "YYYY-MM-DDThh:mm").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
