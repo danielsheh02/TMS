@@ -42,5 +42,7 @@ export interface testPlan {
 export interface user {
     id: number;
     first_name?: string;
+    last_name?: string;
+    email: string;
     username: string;
 }

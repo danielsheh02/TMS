@@ -8,6 +8,7 @@ import Login from "./components/login"
 import ProjectSelection from "./components/projects/project.selection";
 import NotExist from "./components/not-exist";
 import AuthService from "./services/Authorization/auth.service";
+import Profile from "./components/profile";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                 <Route path={"/"} element={token ? <ProjectSelection/> : <Navigate to="/login"/>}/>
                 <Route path={"/project"} element={token ? <Project/> : <Navigate to="/login"/>}/>
                 <Route path={"/testcases"} element={token ? <Suites/> : <Navigate to="/login"/>}/>
+                <Route path={"/profile"} element={token ? <Profile/> : <Navigate to="/login"/>}/>
                 <Route path={"*"} element={token ? <NotExist/> : <Navigate to="/login"/>}/>
             </Routes>
         </div>
