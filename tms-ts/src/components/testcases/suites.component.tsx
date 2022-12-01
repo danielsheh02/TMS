@@ -8,14 +8,50 @@ import CreationSuite from "./creation.suite.component";
 import TableSuites from "./table.suites.component";
 import SuiteCaseService from "../../services/suite.case.service";
 import FolderSuites from "./folder.suites.component";
+import {styled} from "@mui/material/styles";
+import {Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
 
-interface myCase {
+export const CustomWidthTooltip = styled(({className, ...props}: TooltipProps) => (
+    <Tooltip  {...props} classes={{popper: className}}/>
+))(({theme}) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        marginLeft: 10,
+        minWidth: 200,
+        minHeight: 25,
+        // backgroundColor: theme.palette.common.white,
+        border: "1px solid #5c6900",
+        color: "#4A4A4A",
+        backgroundColor: '#fff4e5',
+        fontSize: 15,
+        textAlign: "start"
+        // marginBottom: 10,
+        // paddingBottom: 10
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+        "&:before": {
+            border: "1px solid #5c6900",
+            boxSizing: "border-box",
+            backgroundColor: '#fff4e5'
+            // borderTopWidth: 1,
+        },
+        fontSize: 25,
+        // color: theme.palette.common.white
+        // minWidth: 200,
+        // minHeight: 25,
+        // color: "red",
+        // size: 100
+    },
+}));
+
+export interface myCase {
     id: number;
     name: string;
     suite: number;
     scenario: string;
     project: number;
-    estimate: number
+    estimate: number;
+    teardown: string;
+    setup: string;
     url?: string;
 }
 
@@ -86,7 +122,7 @@ const SuitesComponent: React.FC = () => {
             marginTop: 0,
             position: "absolute",
             display: "flex",
-            height: "91%",
+            height: "91.5%",
             width: "100%"
         }}>
             <Grid   style={{
@@ -96,7 +132,8 @@ const SuitesComponent: React.FC = () => {
                              setShowCreationCase={setShowCreationCase}
                              setShowCreationSuite={setShowCreationSuite}
                              setSelectedSuiteCome={setSelectedSuiteCome}
-                             suites={treeSuites}
+                             suites={suites}
+                             treeSuites={treeSuites}
                 />
             </Grid>
             <Grid   style={{
@@ -127,7 +164,7 @@ const SuitesComponent: React.FC = () => {
                     </Grid>
                 </Grid>
                 <Grid style={{backgroundColor: "white", borderRadius: 10, margin: 13,
-                    height: 400, maxHeight: 500, overflowY: "auto", overflowX: "auto"}}>
+                    height: "70%", maxHeight: "70%", overflowY: "auto", overflowX: "auto"}}>
                     <FolderSuites suites={treeSuites}/>
                 </Grid>
             </Grid>
