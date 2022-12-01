@@ -1,22 +1,14 @@
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
-    Alert,
-    Chip,
-    Collapse,
     FormControl,
     InputLabel,
     MenuItem,
     Select,
-    SelectChangeEvent,
-    Tooltip, tooltipClasses, TooltipProps
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import useStyles from "../../styles/styles";
-import {Grid, Button, Dialog, IconButton, TextField, InputAdornment, Typography} from "@mui/material";
+import {Grid, Button, Dialog,  TextField,  Typography} from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
-import {CustomWidthTooltip, suite, treeSuite} from "./suites.component";
-import {styled} from "@mui/material/styles";
-import {PhoneInTalk} from "@mui/icons-material";
+import {CustomWidthTooltip, myCase, suite, treeSuite} from "./suites.component";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 interface Props {
@@ -24,10 +16,20 @@ interface Props {
     setShow: (show: boolean) => void;
     suites: suite [];
     selectedSuiteCome: { id: number, name: string } | null;
-    setTreeSuites: (treeSuites: treeSuite[]) => void
+    setTreeSuites: (treeSuites: treeSuite[]) => void;
+    infoCaseForEdit: myCase | null;
+    setInfoCaseForEdit: (myCase: null) => void
 }
 
-const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome, setTreeSuites}) => {
+const CreationCase: React.FC<Props> = ({
+                                           show,
+                                           setShow,
+                                           suites,
+                                           selectedSuiteCome,
+                                           setTreeSuites,
+                                           infoCaseForEdit,
+                                           setInfoCaseForEdit
+                                       }) => {
     const classes = useStyles()
 
     const [tagInput, setTagInput] = useState("")
@@ -64,6 +66,18 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         if (selectedSuiteCome) {
             setSelectedSuite(selectedSuiteCome)
         }
+        if (infoCaseForEdit) {
+            setName(infoCaseForEdit.name)
+            setNamePresence(true)
+            setScenario(infoCaseForEdit.scenario)
+            setScenarioPresence(true)
+            setSetup(infoCaseForEdit.setup)
+            setTeardown(infoCaseForEdit.teardown)
+            if (infoCaseForEdit.estimate) {
+                setEstimate(infoCaseForEdit.estimate.toString())
+                setEstimateNumber(infoCaseForEdit.estimate)
+            }
+        }
     }, [selectedSuiteCome])
 
     const handleClose = () => {
@@ -85,6 +99,7 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         setFillFieldScenario(false)
         setSetup("")
         setTeardown("")
+        setInfoCaseForEdit(null)
     }
 
     const handleDelete = (index: number) => {
@@ -213,11 +228,19 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                 teardown: teardown,
                 setup: setup
             }
-            SuiteCaseService.createCase(myCase).then(() => {
-                SuiteCaseService.getTreeSuites().then((response) => {
-                    setTreeSuites(response.data)
+            if (infoCaseForEdit) {
+                SuiteCaseService.editCase({...myCase, url: infoCaseForEdit.url, id: infoCaseForEdit.id}).then(() => {
+                    SuiteCaseService.getTreeSuites().then((response) => {
+                        setTreeSuites(response.data)
+                    })
                 })
-            })
+            } else {
+                SuiteCaseService.createCase(myCase).then(() => {
+                    SuiteCaseService.getTreeSuites().then((response) => {
+                        setTreeSuites(response.data)
+                    })
+                })
+            }
             handleClose()
         } else if (!namePresence && !scenarioPresence) {
             // @ts-ignore
@@ -239,7 +262,6 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
         setSelectedSuite({id: e.target.value.id, name: e.target.value.name})
     }
 
-    // @ts-ignore
     return (
         <Dialog
             disableEnforceFocus
@@ -247,14 +269,6 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
             onClose={handleClose}
             classes={{paper: classes.paperCreationTestCase}}
         >
-            {/*<DialogTitle disableTypography className={classes.dialogTitle}>*/}
-            {/*    <h2>Создание тест-кейса</h2>*/}
-            {/*    <IconButton onClick={handleClose}>*/}
-            {/*        <CloseIcon/>*/}
-            {/*    </IconButton>*/}
-            {/*</DialogTitle>*/}
-
-            {/*<DialogContentText style={{fontSize: 20, color: "black"}}>*/}
             <Grid container style={{
                 position: "absolute",
                 height: "100%",
@@ -265,27 +279,28 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                         <Typography variant="h6">
                             Название тест-кейса
                         </Typography>
-                        <TextField
-                            id="nameCaseTextField"
-                            className={fillFieldName ? classes.textFieldSelectCreationCaseSuiteNotFilled : classes.textFieldSelectCreationCaseSuite}
-                            onChange={(content) => onChangeName(content)}
-                            variant="outlined"
-                            value={name}
-                            margin="normal"
-                            autoComplete="off"
-                            helperText={fillFieldName && "Заполните это поле"}
-                            required
-                            fullWidth
-                            label="Введите название тест-кейса"
-                        />
+                        <CustomWidthTooltip
+                            title={<Grid style={{display: "flex", flexDirection: 'row'}}><WarningAmberIcon
+                                sx={{fontSize: 25, marginRight: 1}}/> <Typography> Заполните это
+                                поле.</Typography></Grid>} placement="top-start" arrow
+                            open={fillFieldScenario}>
+                            <TextField
+                                id="nameCaseTextField"
+                                className={classes.textFieldSelectCreationCaseSuite}
+                                onChange={(content) => onChangeName(content)}
+                                variant="outlined"
+                                value={name}
+                                margin="normal"
+                                autoComplete="off"
+                                helperText={fillFieldName && "Заполните это поле"}
+                                required
+                                fullWidth
+                                label="Введите название тест-кейса"
+                            />
+                        </CustomWidthTooltip>
                     </Grid>
 
                     <Grid className={classes.gridContent}>
-                        {/*<Collapse style={{position: "absolute"}} in={fillFieldScenario}>*/}
-                        {/*    <Alert style={{borderRadius: "10px 10px 1px 10px"}} className={classes.alertNotFilled} severity="warning">Заполните это*/}
-                        {/*        поле.</Alert>*/}
-                        {/*    <Grid className={classes.triangle}/>*/}
-                        {/*</Collapse>*/}
                         <Typography variant="h6">
                             Описание
                         </Typography>
@@ -297,7 +312,6 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                             <TextField
                                 id="scenarioCaseTextField"
                                 className={classes.textFieldSelectCreationCaseSuite}
-                                // sx={{marginTop: fillFieldScenario ? 0.5 : ""}}
                                 onChange={(content) => onChangeScenario(content)}
                                 variant="outlined"
                                 value={scenario}
@@ -314,28 +328,27 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                     </Grid>
                     <Grid className={classes.gridContent}>
                         <Typography variant="h6">
-                            Предусловие
+                            Подготовка теста
                         </Typography>
 
-                            <TextField
-                                id="scenarioCaseTextField"
-                                className={classes.textFieldSelectCreationCaseSuite}
-                                onChange={(content) => onChangeSetup(content)}
-                                variant="outlined"
-                                value={setup}
-                                margin="normal"
-                                fullWidth
-                                required
-                                label="Введите предусловие тест-кейса"
-                                autoComplete="off"
-                                multiline
-                                minRows={2}
-                                maxRows={3}
-                            />
+                        <TextField
+                            id="scenarioCaseTextField"
+                            className={classes.textFieldSelectCreationCaseSuite}
+                            onChange={(content) => onChangeSetup(content)}
+                            variant="outlined"
+                            value={setup}
+                            margin="normal"
+                            fullWidth
+                            label="Введите инструкции"
+                            autoComplete="off"
+                            multiline
+                            minRows={2}
+                            maxRows={3}
+                        />
                     </Grid>
                     <Grid className={classes.gridContent}>
                         <Typography variant="h6">
-                            Постусловие
+                            Очистка после теста
                         </Typography>
 
                         <TextField
@@ -346,49 +359,48 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                             value={teardown}
                             margin="normal"
                             fullWidth
-                            required
-                            label="Введите постусловие тест-кейса"
+                            label="Введите инструкции"
                             autoComplete="off"
                             multiline
                             minRows={2}
                             maxRows={3}
                         />
                     </Grid>
-                    <Grid className={classes.gridContent}>
-                        <Typography variant="h6">
-                            Тэги
-                        </Typography>
-                        <TextField
-                            value={tagInput}
-                            onChange={(content) => onChangeTagContent(content)}
-                            className={classes.textFieldSelectCreationCaseSuite}
-                            variant="outlined"
-                            margin="normal"
-                            autoComplete="off"
-                            fullWidth
-                            label="Введите тэг"
-                            onKeyPress={(key) => keyPress(key)}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton size={"small"} onClick={() => {
-                                            if (tagPresence) {
-                                                createTag()
-                                            }
-                                        }}>
-                                            <AddCircleIcon fontSize={"large"}/>
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <Grid className={classes.stackTags}>
-                            {tags.map((tag, index) =>
-                                <Chip key={index} label={tag} style={{margin: 3, maxWidth: "95%"}}
-                                      onDelete={() => handleDelete(index)}/>
-                            )}
-                        </Grid>
-                    </Grid>
+                    {/*<Grid className={classes.gridContent}>*/}
+                    {/*    <Typography variant="h6">*/}
+                    {/*        Тэги*/}
+                    {/*    </Typography>*/}
+                    {/*    <TextField*/}
+                    {/*        value={tagInput}*/}
+                    {/*        onChange={(content) => onChangeTagContent(content)}*/}
+                    {/*        className={classes.textFieldSelectCreationCaseSuite}*/}
+                    {/*        variant="outlined"*/}
+                    {/*        margin="normal"*/}
+                    {/*        autoComplete="off"*/}
+                    {/*        fullWidth*/}
+                    {/*        label="Введите тэг"*/}
+                    {/*        onKeyPress={(key) => keyPress(key)}*/}
+                    {/*        InputProps={{*/}
+                    {/*            endAdornment: (*/}
+                    {/*                <InputAdornment position="end">*/}
+                    {/*                    <IconButton size={"small"} onClick={() => {*/}
+                    {/*                        if (tagPresence) {*/}
+                    {/*                            createTag()*/}
+                    {/*                        }*/}
+                    {/*                    }}>*/}
+                    {/*                        <AddCircleIcon fontSize={"large"}/>*/}
+                    {/*                    </IconButton>*/}
+                    {/*                </InputAdornment>*/}
+                    {/*            ),*/}
+                    {/*        }}*/}
+                    {/*    />*/}
+                    {/*    <Grid className={classes.stackTags}>*/}
+                    {/*        {tags.map((tag, index) =>*/}
+                    {/*            <Chip key={index} label={tag} style={{margin: 3, maxWidth: "95%"}}*/}
+                    {/*                  onDelete={() => handleDelete(index)}/>*/}
+                    {/*        )}*/}
+                    {/*    </Grid>*/}
+                    {/*</Grid>*/}
                 </Grid>
                 <Grid xs={3} item style={{
                     backgroundColor: "#eeeeee", paddingTop: 26, display: "flex",
@@ -432,55 +444,55 @@ const CreationCase: React.FC<Props> = ({show, setShow, suites, selectedSuiteCome
                                 label="Введите время"
                             />
                         </Grid>
-                        <Grid>
-                            <Typography>
-                                Ссылки
-                            </Typography>
-                            <TextField
-                                value={link}
-                                onChange={(content) => onChangeLinkContent(content)}
-                                style={{marginTop: 10}}
-                                className={classes.textFieldSelectCreationCaseSuite}
-                                variant="outlined"
-                                margin="normal"
-                                autoComplete="off"
-                                fullWidth
-                                label="Введите URL"
-                                onKeyPress={(key) => keyPressLink(key)}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton size={"small"} onClick={() => {
-                                                if (linkPresence) {
-                                                    createLink()
-                                                }
-                                            }}>
-                                                <AddCircleIcon fontSize={"medium"}/>
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            <Grid className={classes.stackTags}>
-                                {links.map((link, index) =>
-                                    <Grid>
-                                        <Chip key={index} label={link} style={{
-                                            margin: 3,
-                                            maxWidth: "95%",
-                                            color: "#0000FF",
-                                            textDecoration: "underline"
-                                        }}
-                                              onDelete={() => handleDeleteLink(index)}
-                                              onClick={() => {
-                                                  const url = link.match(/^http[s]?:\/\//) ? link : '//' + link;
-                                                  window.open(url, '_blank')
-                                              }}
-                                        />
-                                        <br/>
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </Grid>
+                        {/*<Grid>*/}
+                        {/*    <Typography>*/}
+                        {/*        Ссылки*/}
+                        {/*    </Typography>*/}
+                        {/*    <TextField*/}
+                        {/*        value={link}*/}
+                        {/*        onChange={(content) => onChangeLinkContent(content)}*/}
+                        {/*        style={{marginTop: 10}}*/}
+                        {/*        className={classes.textFieldSelectCreationCaseSuite}*/}
+                        {/*        variant="outlined"*/}
+                        {/*        margin="normal"*/}
+                        {/*        autoComplete="off"*/}
+                        {/*        fullWidth*/}
+                        {/*        label="Введите URL"*/}
+                        {/*        onKeyPress={(key) => keyPressLink(key)}*/}
+                        {/*        InputProps={{*/}
+                        {/*            endAdornment: (*/}
+                        {/*                <InputAdornment position="end">*/}
+                        {/*                    <IconButton size={"small"} onClick={() => {*/}
+                        {/*                        if (linkPresence) {*/}
+                        {/*                            createLink()*/}
+                        {/*                        }*/}
+                        {/*                    }}>*/}
+                        {/*                        <AddCircleIcon fontSize={"medium"}/>*/}
+                        {/*                    </IconButton>*/}
+                        {/*                </InputAdornment>*/}
+                        {/*            ),*/}
+                        {/*        }}*/}
+                        {/*    />*/}
+                        {/*    <Grid className={classes.stackTags}>*/}
+                        {/*        {links.map((link, index) =>*/}
+                        {/*            <Grid>*/}
+                        {/*                <Chip key={index} label={link} style={{*/}
+                        {/*                    margin: 3,*/}
+                        {/*                    maxWidth: "95%",*/}
+                        {/*                    color: "#0000FF",*/}
+                        {/*                    textDecoration: "underline"*/}
+                        {/*                }}*/}
+                        {/*                      onDelete={() => handleDeleteLink(index)}*/}
+                        {/*                      onClick={() => {*/}
+                        {/*                          const url = link.match(/^http[s]?:\/\//) ? link : '//' + link;*/}
+                        {/*                          window.open(url, '_blank')*/}
+                        {/*                      }}*/}
+                        {/*                />*/}
+                        {/*                <br/>*/}
+                        {/*            </Grid>*/}
+                        {/*        )}*/}
+                        {/*    </Grid>*/}
+                        {/*</Grid>*/}
                     </Grid>
                     <Grid style={{textAlign: "center"}}>
                         <Grid>
