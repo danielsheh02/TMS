@@ -6,7 +6,19 @@ export default class ProjectService {
         return axiosTMS.get("api/v1/projects/")
     }
 
-    static createProject(project: {name: string, description: string}) {
+    static getTestPlans() {
+        return axiosTMS.get("api/v1/testplans/")
+    }
+
+    static getTests() {
+        return axiosTMS.get("api/v1/tests/")
+    }
+
+    static getUsers() {
+        return axiosTMS.get("api/v1/users/")
+    }
+
+    static createProject(project: { name: string, description: string }) {
         return axiosTMS.post("api/v1/projects/", project)
     }
 }

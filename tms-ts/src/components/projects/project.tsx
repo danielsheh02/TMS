@@ -1,36 +1,42 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {
     Checkbox,
-    FormControlLabel, FormGroup,
+    FormControlLabel,
+    FormGroup,
     Grid,
     Paper,
-    Stack, Switch,
+    Stack,
+    Switch,
     Table,
-    TableBody, TableCell,
-    TableContainer, TableHead, TableRow, TextField, Zoom
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Zoom
 } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {Button} from "@material-ui/core";
 import LineChartComponent from "./charts/line.chart.component";
 import PieChartComponent from "./charts/pie.chart.component";
-import AreaChartComponent from "./charts/area.chart.component";
-import {personalTestsData, testsData} from "./dataExample";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {useNavigate} from "react-router-dom";
-
+import {test, testPlan, user} from "../models.interfaces";
+import ProjectService from "../../services/project.service";
 
 const Project: React.FC = () => {
     const navigate = useNavigate();
-    const labels = [['НАЗВАНИЕ', '#000000'], ['ВСЕГО', '#000000'], ['PASSED', '#24b124'],
+    const labels = [['НАЗВАНИЕ ТЕСТ-ПЛАНА', '#000000'], ['ВСЕГО ТЕСТОВ', '#000000'], ['PASSED', '#24b124'],
         ['SKIPPED', '#c4af30'], ['FAILED', '#bd2828'], ['RETEST', '#6c6c6c'],
-        ['ДАТА', '#000000'], ['ЗАПУСКАЛ', '#000000']];
+        ['ДАТА ИЗМЕНЕНИЯ', '#000000'], ['КЕМ ИЗМЕНЕНО', '#000000']];
     const checkboxesLabels = ["passed", "skipped", "failed", "retest"];
     const getMinStatusIndex = () => labels.findIndex((value) => checkboxesLabels.includes(value[0].toLowerCase()))
     const minStatusIndex = getMinStatusIndex();
     const maxStatusIndex = minStatusIndex + checkboxesLabels.length - 1;
-    const charts = [<LineChartComponent/>, <PieChartComponent/>, <AreaChartComponent/>];
+
     const [isSwitched, setSwitch] = React.useState(false);
     const handleOnSwitch = (event: ChangeEvent<HTMLInputElement>) => setSwitch(event.target.checked);
     const [showFilter, setShowFilter] = React.useState(false);
@@ -43,6 +49,43 @@ const Project: React.FC = () => {
     const handleOnShowStatus = (status: string) => {
         setStatusesToShow({...statusesShow, [status]: !statusesShow[status]})
     };
+    const [tests, setTests] = useState<test[]>([])
+    const [testPlans, setTestPlans] = useState<testPlan[]>([])
+    const [users, setUsers] = useState<user[]>([])
+    const testPlanDates: string[] = []
+    const editorIds: (number | null)[] = ((new Array<number | null>(testPlans.length)).fill(null))
+
+    const projectValue = JSON.parse(localStorage.getItem("currentProject") ?? '')
+    const currentUsername = localStorage.getItem('currentUsername')
+
+    const tableData = testPlans.map((value, indexOfTestPlan) => {
+        testPlanDates.push(value.started_at)
+        const results: { [key: string]: number; } = {
+            "all": value.tests.length,
+            "passed": 0,
+            "skipped": 0,
+            "failed": 0,
+            "retest": 0,
+        }
+        value.tests.sort((a, b) =>
+            moment(b.updated_at, "YYYY-MM-DDThh:mm").valueOf() - moment(a.updated_at, "YYYY-MM-DDThh:mm").valueOf())
+        testPlanDates[testPlanDates.length - 1] = value.tests[0]?.updated_at ?? testPlanDates[testPlanDates.length - 1]
+        if (value.tests.length > 0) {
+            const currentTest = tests.find((test) => test.id === value.tests[0].id)
+            editorIds[indexOfTestPlan] = currentTest?.user ?? editorIds[indexOfTestPlan]
+        }
+        const editor = (editorIds[indexOfTestPlan] != null) ?
+            users.find((value) => value.id === editorIds[indexOfTestPlan]) : null
+        const editorName = (editor != null) ? editor.username : "Не назначен"
+        value.tests.forEach((test) => {
+            results[test.current_result?.status]++
+        });
+        return [value.name, results.all, results.passed, results.skipped, results.failed, results.retest, testPlanDates[testPlanDates.length - 1], editorName]
+    });
+    tableData.sort(([, , , , , , firstDate,], [, , , , , , secondDate,]) =>
+        (moment(secondDate, "YYYY-MM-DDThh:mm").valueOf() - moment(firstDate, "YYYY-MM-DDThh:mm").valueOf()))
+    const personalTableData = tableData.filter((value) => value[value.length - 1] == currentUsername)
+
     const [statusesShow, setStatusesToShow] = React.useState<{ [key: string]: boolean; }>(
         {
             "passed": true,
@@ -51,6 +94,27 @@ const Project: React.FC = () => {
             "retest": true
         }
     );
+    const charts = [<LineChartComponent tests={tests}/>, <PieChartComponent tests={tests}/>];
+
+    useEffect(() => {
+        ProjectService.getTestPlans().then((response) => {
+            const testPlansData: testPlan[] = response.data
+            setTestPlans(testPlansData.filter((value) => value.project === projectValue.id))
+
+            ProjectService.getTests().then((response) => {
+                const testsData: test[] = response.data
+                setTests(testsData.filter((value) => value.project === projectValue.id))
+
+                ProjectService.getUsers().then((response) => {
+                    setUsers(response.data)
+
+                })
+            })
+        })
+            .catch((e) => {
+                console.log(e);
+            });
+    }, [])
 
     const activityTitle = <Stack direction={"row"}>
         <Zoom in={!isSwitched}>
@@ -114,11 +178,11 @@ const Project: React.FC = () => {
     return (
         <div style={{display: "flex", flexDirection: "column"}}>
             <Grid sx={{display: 'flex', justifyContent: 'center', mt: '20px'}}>
-                {charts.map((chart) =>
-                    <div style={{width: "30%"}}>
-                        {chart}
-                    </div>)
-                }
+                {tests.length > 0 ? charts.map((chart) =>
+                        <div style={{width: "50%"}}>
+                            {chart}
+                        </div>)
+                    : <></>}
             </Grid>
             <Grid sx={{width: '100%', justifyContent: 'center', pt: '50px'}}>
                 <Paper
@@ -163,11 +227,13 @@ const Project: React.FC = () => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {(isSwitched ? personalTestsData : testsData)?.map(
+                                    {(isSwitched ? personalTableData : tableData)?.map(
                                         ([title, all, passed, skipped, failed, retest, date, tester]) =>
-                                            (!moment(date, "DD.MM.YYYY").isBetween(startDate, endDate, undefined, "[]")) ? null :
+                                            (!moment(date, "YYYY-MM-DDThh:mm").isBetween(startDate, endDate, undefined, "[]")) ? null :
                                                 (<TableRow>
-                                                    {[title, all, passed, skipped, failed, retest, date, tester].map(
+                                                    {[title, all, passed, skipped, failed, retest,
+                                                        moment(date, "YYYY-MM-DDThh:mm")
+                                                            .format("DD.MM.YYYY"), tester].map(
                                                         (value, index) => {
                                                             if (index < minStatusIndex || index > maxStatusIndex) {
                                                                 return <TableCell>
@@ -190,7 +256,6 @@ const Project: React.FC = () => {
                     </Stack>
                 </Paper>
             </Grid>
-
         </div>
     );
 };
