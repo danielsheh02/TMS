@@ -11,30 +11,32 @@ export default class AuthService {
             .post("api/token/", {username: username, password: password})
             .then((response) => {
                 if (response.data.access) {
-                    localStorage.setItem("accessToken", response.data.access);
-                    localStorage.setItem("refreshToken", response.data.refresh);
+                    localStorage.setItem("currentUsername", username)
+                    localStorage.setItem("accessToken", response.data.access)
+                    localStorage.setItem("refreshToken", response.data.refresh)
                 }
             })
     }
 
     static refreshToken() {
-        const token = localStorage.getItem("refreshToken");
+        const token = localStorage.getItem("refreshToken")
         return axiosTMS
             .post("api/token/refresh/", {refresh: token})
             .then((response) => {
                 if (response.data.access) {
-                    localStorage.setItem("accessToken", response.data.access);
+                    localStorage.setItem("accessToken", response.data.access)
                 }
             })
     }
 
     static logout() {
         axios.get(API_URL + "logout/", {headers: authHeader(), params: {"token": localStorage.getItem('token')}})
-            .then(() => {})
-        localStorage.removeItem("accessToken");
+            .then(() => {
+            })
+        localStorage.removeItem("accessToken")
     }
 
     static getCurrentAccessToken() {
-        return localStorage.getItem("accessToken");
+        return localStorage.getItem("accessToken")
     }
 }

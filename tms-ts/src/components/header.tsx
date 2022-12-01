@@ -17,7 +17,6 @@ import AuthService from "../services/Authorization/auth.service";
 const buttons = [['Тест-кейсы', "/testcases"], ['Тест-планы', "/testplans"]];
 
 const Header: React.FC = () => {
-    const token = AuthService.getCurrentAccessToken()
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -67,140 +66,118 @@ const Header: React.FC = () => {
         }}>
             <Container>
                 <Toolbar disableGutters>
-                    {token ?
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="a"
-                            href="/"
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="a"
+                        href="/"
+                        sx={{
+                            mr: 0,
+                            display: {xs: 'none', md: 'flex'},
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        TestY
+                    </Typography>
+                    {/*<Typography*/}
+                    {/*    variant="h6"*/}
+                    {/*    noWrap*/}
+                    {/*    component="a"*/}
+                    {/*    href="/"*/}
+                    {/*    sx={{*/}
+                    {/*        mr: 0,*/}
+                    {/*        display: {xs: 'none', md: 'flex'},*/}
+                    {/*        fontFamily: 'monospace',*/}
+                    {/*        fontWeight: 700,*/}
+                    {/*        color: 'inherit',*/}
+                    {/*        textDecoration: 'none',*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    Название проекта*/}
+                    {/*</Typography>*/}
+                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleOpenNavMenu}
+                            color="inherit"
+                        >
+                            <MenuIcon/>
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
                             sx={{
-                                mr: 0,
-                                display: {xs: 'none', md: 'flex'},
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                color: 'inherit',
-                                textDecoration: 'none',
+                                display: {xs: 'block', md: 'none'},
                             }}
                         >
-                            TestY
-                        </Typography>
-                        : <Typography
-                            variant="h6"
-                            noWrap
-                            sx={{
-                                mr: 0,
-                                display: {xs: 'none', md: 'flex'},
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            TestY
-                        </Typography>
-                    }
-
-                    {token ?
-                        <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
-                            <IconButton
-                                size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleOpenNavMenu}
-                                color="inherit"
-                            >
-                                <MenuIcon/>
-                            </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorElNav}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
-                                sx={{
-                                    display: {xs: 'block', md: 'none'},
-                                }}
-                            >
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Typography
-                                        textAlign="center"
-                                        component="a"
-                                        href="/testcases"
-                                        sx={{
-                                            color: 'inherit',
-                                            textDecoration: 'none',
-                                        }}
-                                    >
-                                        Тест-кейсы
-                                    </Typography>
-                                </MenuItem>
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Typography
-                                        textAlign="center"
-                                        component="a"
-                                        href="/test-plans"
-                                        sx={{
-                                            color: 'inherit',
-                                            textDecoration: 'none',
-                                        }}>
-                                        Тест-планы
-                                    </Typography>
-                                </MenuItem>
-                            </Menu>
-                        </Box>
-                        : <div/>
-                    }
-                    {token ?
-                        <Typography
-                            variant="h5"
-                            noWrap
-                            component="a"
-                            href="/"
-                            sx={{
-                                mr: 2,
-                                display: {xs: 'flex', md: 'none'},
-                                flexGrow: 1,
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            TestY
-                        </Typography>
-                        : <Typography
-                            variant="h5"
-                            noWrap
-                            sx={{
-                                mr: 2,
-                                display: {xs: 'flex', md: 'none'},
-                                flexGrow: 1,
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            TestY
-                        </Typography>
-                    }
-                    {token ? <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, justifyContent: "center"}}>
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Typography
+                                    textAlign="center"
+                                    component="a"
+                                    href="/testcases"
+                                    sx={{
+                                        color: 'inherit',
+                                        textDecoration: 'none',
+                                    }}
+                                >
+                                    Тест-кейсы
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Typography
+                                    textAlign="center"
+                                    component="a"
+                                    href="/test-plans"
+                                    sx={{
+                                        color: 'inherit',
+                                        textDecoration: 'none',
+                                    }}>
+                                    Тест-планы
+                                </Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        component="a"
+                        href="/"
+                        sx={{
+                            mr: 2,
+                            display: {xs: 'flex', md: 'none'},
+                            flexGrow: 1,
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            letterSpacing: '.3rem',
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        TestY
+                    </Typography>
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}, justifyContent: "center"}}>
                         <React.Fragment>
                             {buttonsAtNavBar()}
                         </React.Fragment>
-                    </Box> : <div/>}
+                    </Box>
 
-                    {token ? <Box sx={{flexGrow: 0}}>
+                    <Box sx={{flexGrow: 0}}>
                         <Tooltip title="Уведомления">
                             <IconButton>
                                 <NotificationsActive sx={{mr: 2, color: 'white'}}/>
@@ -225,8 +202,6 @@ const Header: React.FC = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {/*const settings = [['Профиль', "/profile"], ['Настройки', "/settings"], ['Выход', "/login"]];*/}
-                            {/*{settings.map(([setting_name, path]) => (*/}
                             <MenuItem key={"Профиль"} onClick={handleCloseUserMenu}>
                                 <Typography
                                     textAlign="center"
@@ -260,9 +235,8 @@ const Header: React.FC = () => {
                                     }}
                                 > Выход </Typography>
                             </MenuItem>
-                            {/*))}*/}
                         </Menu>
-                    </Box> : <div/>}
+                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>

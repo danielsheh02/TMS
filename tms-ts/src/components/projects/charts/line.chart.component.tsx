@@ -1,17 +1,50 @@
 import React from 'react';
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {testsData} from "../dataExample";
+import {test} from "../../models.interfaces";
+import moment from "moment/moment";
 
-const LineChartComponent: React.FC = () => {
-    const lineData = testsData.map(([, , passed, skipped, failed, retest, date]) => {
-        return {
-            name: date,
-            failed: failed,
-            passed: passed,
-            skipped: skipped,
-            retest: retest
+const LineChartComponent = (props: {
+    tests: test[]
+}) => {
+    const sliceOfTests = props.tests.slice(0, 100)
+    sliceOfTests.sort((a, b) =>
+        moment(a.updated_at, "YYYY-MM-DDThh:mm").valueOf() - moment(b.updated_at, "YYYY-MM-DDThh:mm").valueOf())
+    const result: { [key: string]: number; }[] = []
+    const dates: string[] = []
+    sliceOfTests.forEach((test) => {
+        const testDate = moment(test.updated_at, "YYYY-MM-DDThh:mm").format("DD/MM/YYYY")
+        if (dates[dates.length - 1] !== testDate) {
+            const currentResult: { [key: string]: number; } = {
+                failed: 0,
+                passed: 0,
+                skipped: 0,
+                retest: 0
+            }
+            currentResult[test.current_result?.status]++
+            result.push({
+                failed: currentResult.failed,
+                passed: currentResult.passed,
+                skipped: currentResult.skipped,
+                retest: currentResult.retest
+            })
+            if (testDate) {
+                dates.push(testDate)
+            }
+        } else {
+            result[result.length - 1][test.current_result?.status]++
         }
     })
+    const lineData = dates.map((value, index): { [key: string]: number | string | undefined; } => {
+            return {
+                name: value,
+                failed: result[index].failed,
+                passed: result[index].passed,
+                skipped: result[index].skipped,
+                retest: result[index].retest
+            }
+        }
+    )
+
 
     return (
         <ResponsiveContainer height={200}>

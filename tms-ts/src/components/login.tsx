@@ -23,17 +23,11 @@ const Login: React.FC = () => {
         setPassword(e.target.value)
     };
 
-    const handleLogin = (/*e: React.FormEvent<HTMLFormElement>*/) => {
+    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         AuthService.login(username, password)
-            .then(
-                () => {
-                    navigate("/", {replace: true});
-                    window.location.reload();
-                }
-            )
-            .catch(() => {
-                setMessage("Введен неверный логин или пароль");
-            });
+            .then(() => window.location.assign("/"))
+            .catch(() => setMessage("Введен неверный логин или пароль"))
     }
 
     return (
@@ -43,10 +37,9 @@ const Login: React.FC = () => {
                     <Typography component="h1" variant="h5">
                         Вход
                     </Typography>
-                    {/*<form className={classes.formLogin}*/}
-                    {/*      onSubmit={handleLogin}*/}
-                    {/*>*/}
-                    <div>
+                    <form className={classes.formLogin}
+                          onSubmit={handleLogin}
+                    >
                         <TextField
                             className={classes.rootLogin}
                             variant="outlined"
@@ -76,8 +69,8 @@ const Login: React.FC = () => {
                             onChange={onChangePassword}
                         />
                         <Button
-                            // type="submit"
-                            onClick={handleLogin}
+                            type="submit"
+                            // onClick={handleLogin}
                             fullWidth
                             variant="contained"
                             color="primary"
@@ -92,12 +85,11 @@ const Login: React.FC = () => {
                                 </div>
                             </div>
                         )}
-                    </div>
-                    {/*</form>*/}
+                    </form>
                 </div>
             </Card>
         </Container>
-    );
+    )
 }
 
 export default Login
