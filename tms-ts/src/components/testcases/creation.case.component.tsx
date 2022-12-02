@@ -292,7 +292,6 @@ const CreationCase: React.FC<Props> = ({
                                 value={name}
                                 margin="normal"
                                 autoComplete="off"
-                                helperText={fillFieldName && "Заполните это поле"}
                                 required
                                 fullWidth
                                 label="Введите название тест-кейса"

@@ -12,7 +12,7 @@ export default class SuiteCaseService {
     }
 
     static getTreeSuites() {
-        return axiosTMS.get("api/v1/projects/1/suites/")
+        return axiosTMS.get("api/v1/suites/?treeview=true")
     }
 
     static deleteSuite(idSuite: number) {

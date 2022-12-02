@@ -1,7 +1,7 @@
-import {Grid} from "@mui/material";
+import {Grid, TextField} from "@mui/material";
 import Typography from '@mui/material/Typography';
 import React, {useEffect, useState} from "react";
-import {treeSuite} from "./suites.component";
+import {suite, treeSuite} from "./suites.component";
 import TreeView from "@mui/lab/TreeView";
 import TreeItem, {TreeItemContentProps, useTreeItem} from "@mui/lab/TreeItem";
 import SvgIcon, {SvgIconProps} from "@mui/material/SvgIcon";
@@ -9,6 +9,7 @@ import SvgIcon, {SvgIconProps} from "@mui/material/SvgIcon";
 import {alpha, styled} from '@mui/material/styles';
 import {TreeItemProps, treeItemClasses} from '@mui/lab/TreeItem';
 import clsx from 'clsx';
+import ProjectService from "../../services/project.service";
 
 function MinusSquare(props: SvgIconProps) {
     return (
@@ -104,14 +105,14 @@ const CustomContent = React.forwardRef(function CustomContent(
                 {icon}
             </div>
             {/*<a href={"#" + nodeId}>*/}
-                <Typography
-                    onClick={(e) => handleSelectionClick(e)}
-                    component="div"
-                    sx={{fontSize: 15}}
-                    // className={classes.label}
-                >
-                    {label}
-                </Typography>
+            <Typography
+                onClick={(e) => handleSelectionClick(e)}
+                component="div"
+                sx={{fontSize: 15}}
+                // className={classes.label}
+            >
+                {label}
+            </Typography>
             {/*</a>*/}
         </div>
     );
@@ -147,22 +148,13 @@ const StyledTreeItem = styled((props: TreeItemProps) => (
 }));
 
 const Suite = (props: {
-    row: treeSuite, nodeId: number, expandedSuites: string[], setExpandedSuites: (array: string[]) => void
+    row: treeSuite, nodeId: number
 }) => {
-    const {row, expandedSuites, setExpandedSuites} = props;
-    useEffect(() => {
-        if (row.children.length > 0) {
-            const newExpanded = expandedSuites.slice()
-            newExpanded.push(row.id.toString())
-            setExpandedSuites(newExpanded)
-        }
-    }, [])
+    const {row} = props;
     return (
         <StyledTreeItem label={row.name} nodeId={row.id.toString()}>
             {row.children.map((suite: any, index: number) => (
                 <Suite key={index} row={suite} nodeId={index}
-                       expandedSuites={expandedSuites}
-                       setExpandedSuites={setExpandedSuites}
                 />
             ))}
         </StyledTreeItem>
@@ -170,37 +162,77 @@ const Suite = (props: {
 }
 
 const FolderSuites = (props: {
-    suites: treeSuite[],
+    treeSuites: treeSuite[],
+    suites: suite []
 }) => {
-    const {suites} = props;
-    const [expandedSuites, setExpandedSuites] = useState<string[]>([])
+    const {treeSuites, suites} = props;
+    const [expanded, setExpanded] = useState<string[]>([])
+    const [selected, setSelected] = useState<string[]>([])
+    const [name, setName] = useState("")
 
+    const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
+        setExpanded(nodeIds);
+    };
+
+    const handleSelect = (event: React.SyntheticEvent, nodeIds: string[]) => {
+        setSelected(nodeIds);
+    };
+
+    useEffect(() => {
+        const suitesIdArray: string[] = []
+        suites.map((suite, index) => (
+            suitesIdArray.push(suite.id.toString())
+        ))
+        setExpanded(suitesIdArray)
+    }, [suites]);
+
+    const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (e.target.value) {
+            const foundSuites = suites.filter(suite => suite.name.toLowerCase().includes(e.target.value.toLowerCase()))
+            const suitesIdArray: string[] = []
+            foundSuites.map((suite, index) => (
+                suitesIdArray.push(suite.id.toString())
+            ))
+            setSelected(suitesIdArray)
+            // setName(e.target.value)
+        } else{
+            setSelected([])
+        }
+    }
 
     return (
         <Grid>
+            <TextField
+                id="nameCaseTextField"
+                // className={classes.textFieldSelectCreationCaseSuite}
+                onChange={(content) => onChangeName(content)}
+                variant="outlined"
+                // value={name}
+                margin="normal"
+                autoComplete="off"
+                required
+                fullWidth
+                label="Введите название тест-кейса"
+            >
+
+            </TextField>
             <TreeView
                 aria-label="customized"
-                defaultExpanded={['1']}
+                expanded={expanded}
+                selected={selected}
                 defaultCollapseIcon={<MinusSquare/>}
                 defaultExpandIcon={<PlusSquare/>}
                 defaultEndIcon={<CloseSquare/>}
+                onNodeToggle={handleToggle}
+                // onNodeSelect={handleSelect}
                 sx={{
                     flexGrow: 1,
-                    // width: 200,
-                    // maxWidth: 400,
-                    // maxHeight: 500,
-                    // overflow: "auto",
-                    // marginTop: 1,
                     margin: 1,
-                    // marginLeft: 1,
                     textAlign: "left",
-                    // wordWrap: "break-word",
                 }}
             >
-                {suites.map((suite, index) => (
+                {treeSuites.map((suite, index) => (
                     <Suite key={index} row={suite} nodeId={index}
-                           expandedSuites={expandedSuites}
-                           setExpandedSuites={setExpandedSuites}
                     />
                 ))}
             </TreeView>

@@ -238,21 +238,18 @@ function Row(props: {
                 <TableCell colSpan={4}>
                     <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1, marginBottom: 0.32, maxWidth: 500}}
                           id={row.id.toString()}>
-                        <Chip onClick={setOpenClose} icon={<IconButton
-                            style={{marginLeft: 1}}
-                            aria-label="expand row"
-                            size="small"
-                        >
+                        <Chip onClick={setOpenClose} icon={
                             <KeyboardArrowUpIcon sx={{
                                 transform: localOpen ? 'rotate(0deg)' : 'rotate(180deg)',
                                 transition: '0.2s',
                             }}/>
-                        </IconButton>} style={{marginTop: 7}} label={row.name}/>
+                        }
+                              style={{marginTop: 7}} label={row.name}/>
                     </Grid>
                 </TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{paddingBottom: 0, paddingTop: 7, paddingRight: 0, marginRight: 10, minWidth: 300}}
+                <TableCell style={{paddingBottom: 0, paddingTop: 9, paddingRight: 0, marginRight: 10, minWidth: 300}}
                            colSpan={4}>
                     {(localOpen == true || localOpen == false) && <Collapse in={localOpen} mountOnEnter>
                         <Grid>
