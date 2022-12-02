@@ -57,7 +57,7 @@ export default makeStyles({
         }
     },
     gridContent: {
-        marginTop: 20,
+        marginTop: 17,
     },
     stackTags: {
         maxWidth: "90%",
