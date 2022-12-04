@@ -56,6 +56,12 @@ export default makeStyles({
             marginTop: 0
         }
     },
+    textFieldCreationCase: {
+        "& .MuiFormLabel-root": {
+            margin: 0
+        },
+        maxWidth: "90%",
+    }, /*TODO переименовать в для тестпланов*/
     gridContent: {
         marginTop: 17,
     },
@@ -80,6 +86,15 @@ export default makeStyles({
         },
     },
     rootLogin: {
+        "& .MuiFormLabel-root": {
+            margin: 0
+        }
+    },
+    checkboxTests: {
+        margin: 0,
+        "& .MuiFormControlLabel-root": {
+            margin: 0
+        },
         "& .MuiFormLabel-root": {
             margin: 0
         }
@@ -131,7 +146,13 @@ export default makeStyles({
         maxHeight: 43,
     },
     icons: {
-        color: "#8956FF",
+        // fontSize: 'small',
+        width: '1em',
+        textAlign: 'center',
+        color: 'primary',
+    },
+    tree: {
+        fontSize: 'small'
     },
     collapse: {
         "& .MuiCollapse-root": {
@@ -211,5 +232,73 @@ export default makeStyles({
     },
     splitter: {
         maxWidth: "80%"
+    },
+    tableCellTests: {
+        "& .MuiTableCell-root": {
+            paddingBottom: 0,
+            paddingTop: 0
+        },
+
     }
-});
+    /*clickableLabels: {
+        display: 'flex',
+
+        /!*> *
+            {
+                width: 50 %,
+            }*!/
+    },
+
+
+    expandAllContainer: {
+    maxWidth
+:
+    400
+    px;
+}
+
+.
+rct - node - icon.far
+{
+    width: 1
+    em;
+    text - align
+:
+    center;
+}
+
+.
+filter - container >
+.
+filter - text
+{
+    display: block;
+    margin - bottom
+:
+    .75
+    rem;
+    border: 1
+    px
+    solid
+    $input - border - color;
+    border - radius
+:
+    .25
+    rem;
+    background - clip
+:
+    padding - box;
+    padding: .375
+    rem
+    .75
+    rem;
+    line - height
+:
+    1.5;
+    font - size
+:
+    1
+    rem;
+}*/
+})
+;
