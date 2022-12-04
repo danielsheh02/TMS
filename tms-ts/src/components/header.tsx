@@ -143,7 +143,7 @@ const Header: React.FC = () => {
                                 <Typography
                                     textAlign="center"
                                     component="a"
-                                    href="/test-plans"
+                                    href="/testplans"
                                     sx={{
                                         color: 'inherit',
                                         textDecoration: 'none',

@@ -16,19 +16,21 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {DesktopDatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import moment, {Moment} from "moment";
-import {testPlan, param} from "./testplans.component";
 import TestPlanService from "../../services/testplan.service";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
-import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import FolderCopyOutlinedIcon from '@mui/icons-material/FolderCopyOutlined';
 import BlockIcon from '@mui/icons-material/Block';
 import {alpha} from "@material-ui/core";
+import {treeSuite} from "../testcases/suites.component";
+import {param, testPlan} from "../models.interfaces";
 
 
 interface Props {
@@ -36,6 +38,7 @@ interface Props {
     setShow: (show: boolean) => void;
     testPlans: testPlan[];
     params: param[] | null;
+    treeSuites: treeSuite [];
 }
 
 interface Node {
@@ -43,29 +46,23 @@ interface Node {
     value: string;
     children?: Array<Node>;
     disabled?: boolean;
+    icon?: boolean
+    showCheckbox?: boolean;
 }
 
-const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) => {
+const CreationTestPlan: React.FC<Props> = ({show, setShow, testPlans, params, treeSuites}) => {
     const classes = useStyles()
 
     const [link, setLink] = useState("")
     const [links, setLinks] = useState<string []>([])
     const [linkPresence, setLinkPresence] = useState(false)
 
-    const [selectedTestPlan, setSelectedTestPlan] = useState<{ id: number | null, name: string }>({
-        id: null,
+    const [selectedTestPlan, setSelectedTestPlan] = useState<{ id: number, name: string }>({
+        id: -1,
         name: "Не выбрано"
     })
 
-    // console.log(testPlans)
-    /*useEffect(() => {
-        if (testPlans.length != 0) {
-            setSelectedTestPlan({id: testPlans[0].id, name: testPlans[0].name})
-        }
-    }, [testPlans])*/
-
     const [name, setName] = useState("")
-    // const [namePresence, setNamePresence] = useState(false)
 
     const [startDate, setStartDate] = React.useState<Moment | null>(moment())
     const [endDate, setEndDate] = React.useState<Moment | null>(moment())
@@ -73,6 +70,9 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
     const [paramsChecked, setParamsChecked] = useState<Array<string>>([])
     const [paramsExpanded, setParamsExpanded] = useState<Array<string>>([])
     const [disable, setDisable] = useState(false)
+
+    const [testsChecked, setTestsChecked] = useState<Array<string>>([])
+    const [testsExpanded, setTestsExpanded] = useState<Array<string>>([])
 
     const handleStartDate = (newValue: Moment | null) => {
         setStartDate(newValue);
@@ -88,12 +88,13 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
         setLinks([])
         setShow(false)
         setName("")
-        // setNamePresence(false)
         setStartDate(moment())
         setEndDate(moment())
         setParamsChecked([])
         setParamsExpanded([])
         setDisable(false)
+        setTestsChecked([])
+        setTestsExpanded([])
     }
 
     const handleDeleteLink = (index: number) => {
@@ -126,34 +127,12 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let str = e.target.value
         setName(str)
-        // setNamePresence(true)
     }
 
     const keyPressLink = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === "Enter" && linkPresence) {
             createLink()
         }
-    }
-
-    const createTestPlan = () => {
-        let params = null
-        if (!paramsChecked.includes('no') && paramsChecked.length != 0) {
-            params = []
-            for (let i of paramsChecked) {
-                params.push(Number(i))
-            }
-        }
-        const testPlan = {
-            name: name,
-            project: 1,
-            parent: selectedTestPlan.id,
-            tests: [],
-            parameters: params,
-            started_at: "2006-10-25 14:30:59",
-            due_date: "2006-10-25 14:30:59",
-        }
-        TestPlanService.createTestPlan(testPlan)
-        handleClose()
     }
 
     function nodesChildren() {
@@ -163,8 +142,12 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
             for (let node in arr) {
                 if (arr[node].label == param.group_name) {
                     if (arr[node].children) {/*а это всегда true, но пусть будет*/
-                        // @ts-ignore
-                        arr[node].children.push({value: String(param.id), label: param.data, disabled: disable})
+                        arr[node].children?.push({
+                            value: String(param.id),
+                            label: param.data,
+                            disabled: disable,
+                            icon: false
+                        })
                     }
                     flag = true
                 }
@@ -173,7 +156,7 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                 arr.push({
                     value: param.group_name,
                     label: param.group_name,
-                    children: [{value: String(param.id), label: param.data, disabled: disable}],
+                    children: [{value: String(param.id), label: param.data, disabled: disable, icon: false}],
                     disabled: disable
                 })
             }
@@ -184,6 +167,71 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
 
     const nodes = [{value: 'no', label: 'Без параметров', icon: <BlockIcon className={classes.icons}/>},
         {value: 'all', label: 'Все параметры', children: nodesChildren(), disabled: disable}];
+
+    function testsNodes(treeSuites: treeSuite[]) {
+        let arr: Node[] = []
+        treeSuites.map((suite) => {
+            if (suite.children.length != 0) {
+                let children: Node[] = []
+                if (suite.test_cases.length != 0) {
+                    suite.test_cases.map((test) => children.push({
+                        value: String(test.id),
+                        label: test.name,
+                        icon: false
+                    }))
+                }
+                children = children.concat(testsNodes(suite.children))
+                arr.push({
+                    value: suite.name,
+                    label: suite.name,
+                    children: children
+                })
+            } else {
+                if (suite.test_cases.length != 0) {
+                    let tests: Node[] = []
+                    suite.test_cases.map((test) => tests.push({value: String(test.id), label: test.name, icon: false}))
+                    arr.push({
+                        value: suite.name,
+                        label: suite.name,
+                        children: tests,
+                    })
+                }
+            }
+        })
+        return arr
+    }
+
+
+    const createTestPlan = () => {
+        let params = []
+        if (!paramsChecked.includes('no') && paramsChecked.length != 0) {
+            for (let i of paramsChecked) {
+                params.push(Number(i))
+            }
+        }
+        let tests = []
+        for (let i of testsChecked) {
+            tests.push(Number(i))
+        }
+        const testPlan = {
+            name: name,
+            project: 1,
+            parent: selectedTestPlan.id == -1 ? null : selectedTestPlan.id,
+            test_cases: tests,
+            parameters: params,
+            started_at: startDate ? startDate.format('YYYY-MM-DDTHH:mm') : "01.01.1970",
+            due_date: endDate ? endDate.format('YYYY-MM-DDTHH:mm') : "01.01.1970",
+        }
+        TestPlanService.createTestPlan(testPlan).then((response) => {
+            // console.log(response.data[0])
+            window.location.assign("/testplans/" + response.data[0].id)
+        })
+            .catch((e) => {
+                console.log(e);
+            });
+        handleClose()
+
+    }
 
     return (
         <Dialog
@@ -223,12 +271,13 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                                 Параметры
                             </Typography>
                         </Grid>
-                        <Grid item xs={7}>
+                        <Grid item xs={10}>
                             <FormControl style={{minWidth: "50%"}} className={classes.textFieldCreationCase}>
                                 {params ? (<CheckboxTree
                                         nodes={nodes}
                                         checked={paramsChecked}
                                         expanded={paramsExpanded}
+                                        // nativeCheckboxes={true}
                                         onCheck={(paramsChecked) => {
                                             setParamsChecked(paramsChecked)
                                             if (paramsChecked.find(x => x == 'no')) {
@@ -244,16 +293,18 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                                             check: <CheckBoxOutlinedIcon className={classes.icons}/>,
                                             uncheck: <CheckBoxOutlineBlankIcon className={classes.icons}/>,
                                             halfCheck: <CheckBoxOutlinedIcon style={{color: alpha("#8956FF", 0.6)}}/>,
-                                            expandClose: <ExpandMoreOutlinedIcon className={classes.icons}/>,
+                                            expandClose: <KeyboardArrowRightIcon className={classes.icons}/>,
                                             expandOpen: <KeyboardArrowUpIcon className={classes.icons}/>,
                                             expandAll: <IndeterminateCheckBoxOutlinedIcon className={classes.icons}/>,
                                             collapseAll: <IndeterminateCheckBoxOutlinedIcon className={classes.icons}/>,
                                             parentClose: <FolderCopyOutlinedIcon className={classes.icons}/>,
                                             parentOpen: <FolderCopyOutlinedIcon className={classes.icons}/>,
-                                            leaf: <ArticleOutlinedIcon className={classes.icons}/>,
-                                        }}/>) :
+                                            // leaf: <ArticleOutlinedIcon className={classes.icons}/>,
+                                        }}
+                                        // className={classes.tree}
+                                    />) :
                                     (<CheckboxTree nodes={[{
-                                        value: 'no_params',
+                                        value: 'no',
                                         label: 'Без параметров',
                                         disabled: true,
                                         showCheckbox: false,
@@ -263,11 +314,50 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                                 }
 
                             </FormControl>
+
                         </Grid>
                     </Grid>
-                    <Typography variant="h6">
-                        Тест-кейсы
-                    </Typography>
+                    <Grid container spacing={0} className={classes.gridContent}>
+                        <Grid item xs={2}>
+                            <Typography variant="h6">
+                                Тест-кейсы
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={10}>
+                            <FormControl style={{minWidth: "50%"}} className={classes.textFieldCreationCase}>
+                                {treeSuites ? (<CheckboxTree
+                                        nodes={testsNodes(treeSuites)}
+                                        checked={testsChecked}
+                                        expanded={testsExpanded}
+                                        onCheck={(testsChecked) => {
+                                            setTestsChecked(testsChecked)
+                                        }}
+                                        onExpand={(testsExpanded) => setTestsExpanded(testsExpanded)}
+                                        // nativeCheckboxes={true}
+                                        showExpandAll={true}
+                                        icons={{
+                                            check: <CheckBoxOutlinedIcon className={classes.icons}/>,
+                                            uncheck: <CheckBoxOutlineBlankIcon className={classes.icons}/>,
+                                            halfCheck: <CheckBoxOutlinedIcon style={{color: alpha("#8956FF", 0.6)}}/>,
+                                            expandClose: <KeyboardArrowRightIcon className={classes.icons}/>,
+                                            expandOpen: <KeyboardArrowUpIcon className={classes.icons}/>,
+                                            expandAll: <AddIcon className={classes.icons}/>,
+                                            collapseAll: <RemoveIcon className={classes.icons}/>,
+                                            parentClose: <FolderCopyOutlinedIcon className={classes.icons}/>,
+                                            parentOpen: <FolderCopyOutlinedIcon className={classes.icons}/>,
+                                        }}/>) :
+                                    (<CheckboxTree nodes={[{
+                                        value: 'no_tests',
+                                        label: 'Без тестов',
+                                        disabled: true,
+                                        showCheckbox: false,
+                                        icon: <BlockIcon className={classes.icons}/>
+                                    }]}
+                                    />)
+                                }
+                            </FormControl>
+                        </Grid>
+                    </Grid>
                 </Grid>
 
                 <Grid xs={3} item style={{
@@ -290,7 +380,7 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
                                     renderValue={(selected) => <Grid>{selected}</Grid>}
                                 >
                                     {testPlans.map((plan, index) => <MenuItem key={index}
-                                                                              value={plan as any}>{plan.name}</MenuItem>)}
+                                                                              value={plan as any}>{plan.title}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -401,4 +491,4 @@ const CreationTestPlan2: React.FC<Props> = ({show, setShow, testPlans, params}) 
     );
 }
 
-export default CreationTestPlan2
+export default CreationTestPlan
