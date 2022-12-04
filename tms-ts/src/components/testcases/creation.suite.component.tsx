@@ -109,11 +109,6 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                                 Название сьюты
                             </Typography>
 
-                            {/*<Collapse in={fillFieldName}>*/}
-                            {/*    <Alert style={{borderRadius: "10px 10px 1px 10px"}} className={classes.alertNotFilled} severity="warning">Заполните это*/}
-                            {/*        поле.</Alert>*/}
-                            {/*    <Grid className={classes.triangle}/>*/}
-                            {/*</Collapse>*/}
                             <CustomWidthTooltip
                                 title={<Grid style={{display: "flex", flexDirection: 'row'}}><WarningAmberIcon
                                     sx={{fontSize: 25, marginRight: 1}}/> <Typography> Заполните это

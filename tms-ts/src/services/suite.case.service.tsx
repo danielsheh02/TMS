@@ -1,20 +1,5 @@
 import axiosTMS from "./axiosTMS";
-
-// function getCookie(name: string) {
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         const cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             const cookie = cookies[i].trim();
-//             // Does this cookie string begin with the name we want?
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
+import {myCase} from "../components/testcases/suites.component";
 
 export default class SuiteCaseService {
 
@@ -36,6 +21,10 @@ export default class SuiteCaseService {
 
     static createCase(myCase: { name: string; project: number; suite: number; scenario: string; }) {
         return axiosTMS.post("api/v1/cases/", myCase)
+    }
+
+    static editCase(myCase: myCase) {
+        return axiosTMS.put("api/v1/cases/" + myCase.id + "/", myCase)
     }
 
     static createSuite(suite: { parent: number | null; name: string }) {

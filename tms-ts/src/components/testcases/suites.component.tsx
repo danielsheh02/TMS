@@ -49,7 +49,7 @@ export interface myCase {
     suite: number;
     scenario: string;
     project: number;
-    estimate: number;
+    estimate: number | null;
     teardown: string;
     setup: string;
     url?: string;
@@ -80,6 +80,7 @@ const SuitesComponent: React.FC = () => {
     const [suites, setSuites] = useState<suite []>([])
     const [treeSuites, setTreeSuites] = useState<treeSuite[]>([])
     const [cases, setCases] = useState([])
+    const [infoCaseForEdit, setInfoCaseForEdit] = useState<myCase | null>(null)
     const [selectedSuiteCome, setSelectedSuiteCome] = useState<{ id: number, name: string } | null>(null)
 
     useEffect(() => {
@@ -88,12 +89,14 @@ const SuitesComponent: React.FC = () => {
             SuiteCaseService.getSuites().then((response) => {
                 // const localSuites = response.data
                 setSuites(response.data)
+                console.log(response.data.length)
                 // for (let i = 0; i< response.data.length; i++){
                 //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
                 // }
                 SuiteCaseService.getCases().then((response) => {
                     // const localCases = response.data
                     setCases(response.data)
+                    console.log(response.data.length)
                     SuiteCaseService.getTreeSuites().then((response) => {
                         // const localTreeSuites = response.data
                         setTreeSuites(response.data)
@@ -134,6 +137,7 @@ const SuitesComponent: React.FC = () => {
                              setSelectedSuiteCome={setSelectedSuiteCome}
                              suites={suites}
                              treeSuites={treeSuites}
+                             setInfoCaseForEdit={setInfoCaseForEdit}
                 />
             </Grid>
             <Grid   style={{
@@ -157,7 +161,10 @@ const SuitesComponent: React.FC = () => {
                         }} onClick={handleShowCreationSuite}>Создать сьюту</Button>
                         {suites.length > 0 &&
                         <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
-                                      selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>}
+                                      selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
+                                        infoCaseForEdit={infoCaseForEdit}
+                                      setInfoCaseForEdit={setInfoCaseForEdit}
+                        />}
                         <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
                                        setSuites={setSuites}
                                        selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>

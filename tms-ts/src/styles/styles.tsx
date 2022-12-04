@@ -63,7 +63,7 @@ export default makeStyles({
         maxWidth: "90%",
     }, /*TODO переименовать в для тестпланов*/
     gridContent: {
-        marginTop: 20,
+        marginTop: 17,
     },
     stackTags: {
         maxWidth: "90%",
