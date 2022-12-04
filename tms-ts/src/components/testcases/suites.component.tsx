@@ -89,7 +89,7 @@ const SuitesComponent: React.FC = () => {
         SuiteCaseService.getSuites().then((response) => {
             // const localSuites = response.data
             setSuites(response.data)
-            // for (let i = 0; i< response.data.length; i++){
+            // for (let i = 100; i< response.data.length; i++){
             //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
             // }
             SuiteCaseService.getCases().then((response) => {
@@ -143,7 +143,7 @@ const SuitesComponent: React.FC = () => {
                 width: "20%"
             }}>
                 <Grid style={{display: "flex", flexDirection: "column"}}>
-                    <Grid style={{textAlign: "center",}}>
+                    <Grid style={{textAlign: "center"}}>
                         <Button style={{
                             margin: 15,
                             minWidth: "70%",
@@ -169,8 +169,7 @@ const SuitesComponent: React.FC = () => {
                     </Grid>
                 </Grid>
                 <Grid style={{
-                    backgroundColor: "white", borderRadius: 10, margin: 13,
-                    height: "70%", maxHeight: "70%", overflowY: "auto", overflowX: "auto"
+                    height: "67%"
                 }}>
                     <FolderSuites treeSuites={treeSuites} suites={suites}/>
                 </Grid>

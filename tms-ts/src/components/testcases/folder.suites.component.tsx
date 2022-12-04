@@ -1,4 +1,4 @@
-import {Grid, TextField} from "@mui/material";
+import {Grid, IconButton, Input, InternalStandardProps as StandardProps, TextField} from "@mui/material";
 import Typography from '@mui/material/Typography';
 import React, {useEffect, useState} from "react";
 import {suite, treeSuite} from "./suites.component";
@@ -9,7 +9,9 @@ import SvgIcon, {SvgIconProps} from "@mui/material/SvgIcon";
 import {alpha, styled} from '@mui/material/styles';
 import {TreeItemProps, treeItemClasses} from '@mui/lab/TreeItem';
 import clsx from 'clsx';
-import ProjectService from "../../services/project.service";
+import useStyles from "../../styles/styles";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 
 function MinusSquare(props: SvgIconProps) {
     return (
@@ -88,8 +90,8 @@ const CustomContent = React.forwardRef(function CustomContent(
         document.getElementById(nodeId).scrollIntoView();
     };
     return (
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <div
+            id={nodeId + "Folder"}
             className={clsx(className, classes.root, {
                 [classes.expanded]: expanded,
                 [classes.selected]: selected,
@@ -100,20 +102,16 @@ const CustomContent = React.forwardRef(function CustomContent(
             onMouseDown={handleMouseDown}
             ref={ref as React.Ref<HTMLDivElement>}
         >
-            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
             <div onClick={handleExpansionClick} className={classes.iconContainer}>
                 {icon}
             </div>
-            {/*<a href={"#" + nodeId}>*/}
             <Typography
                 onClick={(e) => handleSelectionClick(e)}
                 component="div"
                 sx={{fontSize: 15}}
-                // className={classes.label}
             >
                 {label}
             </Typography>
-            {/*</a>*/}
         </div>
     );
 });
@@ -135,15 +133,6 @@ const StyledTreeItem = styled((props: TreeItemProps) => (
     [`& .${treeItemClasses.root}`]: {
         marginTop: 3,
         marginBottom: 3,
-        '& .MuiTreeItem-label': {
-            maxWidth: 250,
-            // wordWrap: "break-word"
-            // minWidth: "max-content"
-        },
-        // '& .MuiTreeItem-content': {
-        //     // wordWrap: "break-word",
-        //     // minWidth: "max-content"
-        // }
     },
 }));
 
@@ -152,7 +141,8 @@ const Suite = (props: {
 }) => {
     const {row} = props;
     return (
-        <StyledTreeItem label={row.name} nodeId={row.id.toString()}>
+        <StyledTreeItem
+            ContentComponent={CustomContent} label={row.name} nodeId={row.id.toString()}>
             {row.children.map((suite: any, index: number) => (
                 <Suite key={index} row={suite} nodeId={index}
                 />
@@ -168,14 +158,13 @@ const FolderSuites = (props: {
     const {treeSuites, suites} = props;
     const [expanded, setExpanded] = useState<string[]>([])
     const [selected, setSelected] = useState<string[]>([])
-    const [name, setName] = useState("")
+    const [currentSuiteNumber, setCurrentSuiteNumber] = useState<number>(0)
+    const [totalSuitesNumber, setTotalSuitesNumber] = useState<number>(0)
+    const [suitesHtmlElmArrayLocal, setSuitesHtmlElmArrayLocal] = useState<any[]>([])
+    const [hover, setHover] = useState<any>(null)
 
     const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) => {
         setExpanded(nodeIds);
-    };
-
-    const handleSelect = (event: React.SyntheticEvent, nodeIds: string[]) => {
-        setSelected(nodeIds);
     };
 
     useEffect(() => {
@@ -190,52 +179,157 @@ const FolderSuites = (props: {
         if (e.target.value) {
             const foundSuites = suites.filter(suite => suite.name.toLowerCase().includes(e.target.value.toLowerCase()))
             const suitesIdArray: string[] = []
-            foundSuites.map((suite, index) => (
+            let suitesHtmlElmArray: any[] = []
+            foundSuites.map((suite, index) => {
                 suitesIdArray.push(suite.id.toString())
-            ))
+                suitesHtmlElmArray.push(document.getElementById(suite.id.toString() + "Folder"))
+            })
+            suitesHtmlElmArray.sort(function (elm1, elm2) {
+                const elm1Y = elm1.getBoundingClientRect().y
+                const elm2Y = elm2.getBoundingClientRect().y
+                if (elm1Y < elm2Y) {
+                    return -1
+                }
+                if (elm1Y > elm2Y) {
+                    return 1
+                }
+                return 0
+            })
+            if (suitesHtmlElmArray.length > 0) {
+                setCurrentSuiteNumber(1)
+                setTotalSuitesNumber(suitesHtmlElmArray.length)
+                suitesHtmlElmArray[0].scrollIntoView({block: "center", inline: "nearest"})
+                if (hover) {
+                    hover.style.backgroundColor = ""
+                }
+                suitesHtmlElmArray[0].style.backgroundColor = '#a6c4e5'
+                setHover(suitesHtmlElmArray[0])
+                setSuitesHtmlElmArrayLocal(suitesHtmlElmArray)
+            } else {
+                if (hover) {
+                    hover.style.backgroundColor = ""
+                }
+                setHover(null)
+                setCurrentSuiteNumber(0)
+                setTotalSuitesNumber(0)
+            }
             setSelected(suitesIdArray)
-            // setName(e.target.value)
-        } else{
+        } else {
+            if (hover) {
+                hover.style.backgroundColor = ""
+            }
+            setHover(null)
+            setCurrentSuiteNumber(0)
+            setTotalSuitesNumber(0)
             setSelected([])
         }
     }
 
-    return (
-        <Grid>
-            <TextField
-                id="nameCaseTextField"
-                // className={classes.textFieldSelectCreationCaseSuite}
-                onChange={(content) => onChangeName(content)}
-                variant="outlined"
-                // value={name}
-                margin="normal"
-                autoComplete="off"
-                required
-                fullWidth
-                label="Введите название тест-кейса"
-            >
+    const nextSuite = () => {
+        if (currentSuiteNumber != totalSuitesNumber) {
+            if (suitesHtmlElmArrayLocal[currentSuiteNumber].getBoundingClientRect().bottom > window.innerHeight) {
+                suitesHtmlElmArrayLocal[currentSuiteNumber].scrollIntoView({
+                    block: "center",
+                    inline: "nearest"
+                })
+            } else {
+                suitesHtmlElmArrayLocal[currentSuiteNumber].scrollIntoView({
+                    block: "nearest",
+                    inline: "nearest"
+                })
+            }
+            hover.style.backgroundColor = ""
+            suitesHtmlElmArrayLocal[currentSuiteNumber].style.backgroundColor = '#a6c4e5'
+            setHover(suitesHtmlElmArrayLocal[currentSuiteNumber])
+            setCurrentSuiteNumber((prevState => prevState + 1))
+        } else {
+            suitesHtmlElmArrayLocal[0].scrollIntoView({
+                block: "nearest",
+                inline: "nearest"
+            })
+            hover.style.backgroundColor = ""
+            suitesHtmlElmArrayLocal[0].style.backgroundColor = '#a6c4e5'
+            setHover(suitesHtmlElmArrayLocal[0])
+            setCurrentSuiteNumber(1)
+        }
+    }
 
-            </TextField>
-            <TreeView
-                aria-label="customized"
-                expanded={expanded}
-                selected={selected}
-                defaultCollapseIcon={<MinusSquare/>}
-                defaultExpandIcon={<PlusSquare/>}
-                defaultEndIcon={<CloseSquare/>}
-                onNodeToggle={handleToggle}
-                // onNodeSelect={handleSelect}
-                sx={{
-                    flexGrow: 1,
-                    margin: 1,
-                    textAlign: "left",
-                }}
-            >
-                {treeSuites.map((suite, index) => (
-                    <Suite key={index} row={suite} nodeId={index}
+    const prevSuite = () => {
+        if (currentSuiteNumber - 2 >= 0) {
+            suitesHtmlElmArrayLocal[currentSuiteNumber - 2].scrollIntoView({
+                block: "nearest",
+                inline: "nearest"
+            })
+            hover.style.backgroundColor = ""
+            suitesHtmlElmArrayLocal[currentSuiteNumber - 2].style.backgroundColor = '#a6c4e5'
+            setHover(suitesHtmlElmArrayLocal[currentSuiteNumber - 2])
+            setCurrentSuiteNumber((prevState => prevState - 1))
+        } else {
+            suitesHtmlElmArrayLocal[totalSuitesNumber - 1].scrollIntoView({
+                block: "nearest",
+                inline: "nearest"
+            })
+            hover.style.backgroundColor = ""
+            suitesHtmlElmArrayLocal[totalSuitesNumber - 1].style.backgroundColor = '#a6c4e5'
+            setHover(suitesHtmlElmArrayLocal[totalSuitesNumber - 1])
+            setCurrentSuiteNumber(totalSuitesNumber)
+        }
+    }
+    return (
+        <Grid style={{
+            height: "100%"
+        }}>
+            <Grid style={{
+                height: "15%",
+                minHeight: "max-content",
+                margin: "15px 0px 0px 20px",
+            }}>
+                <Grid>
+                    <Input
+                        id="nameCaseTextField"
+                        onChange={(content) => onChangeName(content)}
+                        autoComplete="off"
+                        style={{width: "95%"}}
+                        placeholder="Поиск..."
                     />
-                ))}
-            </TreeView>
+                </Grid>
+
+                {currentSuiteNumber != 0 &&
+                <Grid style={{display: "flex", flexDirection: "row", width: "100%", height: "35%", marginTop: 7}}>
+                    <IconButton style={{width: "8%", height: "100%"}} onClick={() => prevSuite()}>
+                        <KeyboardArrowLeftIcon/>
+                    </IconButton>
+                    <Grid style={{height: "100%"}}>{currentSuiteNumber} / {totalSuitesNumber}</Grid>
+                    <IconButton style={{width: "8%", height: "100%"}} onClick={() => nextSuite()}>
+                        <KeyboardArrowRightIcon/>
+                    </IconButton>
+                </Grid>}
+
+            </Grid>
+            <Grid style={{
+                backgroundColor: "white", borderRadius: 10, margin: "13px 13px 13px 13px ",
+                height: "100%", overflowY: "auto", overflowX: "auto"
+            }}>
+                <TreeView
+                    aria-label="customized"
+                    expanded={expanded}
+                    selected={selected}
+                    defaultCollapseIcon={<MinusSquare/>}
+                    defaultExpandIcon={<PlusSquare/>}
+                    defaultEndIcon={<CloseSquare/>}
+                    onNodeToggle={handleToggle}
+                    sx={{
+                        flexGrow: 1,
+                        margin: 1,
+                        textAlign: "left",
+                    }}
+                >
+                    {treeSuites.map((suite, index) => (
+                        <Suite key={index} row={suite} nodeId={index}
+                        />
+                    ))}
+                </TreeView>
+            </Grid>
         </Grid>
     );
 }

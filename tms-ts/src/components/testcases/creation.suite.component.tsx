@@ -114,20 +114,18 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
                                     sx={{fontSize: 25, marginRight: 1}}/> <Typography> Заполните это
                                     поле.</Typography></Grid>} placement="top-start" arrow
                                 open={fillFieldName}>
-                            <TextField
-                                id="nameTextField"
-                                // sx={{marginTop: fillFieldName ? 0.5 : ""}}
-                                onChange={(content) => onChangeName(content)}
-                                className={classes.textFieldSelectCreationCaseSuite}
-                                variant="outlined"
-                                margin="normal"
-                                // helperText={fillFieldName && "Заполните это поле."}
-                                required
-                                fullWidth
-                                autoComplete="off"
-                                value={name}
-                                label="Введите название сьюты"
-                            />
+                                <TextField
+                                    id="nameTextField"
+                                    onChange={(content) => onChangeName(content)}
+                                    className={classes.textFieldSelectCreationCaseSuite}
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    autoComplete="off"
+                                    value={name}
+                                    label="Введите название сьюты"
+                                />
                             </CustomWidthTooltip>
                         </Grid>
                     </Grid>
