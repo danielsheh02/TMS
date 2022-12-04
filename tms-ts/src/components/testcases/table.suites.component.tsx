@@ -100,7 +100,7 @@ function TableRowCase(props: {
     row: treeSuite, setShowCreationCase: (show: boolean) => void,
     setSelectedSuiteCome: (selectedSuite: { id: number, name: string } | null) => void,
     setDetailedCaseInfo: (myCase: { show: boolean, myCase: myCase }) => void,
-    detailedCaseInfo: { show: boolean, myCase: myCase }, setInfoCaseForEdit: (myCase: myCase) => void, index: number,
+    detailedCaseInfo: { show: boolean, myCase: myCase }, setInfoCaseForEdit: (myCase: myCase) => void,
     onecase: myCase,
     selected: number [], setSelected: (ids: number[]) => void
 }) {
@@ -112,7 +112,6 @@ function TableRowCase(props: {
         setDetailedCaseInfo,
         detailedCaseInfo,
         setInfoCaseForEdit,
-        index,
         onecase,
         selected,
         setSelected
@@ -135,58 +134,59 @@ function TableRowCase(props: {
         }
         setSelected(newSelected);
     };
-    return (<TableRow key={index}
-                      onMouseMove={() => setVisibleEditIcon(true)}
-                      onMouseLeave={() => setVisibleEditIcon(false)}
-                      hover
-                      selected={selected.indexOf(onecase.id) !== -1}
-    >
-        <TableCell>
-            <Checkbox
-                style={{height: 25}}
-                onClick={(event) => handleClick(event, onecase.id)}
-                color="primary"
-                checked={selected.indexOf(onecase.id) !== -1}
-            />
-        </TableCell>
-        <TableCell component="th"
-            // id={`enhanced-table-checkbox-${index}`}
-                   scope="row"
-                   padding="none">
-            {onecase.id}
-        </TableCell>
-        <TableCell style={{wordBreak: "break-word"}}>
-            {onecase.name}
-        </TableCell>
-        <TableCell style={{textAlign: "end", display: "flex", justifyContent: "flex-end", minWidth: 60}}>
-            {visibleEditIcon &&
-            <IconButton size={"small"} onClick={() => {
-                setShowCreationCase(true)
-                setSelectedSuiteCome({id: row.id, name: row.name})
-                setInfoCaseForEdit(onecase)
-            }}>
-                <EditIcon fontSize={"small"}/>
-            </IconButton>}
-            <IconButton size={"small"} onClick={() => {
-                if (onecase.id == detailedCaseInfo.myCase.id) {
-                    setDetailedCaseInfo({
-                        show: !detailedCaseInfo.show,
-                        myCase: onecase
-                    })
-                } else {
-                    setDetailedCaseInfo({
-                        show: true,
-                        myCase: onecase
-                    })
-                }
-            }}>
-                <KeyboardArrowRightIcon sx={{
-                    transform: (onecase.id == detailedCaseInfo.myCase.id && detailedCaseInfo.show) ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: '0.2s',
-                }}/>
-            </IconButton>
-        </TableCell>
-    </TableRow>)
+    return (
+        <TableRow
+                  onMouseMove={() => setVisibleEditIcon(true)}
+                  onMouseLeave={() => setVisibleEditIcon(false)}
+                  hover
+                  selected={selected.indexOf(onecase.id) !== -1}
+        >
+            <TableCell>
+                <Checkbox
+                    style={{height: 25}}
+                    onClick={(event) => handleClick(event, onecase.id)}
+                    color="primary"
+                    checked={selected.indexOf(onecase.id) !== -1}
+                />
+            </TableCell>
+            <TableCell component="th"
+                // id={`enhanced-table-checkbox-${index}`}
+                       scope="row"
+                       padding="none">
+                {onecase.id}
+            </TableCell>
+            <TableCell style={{wordBreak: "break-word"}}>
+                {onecase.name}
+            </TableCell>
+            <TableCell style={{textAlign: "end", display: "flex", justifyContent: "flex-end", minWidth: 60}}>
+                {visibleEditIcon &&
+                <IconButton size={"small"} onClick={() => {
+                    setShowCreationCase(true)
+                    setSelectedSuiteCome({id: row.id, name: row.name})
+                    setInfoCaseForEdit(onecase)
+                }}>
+                    <EditIcon fontSize={"small"}/>
+                </IconButton>}
+                <IconButton size={"small"} onClick={() => {
+                    if (onecase.id == detailedCaseInfo.myCase.id) {
+                        setDetailedCaseInfo({
+                            show: !detailedCaseInfo.show,
+                            myCase: onecase
+                        })
+                    } else {
+                        setDetailedCaseInfo({
+                            show: true,
+                            myCase: onecase
+                        })
+                    }
+                }}>
+                    <KeyboardArrowRightIcon sx={{
+                        transform: (onecase.id == detailedCaseInfo.myCase.id && detailedCaseInfo.show) ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: '0.2s',
+                    }}/>
+                </IconButton>
+            </TableCell>
+        </TableRow>)
 }
 
 function Row(props: {
@@ -238,21 +238,18 @@ function Row(props: {
                 <TableCell colSpan={4}>
                     <Grid sx={{display: "flex", flexDirection: "row", marginTop: 1, marginBottom: 0.32, maxWidth: 500}}
                           id={row.id.toString()}>
-                        <Chip onClick={setOpenClose} icon={<IconButton
-                            style={{marginLeft: 1}}
-                            aria-label="expand row"
-                            size="small"
-                        >
+                        <Chip onClick={setOpenClose} icon={
                             <KeyboardArrowUpIcon sx={{
                                 transform: localOpen ? 'rotate(0deg)' : 'rotate(180deg)',
                                 transition: '0.2s',
                             }}/>
-                        </IconButton>} style={{marginTop: 7}} label={row.name}/>
+                        }
+                              style={{marginTop: 7}} label={row.name}/>
                     </Grid>
                 </TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{paddingBottom: 0, paddingTop: 7, paddingRight: 0, marginRight: 10, minWidth: 300}}
+                <TableCell style={{paddingBottom: 0, paddingTop: 9, paddingRight: 0, marginRight: 10, minWidth: 300}}
                            colSpan={4}>
                     {(localOpen == true || localOpen == false) && <Collapse in={localOpen} mountOnEnter>
                         <Grid>
@@ -281,7 +278,7 @@ function Row(props: {
                                 </TableBody>
                                 <TableBody style={{border: "solid", borderWidth: "0px 1px 1px 1px"}}>
                                     {row.test_cases.map((onecase, index) => (
-                                        <TableRowCase onecase={onecase} index={index} row={row} selected={selected}
+                                        <TableRowCase key={onecase.id} onecase={onecase} row={row} selected={selected}
                                                       detailedCaseInfo={detailedCaseInfo}
                                                       setDetailedCaseInfo={setDetailedCaseInfo}
                                                       setInfoCaseForEdit={setInfoCaseForEdit}
@@ -315,7 +312,7 @@ function Row(props: {
                                 {row && row.children &&
                                 <TableBody sx={{borderLeft: "1px dashed", borderCollapse: "collapse"}}>
                                     {row.children.map((suite: any, index: number) => (
-                                        <Row key={index} row={suite}
+                                        <Row key={suite.id} row={suite}
                                              setShowCreationCase={setShowCreationCase}
                                              setShowCreationSuite={setShowCreationSuite}
                                              setSelectedSuiteCome={setSelectedSuiteCome}
@@ -411,7 +408,7 @@ const TableSuites = (props: {
                 }}>
                     <TableBody>
                         {treeSuites.map((suite, index) => (
-                            <Row key={index} row={suite}
+                            <Row key={suite.id} row={suite}
                                  setShowCreationCase={setShowCreationCase}
                                  setShowCreationSuite={setShowCreationSuite}
                                  setSelectedSuiteCome={setSelectedSuiteCome}

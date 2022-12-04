@@ -164,7 +164,8 @@ const CreationCase: React.FC<Props> = ({
 
     const onChangeEstimateContent = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const strInput = e.target.value
-        if (strInput.charCodeAt(strInput.length - 1) >= 48 && strInput.charCodeAt(strInput.length - 1) <= 57) {
+
+        if (strInput.length > 0) {
             setEstimate(strInput)
             setEstimateNumber(parseInt(strInput, 10))
             setEstimatePresence(true)
@@ -292,7 +293,6 @@ const CreationCase: React.FC<Props> = ({
                                 value={name}
                                 margin="normal"
                                 autoComplete="off"
-                                helperText={fillFieldName && "Заполните это поле"}
                                 required
                                 fullWidth
                                 label="Введите название тест-кейса"
@@ -439,6 +439,10 @@ const CreationCase: React.FC<Props> = ({
                                 onChange={(content) => onChangeEstimateContent(content)}
                                 variant="outlined"
                                 margin="normal"
+                                type={'number'}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
                                 autoComplete="off"
                                 fullWidth
                                 label="Введите время"
