@@ -1,13 +1,16 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {Button, Paper, Stack, Typography} from "@mui/material";
 import {user} from "./models.interfaces";
 import ProjectService from "../services/project.service";
 import ProfileService from "../services/profile.service";
 import TextField from "@material-ui/core/TextField";
+import Settings from "./settings";
 
 const Profile: React.FC = () => {
     const [isLoaded, setIsLoaded] = useState<boolean>(false)
+    const [isSettings, setIsSettings] = useState<boolean>(false)
     const [showPasswordChange, setShowPasswordChange] = useState(false)
 
     const [currentUser, setCurrentUser] = useState<user>()
@@ -35,6 +38,7 @@ const Profile: React.FC = () => {
     const handleChangeRepeatNewPassword = (event: ChangeEvent<HTMLInputElement>) => setRepeatNewPassword(event.target.value)
     const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)
 
+    const handleOnShowSettings = () => setIsSettings(true)
     const handleOnShowChangePassword = () => {
         setMessage("")
         setNewPassword("")
@@ -43,8 +47,6 @@ const Profile: React.FC = () => {
         setShowPasswordChange(true)
     }
     const handleOnHideChangePassword = () => {
-        // setMessage("")
-        // setShowPasswordChange(false)
         window.location.assign('/profile')
     }
     const handleOnSavePersonalData = (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,6 +100,9 @@ const Profile: React.FC = () => {
     }, [])
 
     if (isLoaded) {
+        if (isSettings) {
+            return <Settings/>
+        }
         return <>
             <Typography textAlign={"center"} mt={'15px'}>
                 {message}
@@ -112,11 +117,11 @@ const Profile: React.FC = () => {
             }}>
                 {showPasswordChange ?
                     <>
+                        <Button style={{alignSelf: "end"}} onClick={handleOnShowSettings}>
+                            <SettingsIcon/>
+                        </Button>
                         <Stack direction={"row"}>
-                            {/*<Button sx={{margin: '10px 10px 10px 10px'}} onClick={handleOnHideChangePassword}>*/}
-                            {/*    <ArrowBackIcon/>*/}
-                            {/*</Button>*/}
-                            <Button sx={{margin: '10px 10px 10px 10px'}} onClick={handleOnHideChangePassword}>
+                            <Button style={{margin: '10px 10px 10px 10px'}} onClick={handleOnHideChangePassword}>
                                 <AccountBoxIcon fontSize={'large'}/>
                             </Button>
                         </Stack>
@@ -142,11 +147,15 @@ const Profile: React.FC = () => {
                     </>
                     :
                     <>
+                        <Button style={{alignSelf: "end"}} onClick={handleOnShowSettings}>
+                            <SettingsIcon/>
+                        </Button>
                         <Stack direction={"row"}>
                             <AccountBoxIcon fontSize={'large'} sx={{margin: '10px 10px 10px 10px'}}/>
                             <Button variant={"outlined"}
                                     sx={{margin: '10px 10px 10px 10px'}} onClick={handleOnShowChangePassword}>Сменить
                                 пароль</Button>
+
                         </Stack>
                         <form onSubmit={handleOnSavePersonalData}
                               style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
