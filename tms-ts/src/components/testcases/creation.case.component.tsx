@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import useStyles from "../../styles/styles";
-import {Grid, Button, Dialog,  TextField,  Typography} from "@mui/material";
+import {Grid, Button, Dialog, TextField, Typography} from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
 import {CustomWidthTooltip, myCase, suite, treeSuite} from "./suites.component";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -19,6 +19,9 @@ interface Props {
     setTreeSuites: (treeSuites: treeSuite[]) => void;
     infoCaseForEdit: myCase | null;
     setInfoCaseForEdit: (myCase: null) => void
+    setDetailedCaseInfo: (myCase: { show: boolean, myCase: myCase }) => void,
+    detailedCaseInfo: { show: boolean, myCase: myCase },
+    setLastEditCase: (id: number) => void
 }
 
 const CreationCase: React.FC<Props> = ({
@@ -28,7 +31,10 @@ const CreationCase: React.FC<Props> = ({
                                            selectedSuiteCome,
                                            setTreeSuites,
                                            infoCaseForEdit,
-                                           setInfoCaseForEdit
+                                           setInfoCaseForEdit,
+                                           setDetailedCaseInfo,
+                                           detailedCaseInfo,
+                                           setLastEditCase
                                        }) => {
     const classes = useStyles()
 
@@ -217,7 +223,6 @@ const CreationCase: React.FC<Props> = ({
             setTeardown(str)
         }
     }
-
     const createCase = () => {
         if (namePresence && scenarioPresence) {
             const myCase = {
@@ -235,6 +240,10 @@ const CreationCase: React.FC<Props> = ({
                         setTreeSuites(response.data)
                     })
                 })
+                if (infoCaseForEdit.id === detailedCaseInfo.myCase.id && detailedCaseInfo.show) {
+                    setLastEditCase(infoCaseForEdit.id)
+                    setDetailedCaseInfo({show: true, myCase: {...myCase, id: infoCaseForEdit.id}})
+                }
             } else {
                 SuiteCaseService.createCase(myCase).then(() => {
                     SuiteCaseService.getTreeSuites().then((response) => {

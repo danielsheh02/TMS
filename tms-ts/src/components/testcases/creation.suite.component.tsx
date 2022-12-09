@@ -56,9 +56,9 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
             SuiteCaseService.createSuite(suite).then(() => {
                 SuiteCaseService.getTreeSuites().then((response) => {
                     setTreeSuites(response.data)
-                    SuiteCaseService.getSuites().then((response) => {
-                        setSuites(response.data)
-                    })
+                })
+                SuiteCaseService.getSuites().then((response) => {
+                    setSuites(response.data)
                 })
             })
             setShow(false)
