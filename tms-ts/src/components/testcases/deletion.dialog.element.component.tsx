@@ -7,21 +7,40 @@ function DeletionDialogElement(props: {
     openDialogDeletion: boolean, setOpenDialogDeletion: (show: boolean) => void,
     componentForDeletion: { type: string, id: number },
     setTreeSuites: (treeSuites: treeSuite[]) => void,
+    selectedForDeletion: number[], setSelectedForDeletion: (idCases: number[]) => void
 }) {
-    const {openDialogDeletion, setOpenDialogDeletion, componentForDeletion, setTreeSuites} = props
+    const {
+        openDialogDeletion, setOpenDialogDeletion, componentForDeletion, setTreeSuites,
+        selectedForDeletion, setSelectedForDeletion
+    } = props
 
     function disagreeToDelete() {
         setOpenDialogDeletion(false)
     }
 
     function agreeToDelete() {
-        if (componentForDeletion.type == "case")
+        if (componentForDeletion.type == "case") {
+            const indexInSelected = selectedForDeletion.indexOf(componentForDeletion.id)
+            if (indexInSelected !== -1) {
+                let newSelected: number[] = [];
+                if (indexInSelected === 0) {
+                    newSelected = newSelected.concat(selectedForDeletion.slice(1));
+                } else if (indexInSelected === selectedForDeletion.length - 1) {
+                    newSelected = newSelected.concat(selectedForDeletion.slice(0, -1));
+                } else if (indexInSelected > 0) {
+                    newSelected = newSelected.concat(
+                        selectedForDeletion.slice(0, indexInSelected),
+                        selectedForDeletion.slice(indexInSelected + 1),
+                    );
+                }
+                setSelectedForDeletion(newSelected);
+            }
             SuiteCaseService.deleteCase(componentForDeletion.id).then(() => {
                 SuiteCaseService.getTreeSuites().then((response) => {
                     setTreeSuites(response.data)
                 })
             })
-        else {
+        } else {
             SuiteCaseService.deleteSuite(componentForDeletion.id).then(() => {
                 SuiteCaseService.getTreeSuites().then((response) => {
                     setTreeSuites(response.data)

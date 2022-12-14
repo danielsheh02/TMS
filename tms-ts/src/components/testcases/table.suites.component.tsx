@@ -10,9 +10,7 @@ import {
     tableCellClasses,
     Checkbox,
     Link,
-    Dialog,
-    DialogContent,
-    DialogActions, Button, DialogContentText, CircularProgress, Box
+    Box
 } from "@mui/material";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React, {useEffect, useMemo, useState} from "react";
@@ -308,8 +306,12 @@ function Row(props: {
                             }}/>
                         }
                               style={{marginTop: 7}} label={row.name}/>
-                        {/*<Grid onClick={setOpenClose}*/}
-                        {/*      style={{marginTop: 7}} >{row.name}</Grid>*/}
+                        <IconButton size={"small"} onClick={() => {
+                            setComponentForDeletion({type: "suite", id: row.id})
+                            setOpenDialogDeletion(true)
+                        }} style={{marginLeft: 2, marginTop: 7}}>
+                            <DeleteIcon fontSize={"small"}/>
+                        </IconButton>
                     </Grid>
                 </TableCell>
             </TableRow>
@@ -501,13 +503,11 @@ const TableSuites = (props: {
             ))}
         </TableBody>
     </Table>, [suites, treeSuites, treeSuitesOpenMap, selectedCases]);
-    // console.log(detailedCaseInfo)
-    // console.log(shownCase)
+
     useEffect(() => {
         if (detailedCaseInfo.show) {
             if (shownCase.show && detailedCaseInfo.myCase.id === shownCase.myCaseId && lastEditCase !== detailedCaseInfo.myCase.id) {
-                // @ts-ignore
-                document.getElementById(shownCase.myCaseId + "Arrow").style.transform = ""
+                document.getElementById(shownCase.myCaseId + "Arrow")!.style.transform = ""
                 setDetailedCaseInfo({
                     show: false, myCase: {
                         id: -1,
@@ -522,20 +522,16 @@ const TableSuites = (props: {
                 })
                 setShownCase({show: false, myCaseId: -1})
             } else if (lastEditCase !== detailedCaseInfo.myCase.id) {
-                // @ts-ignore
-                document.getElementById(detailedCaseInfo.myCase.id + "Arrow").style.transform = 'rotate(180deg)'
+                document.getElementById(detailedCaseInfo.myCase.id + "Arrow")!.style.transform = 'rotate(180deg)'
                 if (shownCase.show) {
-                    // @ts-ignore
-                    document.getElementById(shownCase.myCaseId + "Arrow").style.transform = ""
+                    document.getElementById(shownCase.myCaseId + "Arrow")!.style.transform = ""
                 }
                 setShownCase({show: true, myCaseId: detailedCaseInfo.myCase.id})
             } else {
-                console.log("ya tut3")
                 setLastEditCase(-1)
             }
         } else if (detailedCaseInfo.myCase.id >= 0) {
-            // @ts-ignore
-            document.getElementById(detailedCaseInfo.myCase.id + "Arrow").style.transform = ""
+            document.getElementById(detailedCaseInfo.myCase.id + "Arrow")!.style.transform = ""
             setDetailedCaseInfo({
                 show: false, myCase: {
                     id: -1,
@@ -551,7 +547,7 @@ const TableSuites = (props: {
             setShownCase({show: false, myCaseId: -1})
         }
     }, [detailedCaseInfo])
-
+    console.log(selectedCases)
     return (
 
         <SplitterLayout customClassName={classes.splitter} primaryIndex={0} primaryMinSize={40} secondaryMinSize={35}
@@ -591,6 +587,8 @@ const TableSuites = (props: {
                                        setOpenDialogDeletion={setOpenDialogDeletion}
                                        componentForDeletion={componentForDeletion}
                                        setTreeSuites={setTreeSuites}
+                                       selectedForDeletion={selectedCases}
+                                       setSelectedForDeletion={setSelectedCases}
                 />
                 <DeletionDialogElements openDialogDeletion={openDialogDeletionElements}
                                         setOpenDialogDeletion={setOpenDialogDeletionElements}

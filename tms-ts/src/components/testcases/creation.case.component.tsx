@@ -224,10 +224,11 @@ const CreationCase: React.FC<Props> = ({
         }
     }
     const createCase = () => {
+        const projectId = JSON.parse(localStorage.getItem("currentProject") ?? '{"id" : 1}').id
         if (namePresence && scenarioPresence) {
             const myCase = {
                 name: name,
-                project: 1,
+                project: projectId,
                 suite: selectedSuite.id,
                 scenario: scenario,
                 estimate: estimateNumber,
@@ -253,17 +254,14 @@ const CreationCase: React.FC<Props> = ({
             }
             handleClose()
         } else if (!namePresence && !scenarioPresence) {
-            // @ts-ignore
-            document.getElementById("nameCaseTextField").focus();
+            document.getElementById("nameCaseTextField")?.focus();
             setFillFieldName(true)
             setFillFieldScenario(true)
         } else if (!namePresence) {
-            // @ts-ignore
-            document.getElementById("nameCaseTextField").focus();
+            document.getElementById("nameCaseTextField")?.focus();
             setFillFieldName(true)
         } else {
-            // @ts-ignore
-            document.getElementById("scenarioCaseTextField").focus();
+            document.getElementById("scenarioCaseTextField")?.focus();
             setFillFieldScenario(true)
         }
     }
