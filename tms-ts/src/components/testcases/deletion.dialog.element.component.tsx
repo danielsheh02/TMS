@@ -9,7 +9,6 @@ function DeletionDialogElement(props: {
     setTreeSuites: (treeSuites: treeSuite[]) => void,
 }) {
     const {openDialogDeletion, setOpenDialogDeletion, componentForDeletion, setTreeSuites} = props
-    console.log(componentForDeletion)
 
     function disagreeToDelete() {
         setOpenDialogDeletion(false)

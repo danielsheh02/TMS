@@ -5,30 +5,30 @@ import {treeSuite} from "./suites.component";
 
 function DeletionDialogElements(props: {
     openDialogDeletion: boolean, setOpenDialogDeletion: (show: boolean) => void,
-    selectedForDeletion: number[],
+    selectedForDeletion: number[], setSelectedForDeletion: (idCases: number[]) => void
     setTreeSuites: (treeSuites: treeSuite[]) => void,
 }) {
-    const {openDialogDeletion, setOpenDialogDeletion, selectedForDeletion, setTreeSuites} = props
-    console.log(selectedForDeletion)
+    const {
+        openDialogDeletion,
+        setOpenDialogDeletion,
+        selectedForDeletion,
+        setTreeSuites,
+        setSelectedForDeletion
+    } = props
+
 
     function disagreeToDelete() {
         setOpenDialogDeletion(false)
     }
 
-    function agreeToDelete() {
-        // if (componentForDeletion.type == "case")
-        //     SuiteCaseService.deleteCase(componentForDeletion.id).then(() => {
-        //         SuiteCaseService.getTreeSuites().then((response) => {
-        //             setTreeSuites(response.data)
-        //         })
-        //     })
-        // else {
-        //     SuiteCaseService.deleteSuite(componentForDeletion.id).then(() => {
-        //         SuiteCaseService.getTreeSuites().then((response) => {
-        //             setTreeSuites(response.data)
-        //         })
-        //     })
-        // }
+    async function agreeToDelete() {
+        SuiteCaseService.deleteCases(selectedForDeletion).then(() => {
+            SuiteCaseService.getTreeSuites().then((response) => {
+                setTreeSuites(response.data)
+            })
+        })
+
+        setSelectedForDeletion([])
         setOpenDialogDeletion(false)
     }
 

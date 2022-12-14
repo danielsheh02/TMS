@@ -30,7 +30,7 @@ import DeletionDialogElement from "./deletion.dialog.element.component";
 import DeletionDialogElements from "./deletion.dialog.elements.component";
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
-import { FixedSizeList } from 'react-window';
+import {FixedSizeList} from 'react-window';
 
 // const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
 //     "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
@@ -160,7 +160,7 @@ function TableRowCase(props: {
         }
         setSelected(newSelected);
     };
-    console.log(selected)
+
     return (
         <TableRow
             onMouseMove={() => setVisibleEditDeleteIcon(true)}
@@ -256,13 +256,28 @@ function Row(props: {
     } = props;
     const [localOpen, setLocalOpen] = React.useState<boolean | undefined>(undefined);
 
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.checked) {
-            const newSelected = row.test_cases.map((n) => n.id);
-            setSelectedCases(newSelected);
-            return;
+    const checkIfAllSelected = () => {
+        if (row.test_cases.length > 0) {
+            for (let i = 0; i < row.test_cases.length; i++) {
+                if (selectedCases.indexOf(row.test_cases[i].id) === -1) {
+                    return false
+                }
+            }
+            return true
         }
-        setSelectedCases([]);
+        return false
+    };
+
+    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const caseIdsInCurrentRow = row.test_cases.map((onecase) => onecase.id)
+        if (event.target.checked) {
+            const newSelected = caseIdsInCurrentRow.filter((caseid) => selectedCases.indexOf(caseid) === -1)
+            setSelectedCases(newSelected.concat(selectedCases))
+            return;
+        } else {
+            const newSelected = selectedCases.filter((caseid) => caseIdsInCurrentRow.indexOf(caseid) === -1)
+            setSelectedCases(newSelected)
+        }
     };
 
     useEffect(() => {
@@ -309,8 +324,8 @@ function Row(props: {
                                         <TableCell style={{width: "5%"}}>
                                             <Checkbox
                                                 style={{height: 20}}
-                                                indeterminate={selectedCases.length > 0 && selectedCases.length < row.test_cases.length}
-                                                checked={selectedCases.length > 0 && selectedCases.length === row.test_cases.length}
+                                                // indeterminate={selectedCases.length > 0 && selectedCases.length < row.test_cases.length}
+                                                checked={checkIfAllSelected()}
                                                 onChange={(e) => handleSelectAllClick(e)}
                                                 color="primary"
 
@@ -550,7 +565,7 @@ const TableSuites = (props: {
                     <Grid style={{
                         margin: 5
                     }}>
-                        <Link style={{maxHeight: "50%"}} component="button" onClick={() => {
+                        <Link style={{maxHeight: "50%", marginLeft: 5}} component="button" onClick={() => {
                             openAll()
                         }}>
                             Раскрыть все
@@ -562,9 +577,9 @@ const TableSuites = (props: {
                               }}>
                             Закрыть все
                         </Link>
-                        <IconButton size={"small"} onClick={() => {
+                        <IconButton size={"small"} disabled={!(selectedCases.length > 0)} onClick={() => {
                             setOpenDialogDeletionElements(true)
-                        }}>
+                        }} style={{marginLeft: 5}}>
                             <DeleteIcon fontSize={"small"}/>
                         </IconButton>
                     </Grid>
@@ -573,14 +588,15 @@ const TableSuites = (props: {
                     {memoizedValue}
                 </Grid>
                 <DeletionDialogElement openDialogDeletion={openDialogDeletion}
-                                           setOpenDialogDeletion={setOpenDialogDeletion}
-                                           componentForDeletion={componentForDeletion}
-                                           setTreeSuites={setTreeSuites}
+                                       setOpenDialogDeletion={setOpenDialogDeletion}
+                                       componentForDeletion={componentForDeletion}
+                                       setTreeSuites={setTreeSuites}
                 />
                 <DeletionDialogElements openDialogDeletion={openDialogDeletionElements}
-                                       setOpenDialogDeletion={setOpenDialogDeletionElements}
-                                       selectedForDeletion={selectedCases}
-                                       setTreeSuites={setTreeSuites}
+                                        setOpenDialogDeletion={setOpenDialogDeletionElements}
+                                        selectedForDeletion={selectedCases}
+                                        setTreeSuites={setTreeSuites}
+                                        setSelectedForDeletion={setSelectedCases}
                 />
             </Grid>
             {detailedCaseInfo.show &&
