@@ -20,15 +20,10 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import DetailedCaseInfo from "./detailed.case.info.component";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import TestPlanService from "../../services/testplan.service";
-import SuiteCaseService from "../../services/suite.case.service";
-import DeletionDialog from "./deletion.dialog.element.component";
-import DeletionDialogCaseOrSuite from "./deletion.dialog.element.component";
 import DeletionDialogElement from "./deletion.dialog.element.component";
 import DeletionDialogElements from "./deletion.dialog.elements.component";
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
-import {FixedSizeList} from 'react-window';
 
 // const tags = ['asdf', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
 //     "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ', "СРОЧНО", 'СРОЧНО', 'ОЧЕНЬ',
