@@ -126,6 +126,7 @@ const SuitesComponent: React.FC = () => {
             // for (let i = 100; i< 600; i++){
             //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
             // }
+            // SuiteCaseService.deleteCase(2000).then((r) => console.log(r)).catch((r) => console.log(r))
             // SuiteCaseService.getCases().then((response) => {
             // const localCases = response.data
             // console.log(response.data.length)
