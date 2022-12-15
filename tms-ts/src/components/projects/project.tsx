@@ -28,6 +28,7 @@ import {test, testPlan, user} from "../models.interfaces";
 import ProjectService from "../../services/project.service";
 import {statuses} from "../model.statuses";
 import useStyles from "../../styles/styles";
+import ProjectSettings from "./project.settings";
 
 const Project: React.FC = () => {
     const classes = useStyles()
@@ -46,7 +47,10 @@ const Project: React.FC = () => {
     const [endDate, setEndDate] = React.useState<Moment | null>(moment());
     const handleChangeStartDate = (newValue: Moment | null) => setStartDate(newValue);
     const handleChangeEndDate = (newValue: Moment | null) => setEndDate(newValue);
-    const handleOnOpenProjectSettings = () => navigate('/projectSettings');
+    const [showProjectSettings, setShowProjectSettings] = useState(false)
+    const handleShowProjectSettings = () => {
+        setShowProjectSettings(true)
+    }
     const handleOnShowStatus = (status: string) => {
         setStatusesToShow({...statusesShow, [status]: !statusesShow[status]})
     };
@@ -240,9 +244,10 @@ const Project: React.FC = () => {
                                     onClick={handleOnOpenFilter}>Фильтр</Button>
                             <Button variant="contained"
                                     style={{marginLeft: '10px'}}
-                                    onClick={handleOnOpenProjectSettings}
+                                    onClick={handleShowProjectSettings}
                             >Настройки</Button>
                         </Stack>
+                        <ProjectSettings show={showProjectSettings} setShow={setShowProjectSettings}/>
                         {showFilter ? filter : null}
                         <TableContainer component={Paper}>
                             <Table stickyHeader>
