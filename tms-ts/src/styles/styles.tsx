@@ -239,7 +239,12 @@ export default makeStyles({
             paddingTop: 0
         },
 
-    }
+    },
+    centeredField: {
+        "& .MuiFormLabel-root": {
+            marginTop: 0
+        }
+    },
     /*clickableLabels: {
         display: 'flex',
 

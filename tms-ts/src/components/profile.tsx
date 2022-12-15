@@ -6,8 +6,10 @@ import ProfileService from "../services/profile.service";
 import TextField from "@material-ui/core/TextField";
 import Settings from "./settings";
 import {TabContext, TabList, TabPanel} from "@mui/lab";
+import useStyles from "../styles/styles";
 
 const Profile: React.FC = () => {
+    const classes = useStyles()
     const [isLoaded, setIsLoaded] = useState<boolean>(false)
     const [view, setView] = useState("profile")
     const handleOnChangeView = (event: SyntheticEvent, newValue: string) => {
@@ -126,16 +128,20 @@ const Profile: React.FC = () => {
                     <TabPanel value={"profile"}>
                         <form onSubmit={handleOnSavePersonalData}
                               style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-                            <TextField variant={"outlined"} required label={'Имя пользователя'}
+                            <TextField className={classes.centeredField} variant={"outlined"} required
+                                       label={'Имя пользователя'}
                                        style={{margin: '10px 10px 10px 10px'}}
                                        value={username} onChange={handleChangeUsername}/>
-                            <TextField variant={"outlined"} label={'Имя'} style={{margin: '10px 10px 10px 10px'}}
+                            <TextField className={classes.centeredField} variant={"outlined"} label={'Имя'}
+                                       style={{margin: '10px 10px 10px 10px'}}
                                        value={firstName}
                                        onChange={handleChangeFirstName}/>
-                            <TextField variant={"outlined"} label={'Фамилия'} style={{margin: '10px 10px 10px 10px'}}
+                            <TextField className={classes.centeredField} variant={"outlined"} label={'Фамилия'}
+                                       style={{margin: '10px 10px 10px 10px'}}
                                        value={lastName}
                                        onChange={handleChangeLastName}/>
-                            <TextField variant={"outlined"} label={'Адрес электронной почты'}
+                            <TextField className={classes.centeredField} variant={"outlined"}
+                                       label={'Адрес электронной почты'}
                                        style={{margin: '10px 10px 10px 10px'}}
                                        value={email} onChange={handleChangeEmail}/>
 
@@ -146,17 +152,20 @@ const Profile: React.FC = () => {
                     <TabPanel value={"changePassword"}>
                         <form onSubmit={handleOnSavePassword}
                               style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-                            <TextField variant={"outlined"} required label={'Новый пароль'}
+                            <TextField className={classes.centeredField} variant={"outlined"} required
+                                       label={'Новый пароль'}
                                        style={{margin: '10px 10px 10px 10px'}}
                                        type={"password"}
                                        value={newPassword}
                                        onChange={handleChangeNewPassword}/>
-                            <TextField variant={"outlined"} required error={repeatError} label={'Подтверждение пароля'}
+                            <TextField className={classes.centeredField} variant={"outlined"} required
+                                       error={repeatError} label={'Подтверждение пароля'}
                                        style={{margin: '10px 10px 10px 10px'}}
                                        type={"password"} value={repeatNewPassword}
                                        onChange={handleChangeRepeatNewPassword}
                                        helperText={repeatHelperText}/>
-                            <TextField variant={"outlined"} required error={passwordError} type={"password"}
+                            <TextField className={classes.centeredField} variant={"outlined"} required
+                                       error={passwordError} type={"password"}
                                        label={'Текущий пароль'}
                                        style={{margin: '10px 10px 10px 10px'}}
                                        value={password} onChange={handleChangePassword}

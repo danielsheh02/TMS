@@ -27,8 +27,10 @@ import {useNavigate} from "react-router-dom";
 import {test, testPlan, user} from "../models.interfaces";
 import ProjectService from "../../services/project.service";
 import {statuses} from "../model.statuses";
+import useStyles from "../../styles/styles";
 
 const Project: React.FC = () => {
+    const classes = useStyles()
     const navigate = useNavigate();
     const labels = [['НАЗВАНИЕ ТЕСТ-ПЛАНА', '#000000'], ['ВСЕГО ТЕСТОВ', '#000000']];
     statuses.map((status) => labels.push([status.name.toUpperCase(), status.color]))
@@ -147,7 +149,7 @@ const Project: React.FC = () => {
         </Zoom>
     </Stack>
 
-    const filter = <Zoom in={showFilter} style={{marginBottom: '10px'}}>
+    const filter = <Zoom in={showFilter} style={{marginBottom: '10px', marginTop: "10px"}}>
         <Grid sx={{display: 'flex', justifyContent: 'center'}}>
             <FormGroup sx={{display: 'flex', justifyContent: 'center', flexDirection: 'row'}}>
                 {statuses.map((status, index) =>
@@ -165,20 +167,22 @@ const Project: React.FC = () => {
                 <LocalizationProvider dateAdapter={AdapterMoment}>
                     <div style={{marginLeft: '10px'}}>
                         <DesktopDatePicker
+                            className={classes.centeredField}
                             label="Выберите дату начала"
                             inputFormat="DD/MM/YYYY"
                             value={startDate}
                             onChange={handleChangeStartDate}
-                            renderInput={(params) => <TextField {...params} />}
+                            renderInput={(params) => <TextField className={classes.centeredField} {...params} />}
                         />
                     </div>
                     <div style={{marginLeft: '10px'}}>
                         <DesktopDatePicker
+                            className={classes.centeredField}
                             label="Выберите дату окончания"
                             inputFormat="DD/MM/YYYY"
                             value={endDate}
                             onChange={handleChangeEndDate}
-                            renderInput={(params) => <TextField {...params} />}
+                            renderInput={(params) => <TextField className={classes.centeredField} {...params} />}
                         />
                     </div>
                 </LocalizationProvider>
