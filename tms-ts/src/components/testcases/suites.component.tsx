@@ -2,7 +2,7 @@ import {
     Button, Grid
 } from "@material-ui/core";
 import React, {useEffect, useMemo, useState} from "react";
-import useStyles from "../../styles/styles";
+import useStyles from "./styles.testcases";
 import CreationCase from "./creation.case.component";
 import CreationSuite from "./creation.suite.component";
 import TableSuites from "./table.suites.component";
@@ -82,7 +82,6 @@ const SuitesComponent: React.FC = () => {
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [suites, setSuites] = useState<suite []>([])
     const [treeSuites, setTreeSuites] = useState<treeSuite[]>([])
-    // const [cases, setCases] = useState([])
     const [infoCaseForEdit, setInfoCaseForEdit] = useState<myCase | null>(null)
     const [lastEditCase, setLastEditCase] = useState<number>(-1)
     const [selectedSuiteCome, setSelectedSuiteCome] = useState<{ id: number, name: string } | null>(null)
@@ -123,7 +122,7 @@ const SuitesComponent: React.FC = () => {
             // console.log(response.data)
 
             // console.log(response.data)
-            // for (let i = 100; i< 600; i++){
+            // for (let i = 0; i< 600; i++){
             //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
             // }
             // SuiteCaseService.deleteCase(2000).then((r) => console.log(r)).catch((r) => console.log(r))
@@ -158,16 +157,8 @@ const SuitesComponent: React.FC = () => {
     }
     const classes = useStyles()
     return (
-        <Grid style={{
-            marginTop: 0,
-            position: "absolute",
-            display: "flex",
-            height: "91.5%",
-            width: "100%"
-        }}>
-            <Grid style={{
-                overflowY: "auto", maxHeight: "100%", width: "80%"
-            }}>
+        <Grid className={classes.mainGrid}>
+            <Grid className={classes.leftGrid}>
                 <TableSuites selected={selected} setSelected={setSelected}
                              setShowCreationCase={setShowCreationCase}
                              setShowCreationSuite={setShowCreationSuite}
@@ -182,42 +173,24 @@ const SuitesComponent: React.FC = () => {
                              setTreeSuites={setTreeSuites}
                 />
             </Grid>
-            <Grid style={{
-                backgroundColor: "#eeeeee",
-                width: "20%"
-            }}>
-                <Grid style={{display: "flex", flexDirection: "column"}}>
-                    <Grid style={{textAlign: "center"}}>
-                        <Button style={{
-                            margin: 15,
-                            minWidth: "70%",
-                            height: "45%",
-                            backgroundColor: "#FFFFFF",
-                            color: "#000000",
-                        }} onClick={handleShowCreationCase}>Создать тест-кейс</Button>
-                        <Button style={{
-                            minWidth: "70%",
-                            height: "45%",
-                            backgroundColor: "#696969",
-                            color: "#FFFFFF",
-                        }} onClick={handleShowCreationSuite}>Создать сьюту</Button>
-                        {suites.length > 0 &&
-                        <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
-                                      selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
-                                      infoCaseForEdit={infoCaseForEdit}
-                                      setInfoCaseForEdit={setInfoCaseForEdit}
-                                      setDetailedCaseInfo={setDetailedCaseInfo}
-                                      detailedCaseInfo={detailedCaseInfo}
-                                      setLastEditCase={setLastEditCase}
-                        />}
-                        <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
-                                       setSuites={setSuites}
-                                       selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>
-                    </Grid>
+            <Grid className={classes.rightGrid}>
+                <Grid className={classes.rightGridButtons}>
+                    <Button className={classes.buttonCreateCase} onClick={handleShowCreationCase}>Создать тест-кейс</Button>
+                    <Button className={classes.buttonCreateSuite} onClick={handleShowCreationSuite}>Создать сьюту</Button>
+                    {suites.length > 0 &&
+                    <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
+                                  selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
+                                  infoCaseForEdit={infoCaseForEdit}
+                                  setInfoCaseForEdit={setInfoCaseForEdit}
+                                  setDetailedCaseInfo={setDetailedCaseInfo}
+                                  detailedCaseInfo={detailedCaseInfo}
+                                  setLastEditCase={setLastEditCase}
+                    />}
+                    <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
+                                   setSuites={setSuites}
+                                   selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>
                 </Grid>
-                <Grid style={{
-                    height: "67%"
-                }}>
+                <Grid className={classes.mainGridFolderStructure}>
                     {memoizedValue2}
                 </Grid>
             </Grid>

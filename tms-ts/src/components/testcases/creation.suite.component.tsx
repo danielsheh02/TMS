@@ -46,8 +46,8 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
     }
 
     const createSuite = () => {
-        const projectId = JSON.parse(localStorage.getItem("currentProject") ?? '{"id" : 1}').id
-        if (namePresence) {
+        const projectId = JSON.parse(localStorage.getItem("currentProject") ?? '{"id" : null}').id
+        if (namePresence && projectId) {
             const suite = {
                 name: name,
                 parent: selectedSuite ? selectedSuite.id : null,
@@ -66,7 +66,7 @@ const CreationSuite: React.FC<Props> = ({show, setShow, suites, selectedSuiteCom
             setNamePresence(false)
             setFillFieldName(false)
 
-        } else {
+        } else if (!namePresence) {
             document.getElementById("nameTextField")?.focus();
             setFillFieldName(true)
         }

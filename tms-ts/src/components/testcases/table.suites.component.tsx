@@ -525,8 +525,8 @@ const TableSuites = (props: {
             } else {
                 setLastEditCase(-1)
             }
-        } else if (detailedCaseInfo.myCase.id >= 0) {
-            document.getElementById(detailedCaseInfo.myCase.id + "Arrow")!.style.transform = ""
+        } else if (shownCase.myCaseId >= 0) {
+            document.getElementById(shownCase.myCaseId + "Arrow")!.style.transform = ""
             setDetailedCaseInfo({
                 show: false, myCase: {
                     id: -1,
@@ -542,7 +542,7 @@ const TableSuites = (props: {
             setShownCase({show: false, myCaseId: -1})
         }
     }, [detailedCaseInfo])
-    console.log(selectedCases)
+
     return (
 
         <SplitterLayout customClassName={classes.splitter} primaryIndex={0} primaryMinSize={40} secondaryMinSize={35}
