@@ -38,9 +38,6 @@ export default makeStyles({
         color: "#FFFFFF",
         "&:hover":{
             backgroundColor: "#777676",
-            "&:last-child": {
-                backgroundColor: "#ff0000",
-            }
         },
     },
     mainGridFolderStructure:{
