@@ -113,35 +113,23 @@ const SuitesComponent: React.FC = () => {
     const memoizedValue2 = useMemo(() => <FolderSuites treeSuites={treeSuites} suites={suites}/>, [suites, treeSuites]);
 
     useEffect(() => {
-        // SuiteCaseService.authorize().then((response) => {
-        //     const token = response.data.access
         SuiteCaseService.getSuites().then((response) => {
-            // const localSuites = response.data
             setSuites(response.data)
             console.log(response.data.length)
-            // console.log(response.data)
-
-            // console.log(response.data)
-            // for (let i = 0; i< 600; i++){
+            // for (let i = 0; i< 1500; i++){
             //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
             // }
-            // SuiteCaseService.deleteCase(2000).then((r) => console.log(r)).catch((r) => console.log(r))
             // SuiteCaseService.getCases().then((response) => {
-            // const localCases = response.data
             // console.log(response.data.length)
-            // SuiteCaseService.getTreeSuites().then((response) => {
-            //     // const localTreeSuites = response.data
-            //     setTreeSuites(response.data)
             // })
-            // })
-        })
-            // })
-            .catch((e) => {
-                console.log(e);
-            });
+        }).catch((e) => {
+            console.log(e);
+        });
         SuiteCaseService.getTreeSuites().then((response) => {
             setTreeSuites(response.data)
-        })
+        }).catch((e) => {
+            console.log(e);
+        });
     }, [])
 
     const handleShowCreationCase = () => {
@@ -175,8 +163,10 @@ const SuitesComponent: React.FC = () => {
             </Grid>
             <Grid className={classes.rightGrid}>
                 <Grid className={classes.rightGridButtons}>
-                    <Button className={classes.buttonCreateCase} onClick={handleShowCreationCase}>Создать тест-кейс</Button>
-                    <Button className={classes.buttonCreateSuite} onClick={handleShowCreationSuite}>Создать сьюту</Button>
+                    <Button className={classes.buttonCreateCase} onClick={handleShowCreationCase}>Создать
+                        тест-кейс</Button>
+                    <Button className={classes.buttonCreateSuite} onClick={handleShowCreationSuite}>Создать
+                        сьюту</Button>
                     {suites.length > 0 &&
                     <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
                                   selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}

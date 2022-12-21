@@ -118,17 +118,17 @@ const CustomContent = React.forwardRef(function CustomContent(
 const StyledTreeItem = styled((props: TreeItemProps) => (
     <TreeItem ContentComponent={CustomContent} {...props}/>
 ))(({theme}) => ({
-    [`& .${treeItemClasses.iconContainer}`]: {
+    "& .MuiTreeItem-iconContainer": {
         '& .close': {
             opacity: 0.3,
         },
     },
-    [`& .${treeItemClasses.group}`]: {
+    "& .MuiTreeItem-group": {
         marginLeft: 15,
         paddingLeft: 2,
         borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
     },
-    [`& .${treeItemClasses.root}`]: {
+    "& .MuiTreeItem-root": {
         marginTop: 3,
         marginBottom: 3,
     },
