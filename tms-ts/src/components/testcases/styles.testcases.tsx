@@ -22,7 +22,7 @@ export default makeStyles({
         textAlign: "center"
     },
     buttonCreateCase: {
-        margin: 15,
+        margin: "15px 15px 0 15px",
         minWidth: "70%",
         height: "45%",
         backgroundColor: "#FFFFFF",
@@ -32,6 +32,7 @@ export default makeStyles({
         },
     },
     buttonCreateSuite: {
+        marginTop: 15,
         minWidth: "70%",
         height: "45%",
         backgroundColor: "#696969",
@@ -146,8 +147,18 @@ export default makeStyles({
     suiteChip: {
         borderRadius: 20,
         backgroundColor: "#eeeeee",
+        padding: "8px 13px 8px 8px",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "row",
+    },
+    suitePaper: {
+        borderRadius: 20,
+        backgroundColor: "#eeeeee",
         padding: 7,
-        cursor: "pointer"
+        cursor: "pointer",
+        margin: 10,
+        width: "50%",
     },
     cellSuiteChip:{
         padding: "8px 0px 1px 20px"

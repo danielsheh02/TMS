@@ -10,14 +10,14 @@ import SuiteCaseService from "../../services/suite.case.service";
 import FolderSuites from "./folder.suites.component";
 import {styled} from "@mui/material/styles";
 import {Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
-import DetailedCaseInfo from "./detailed.case.info.component";
-import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
+import PaginationSuitesComponent from "./pagination.suites.component";
+import {useParams, useNavigate} from "react-router-dom";
 
 
 export const CustomWidthTooltip = styled(({className, ...props}: TooltipProps) => (
     <Tooltip  {...props} classes={{popper: className}}/>
-))(({theme}) => ({
+))(() => ({
     [`& .${tooltipClasses.tooltip}`]: {
         marginLeft: 10,
         minWidth: 200,
@@ -77,6 +77,7 @@ export interface suite {
 
 
 const SuitesComponent: React.FC = () => {
+    const classes = useStyles()
     const [showCreationCase, setShowCreationCase] = useState(false)
     const [showCreationSuite, setShowCreationSuite] = useState(false)
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -97,31 +98,17 @@ const SuitesComponent: React.FC = () => {
             estimate: -1
         }
     })
+    const {selectedSuiteId} = useParams()
+    const [selectedSuiteForTreeView, setSelectedSuiteForTreeView] = useState<treeSuite | undefined>(undefined)
+    const navigate = useNavigate()
+    const memoizedValueFolderStructureOfSuites = useMemo(() =>
+            <FolderSuites treeSuites={selectedSuiteForTreeView} suites={suites}/>,
+        [suites, treeSuites, selectedSuiteForTreeView]);
 
-    // const memoizedValue = useMemo(() => <TableSuites
-    //     selected={selected} setSelected={setSelected}
-    //     setShowCreationCase={setShowCreationCase}
-    //     setShowCreationSuite={setShowCreationSuite}
-    //     setSelectedSuiteCome={setSelectedSuiteCome}
-    //     suites={suites}
-    //     treeSuites={treeSuites}
-    //     setInfoCaseForEdit={setInfoCaseForEdit}
-    //     detailedCaseInfo={detailedCaseInfo}
-    //     setDetailedCaseInfo={setDetailedCaseInfo}
-    // />, [suites, treeSuites]);
-
-    const memoizedValue2 = useMemo(() => <FolderSuites treeSuites={treeSuites} suites={suites}/>, [suites, treeSuites]);
 
     useEffect(() => {
         SuiteCaseService.getSuites().then((response) => {
             setSuites(response.data)
-            console.log(response.data.length)
-            // for (let i = 0; i< 1500; i++){
-            //     SuiteCaseService.deleteSuite(response.data[i].id).then((r)=> console.log(r))
-            // }
-            // SuiteCaseService.getCases().then((response) => {
-            // console.log(response.data.length)
-            // })
         }).catch((e) => {
             console.log(e);
         });
@@ -132,56 +119,85 @@ const SuitesComponent: React.FC = () => {
         });
     }, [])
 
+    useEffect(() => {
+        if (selectedSuiteId !== undefined && treeSuites.length > 0) {
+            setSelectedSuiteForTreeView(treeSuites.find(suite => suite.id === parseInt(selectedSuiteId)))
+        } else if (selectedSuiteId !== undefined) {
+            SuiteCaseService.getTreeBySetSuite(parseInt(selectedSuiteId)).then((response) => {
+                setSelectedSuiteForTreeView(response.data)
+            }).catch((e) => {
+                if (e.response.status === 404) {
+                    navigate("/testcases")
+                }
+            })
+        } else {
+            setSelectedSuiteForTreeView(undefined)
+        }
+    }, [selectedSuiteId])
+
     const handleShowCreationCase = () => {
-        if (suites.length > 0) {
+        if (suites.length > 0 && selectedSuiteForTreeView !== undefined) {
             setShowCreationCase(true)
-            setSelectedSuiteCome({id: suites[0].id, name: suites[0].name})
+            setSelectedSuiteCome({id: selectedSuiteForTreeView.id, name: selectedSuiteForTreeView.name})
         }
     }
 
     const handleShowCreationSuite = () => {
         setShowCreationSuite(true)
-        setSelectedSuiteCome(null)
+        if (selectedSuiteForTreeView !== undefined) {
+            setSelectedSuiteCome({id: selectedSuiteForTreeView.id, name: selectedSuiteForTreeView.name})
+        } else {
+            setSelectedSuiteCome(null)
+        }
     }
-    const classes = useStyles()
+
     return (
         <Grid className={classes.mainGrid}>
             <Grid className={classes.leftGrid}>
-                <TableSuites selected={selected} setSelected={setSelected}
-                             setShowCreationCase={setShowCreationCase}
-                             setShowCreationSuite={setShowCreationSuite}
-                             setSelectedSuiteCome={setSelectedSuiteCome}
-                             suites={suites}
-                             treeSuites={treeSuites}
-                             setInfoCaseForEdit={setInfoCaseForEdit}
-                             detailedCaseInfo={detailedCaseInfo}
-                             setDetailedCaseInfo={setDetailedCaseInfo}
-                             lastEditCase={lastEditCase}
-                             setLastEditCase={setLastEditCase}
-                             setTreeSuites={setTreeSuites}
-                />
+                {selectedSuiteForTreeView !== undefined && <TableSuites selected={selected} setSelected={setSelected}
+                                                                        setShowCreationCase={setShowCreationCase}
+                                                                        setShowCreationSuite={setShowCreationSuite}
+                                                                        setSelectedSuiteCome={setSelectedSuiteCome}
+                                                                        suites={suites}
+                                                                        selectedSuiteForTreeView={selectedSuiteForTreeView}
+                                                                        setSelectedSuiteForTreeView={setSelectedSuiteForTreeView}
+                                                                        setInfoCaseForEdit={setInfoCaseForEdit}
+                                                                        detailedCaseInfo={detailedCaseInfo}
+                                                                        setDetailedCaseInfo={setDetailedCaseInfo}
+                                                                        lastEditCase={lastEditCase}
+                                                                        setLastEditCase={setLastEditCase}
+                                                                        setTreeSuites={setTreeSuites}
+                />}
+                {selectedSuiteForTreeView === undefined && <PaginationSuitesComponent treeSuites={treeSuites}/>}
             </Grid>
             <Grid className={classes.rightGrid}>
                 <Grid className={classes.rightGridButtons}>
-                    <Button className={classes.buttonCreateCase} onClick={handleShowCreationCase}>Создать
-                        тест-кейс</Button>
+                    {suites.length > 0 && selectedSuiteForTreeView !== undefined &&
+                    <div>
+                        <Button className={classes.buttonCreateCase} onClick={handleShowCreationCase}>Создать
+                            тест-кейс</Button>
+                        <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
+                                      selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
+                                      infoCaseForEdit={infoCaseForEdit}
+                                      setInfoCaseForEdit={setInfoCaseForEdit}
+                                      setDetailedCaseInfo={setDetailedCaseInfo}
+                                      detailedCaseInfo={detailedCaseInfo}
+                                      setLastEditCase={setLastEditCase}
+                                      setSelectedSuiteForTreeView={setSelectedSuiteForTreeView}
+                                      selectedSuiteForTreeView={selectedSuiteForTreeView}
+                        />
+                    </div>}
                     <Button className={classes.buttonCreateSuite} onClick={handleShowCreationSuite}>Создать
                         сьюту</Button>
-                    {suites.length > 0 &&
-                    <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
-                                  selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
-                                  infoCaseForEdit={infoCaseForEdit}
-                                  setInfoCaseForEdit={setInfoCaseForEdit}
-                                  setDetailedCaseInfo={setDetailedCaseInfo}
-                                  detailedCaseInfo={detailedCaseInfo}
-                                  setLastEditCase={setLastEditCase}
-                    />}
                     <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
                                    setSuites={setSuites}
-                                   selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}/>
+                                   selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
+                                   setSelectedSuiteForTreeView={setSelectedSuiteForTreeView}
+                                   selectedSuiteForTreeView={selectedSuiteForTreeView}
+                    />
                 </Grid>
                 <Grid className={classes.mainGridFolderStructure}>
-                    {memoizedValue2}
+                    {memoizedValueFolderStructureOfSuites}
                 </Grid>
             </Grid>
         </Grid>

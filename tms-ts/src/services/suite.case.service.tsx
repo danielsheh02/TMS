@@ -21,6 +21,15 @@ export default class SuiteCaseService {
         }
     }
 
+    static getTreeBySetSuite(id: number) {
+        const projectId = JSON.parse(localStorage.getItem("currentProject") ?? '{"id" : null}').id
+        if (projectId) {
+            return axiosTMS.get("api/v1/suites/" + id + "/?project=" + projectId + "&treeview=true")
+        } else {
+            return axiosTMS.get("api/v1/suites/" + id + "/?treeview=true")
+        }
+    }
+
     static getTreeSuites() {
         const projectId = JSON.parse(localStorage.getItem("currentProject") ?? '{"id" : null}').id
         if (projectId) {
