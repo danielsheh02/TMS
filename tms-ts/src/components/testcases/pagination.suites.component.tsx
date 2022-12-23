@@ -23,7 +23,6 @@ function PaginationSuitesComponent(props: { treeSuites: treeSuite[], countOfSuit
 
     return (
         <div style={{display: "flex", flexDirection: "column", margin: "0 0 0 30px"}}>
-            {/*<div style={{width: "100%"}}>*/}
             <TextField
                 onChange={(content) => onChangeName(content)}
                 autoComplete="off"
@@ -48,7 +47,6 @@ function PaginationSuitesComponent(props: { treeSuites: treeSuite[], countOfSuit
                 onChange={(_, num) => setPage(num)}
                 sx={{marginY: 1, marginX: 1}}
             />
-            {/*</div>*/}
         </div>
     )
 }
