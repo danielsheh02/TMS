@@ -1,4 +1,4 @@
-import {IconButton, Input} from "@mui/material";
+import {IconButton, TextField} from "@mui/material";
 import Typography from '@mui/material/Typography';
 import React, {useEffect, useState} from "react";
 import {suite, treeSuite} from "./suites.component";
@@ -294,11 +294,12 @@ const FolderSuites = (props: {
                     margin: "15px 0px 0px 20px",
                 }}>
                     <div>
-                        <Input
+                        <TextField
                             onChange={(content) => onChangeName(content)}
                             autoComplete="off"
                             style={{width: "95%"}}
                             placeholder="Поиск..."
+                            variant={"outlined"}
                         />
                     </div>
 

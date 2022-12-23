@@ -192,6 +192,16 @@ const CreationCase: React.FC<Props> = ({
         setSelectedSuite({id: e.target.value.id, name: e.target.value.name})
     }
 
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: "30%",
+                maxWidth: "30%",
+                overflow: "auto"
+            },
+        },
+    };
+
     return (
         <Dialog
             disableEnforceFocus
@@ -315,6 +325,7 @@ const CreationCase: React.FC<Props> = ({
                                     label="Выберите сьюту"
                                     onChange={(e) => chooseSuite(e)}
                                     renderValue={(selected) => <Grid>{selected}</Grid>}
+                                    MenuProps={MenuProps}
                                 >
                                     {suites.map((suite, index) => <MenuItem key={index}
                                                                             value={suite as any}>{suite.name}</MenuItem>)}
