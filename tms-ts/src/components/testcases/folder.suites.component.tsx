@@ -167,11 +167,20 @@ const FolderSuites = (props: {
 
     useEffect(() => {
         const suitesIdArray: string[] = []
-        suites.map((suite) => (
-            suitesIdArray.push(suite.id.toString())
-        ))
+        if (treeSuites){
+            const fillExpandedSuite = (childrenSuitesArr: treeSuite[]) => {
+                childrenSuitesArr.map((suite) => {
+                    if (suite.children.length > 0) {
+                        fillExpandedSuite(suite.children)
+                    }
+                    suitesIdArray.push(suite.id.toString())
+                })
+            }
+            suitesIdArray.push(treeSuites.id.toString())
+            fillExpandedSuite(treeSuites.children)
+        }
         setExpanded(suitesIdArray)
-    }, [suites]);
+    }, [treeSuites]);
 
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (e.target.value) {
