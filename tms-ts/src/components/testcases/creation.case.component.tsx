@@ -40,9 +40,12 @@ const CreationCase: React.FC<Props> = ({
                                            selectedSuiteForTreeView
                                        }) => {
     const classes = useStyles()
-    const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string }>({
+    const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string }>(suites.length > 0 ? {
         id: suites[0].id,
         name: suites[0].name,
+    } : {
+        id: -1,
+        name: "Нет допустимых сьют",
     })
 
     const [name, setName] = useState("")

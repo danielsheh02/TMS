@@ -193,7 +193,7 @@ const SuitesComponent: React.FC = () => {
             </div>
             <div className={classes.rightGrid}>
                 <div className={classes.rightGridButtons}>
-                    {suites.length > 0 && selectedSuiteForTreeView !== undefined &&
+                    {selectedSuiteForTreeView !== undefined &&
                     <div>
                         <Button sx={{
                             margin: "15px 15px 0 15px",
