@@ -1,6 +1,3 @@
-import {
-    Button, Grid
-} from "@material-ui/core";
 import React, {useEffect, useMemo, useState} from "react";
 import useStyles from "./styles.testcases";
 import CreationCase from "./creation.case.component";
@@ -9,7 +6,7 @@ import TableSuites from "./table.suites.component";
 import SuiteCaseService from "../../services/suite.case.service";
 import FolderSuites from "./folder.suites.component";
 import {styled} from "@mui/material/styles";
-import {InputLabel, MenuItem, Select, Tooltip, tooltipClasses, TooltipProps} from "@mui/material";
+import {InputLabel, MenuItem, Select, Tooltip, tooltipClasses, TooltipProps, Button} from "@mui/material";
 import 'react-splitter-layout/lib/index.css';
 import PaginationSuitesComponent from "./pagination.suites.component";
 import {useParams, useNavigate} from "react-router-dom";
@@ -174,8 +171,8 @@ const SuitesComponent: React.FC = () => {
     };
 
     return (
-        <Grid className={classes.mainGrid}>
-            <Grid className={classes.leftGrid}>
+        <div className={classes.mainGrid}>
+            <div className={classes.leftGrid}>
                 {selectedSuiteForTreeView !== undefined && <TableSuites selected={selected} setSelected={setSelected}
                                                                         setShowCreationCase={setShowCreationCase}
                                                                         setShowCreationSuite={setShowCreationSuite}
@@ -193,12 +190,21 @@ const SuitesComponent: React.FC = () => {
                 />}
                 {selectedSuiteForTreeView === undefined &&
                 <PaginationSuitesComponent countOfSuitesOnPage={countOfSuitesOnPage} treeSuites={treeSuites}/>}
-            </Grid>
-            <Grid className={classes.rightGrid}>
-                <Grid className={classes.rightGridButtons}>
+            </div>
+            <div className={classes.rightGrid}>
+                <div className={classes.rightGridButtons}>
                     {suites.length > 0 && selectedSuiteForTreeView !== undefined &&
                     <div>
-                        <Button className={classes.buttonCreateCase} onClick={handleShowCreationCase}>Создать
+                        <Button sx={{
+                            margin: "15px 15px 0 15px",
+                            minWidth: "70%",
+                            height: "45%",
+                            backgroundColor: "#FFFFFF",
+                            color: "#000000",
+                            "&:hover": {
+                                backgroundColor: "#fffafa",
+                            }
+                        }} onClick={handleShowCreationCase}>Создать
                             тест-кейс</Button>
                         <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
                                       selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
@@ -211,7 +217,16 @@ const SuitesComponent: React.FC = () => {
                                       selectedSuiteForTreeView={selectedSuiteForTreeView}
                         />
                     </div>}
-                    <Button className={classes.buttonCreateSuite} onClick={handleShowCreationSuite}>Создать
+                    <Button sx={{
+                        marginTop: "15px",
+                        minWidth: "70%",
+                        height: "45%",
+                        backgroundColor: "#696969",
+                        color: "#FFFFFF",
+                        "&:hover": {
+                            backgroundColor: "#777676",
+                        }
+                    }} onClick={handleShowCreationSuite}>Создать
                         сьюту</Button>
                     <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
                                    setSuites={setSuites}
@@ -221,7 +236,7 @@ const SuitesComponent: React.FC = () => {
                                    infoSuiteForEdit={infoSuiteForEdit}
                                    setInfoSuiteForEdit={setInfoSuiteForEdit}
                     />
-                </Grid>
+                </div>
                 {selectedSuiteForTreeView === undefined &&
                 <div>
                     <FormControl sx={{minWidth: "90%", margin: "25px 0px 0px 15px"}}
@@ -240,11 +255,11 @@ const SuitesComponent: React.FC = () => {
                     </FormControl>
                 </div>}
                 {selectedSuiteForTreeView !== undefined &&
-                <Grid className={classes.mainGridFolderStructure}>
+                <div className={classes.mainGridFolderStructure}>
                     {memoizedValueFolderStructureOfSuites}
-                </Grid>}
-            </Grid>
-        </Grid>
+                </div>}
+            </div>
+        </div>
     )
         ;
 }
