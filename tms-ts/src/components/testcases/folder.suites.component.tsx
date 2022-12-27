@@ -1,7 +1,7 @@
 import {IconButton, TextField} from "@mui/material";
 import Typography from '@mui/material/Typography';
 import React, {useEffect, useState} from "react";
-import {suite, treeSuite} from "./suites.component";
+import {treeSuite} from "./suites.component";
 import TreeView from "@mui/lab/TreeView";
 import TreeItem, {TreeItemContentProps, useTreeItem} from "@mui/lab/TreeItem";
 import SvgIcon from "@mui/material/SvgIcon";
@@ -150,10 +150,9 @@ const Suite = (props: {
 }
 
 const FolderSuites = (props: {
-    treeSuites: treeSuite | undefined,
-    suites: suite []
+    selectedSuiteForTreeView: treeSuite | undefined
 }) => {
-    const {treeSuites, suites} = props;
+    const {selectedSuiteForTreeView} = props;
     const [expanded, setExpanded] = useState<string[]>([])
     const [selected, setSelected] = useState<string[]>([])
     const [currentSuiteNumber, setCurrentSuiteNumber] = useState<number>(0)
@@ -167,7 +166,7 @@ const FolderSuites = (props: {
 
     useEffect(() => {
         const suitesIdArray: string[] = []
-        if (treeSuites){
+        if (selectedSuiteForTreeView) {
             const fillExpandedSuite = (childrenSuitesArr: treeSuite[]) => {
                 childrenSuitesArr.map((suite) => {
                     if (suite.children.length > 0) {
@@ -176,15 +175,30 @@ const FolderSuites = (props: {
                     suitesIdArray.push(suite.id.toString())
                 })
             }
-            suitesIdArray.push(treeSuites.id.toString())
-            fillExpandedSuite(treeSuites.children)
+            suitesIdArray.push(selectedSuiteForTreeView.id.toString())
+            fillExpandedSuite(selectedSuiteForTreeView.children)
         }
         setExpanded(suitesIdArray)
-    }, [treeSuites]);
+    }, [selectedSuiteForTreeView]);
 
     const onChangeName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (e.target.value) {
-            const foundSuites = suites.filter(suite => suite.name.toLowerCase().includes(e.target.value.toLowerCase()))
+        if (e.target.value && selectedSuiteForTreeView) {
+            const query = e.target.value.toLowerCase()
+            const foundSuites: treeSuite[] = []
+            const findSuitesByName = (childrenSuitesArr: treeSuite[]) => {
+                childrenSuitesArr.map((suite) => {
+                    if (suite.name.toLowerCase().includes(query)) {
+                        foundSuites.push(suite)
+                    }
+                    if (suite.children.length > 0) {
+                        findSuitesByName(suite.children)
+                    }
+                })
+            }
+            if (selectedSuiteForTreeView.name.toLowerCase().includes(query)) {
+                foundSuites.push(selectedSuiteForTreeView)
+            }
+            findSuitesByName(selectedSuiteForTreeView.children)
             const suitesIdArray: string[] = []
             let suitesHtmlElmArray: any[] = []
 
@@ -293,7 +307,7 @@ const FolderSuites = (props: {
         <div style={{
             height: "100%"
         }}>
-            {treeSuites !== undefined &&
+            {selectedSuiteForTreeView !== undefined &&
             <div style={{
                 height: "100%"
             }}>
@@ -341,7 +355,8 @@ const FolderSuites = (props: {
                             textAlign: "left",
                         }}
                     >
-                        <Suite key={treeSuites.id} row={treeSuites} nodeId={treeSuites.id}
+                        <Suite key={selectedSuiteForTreeView.id} row={selectedSuiteForTreeView}
+                               nodeId={selectedSuiteForTreeView.id}
                         />
                     </TreeView>
                 </div>
