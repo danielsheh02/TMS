@@ -55,9 +55,6 @@ function DeletionDialogElement(props: {
                         }
                     })
                 }
-                // SuiteCaseService.getTreeSuites().then((response) => {
-                //     setTreeSuites(response.data)
-                // })
                 SuiteCaseService.getTreeBySetSuite(selectedSuiteForTreeView.id).then((response) => {
                     setSelectedSuiteForTreeView(response.data)
                 }).catch((e) => {

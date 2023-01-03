@@ -10,40 +10,39 @@ import {
     Typography
 } from "@mui/material";
 import SuiteCaseService from "../../services/suite.case.service";
-import {CustomWidthTooltip, suite, treeSuite} from "./suites.component";
+import {CustomWidthTooltip, treeSuite} from "./suites.component";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 
 interface Props {
     show: boolean;
     setShow: (show: boolean) => void;
-    suites: suite [],
     selectedSuiteCome: { id: number, name: string } | null
     setTreeSuites: (treeSuites: treeSuite[]) => void
-    setSuites: (suites: suite[]) => void
     setSelectedSuiteForTreeView: (suite: treeSuite | undefined) => void,
     selectedSuiteForTreeView: treeSuite | undefined,
     infoSuiteForEdit: { id: number, name: string } | null;
-    setInfoSuiteForEdit: (suite: { id: number, name: string } | null) => void
+    setInfoSuiteForEdit: (suite: { id: number, name: string } | null) => void,
+    treeSuites: treeSuite []
 }
 
 const CreationSuite: React.FC<Props> = ({
                                             show,
                                             setShow,
-                                            suites,
                                             selectedSuiteCome,
                                             setTreeSuites,
-                                            setSuites,
                                             setSelectedSuiteForTreeView,
                                             selectedSuiteForTreeView,
                                             infoSuiteForEdit,
-                                            setInfoSuiteForEdit
+                                            setInfoSuiteForEdit,
+                                            treeSuites
                                         }) => {
     const classes = useStyles()
     const [selectedSuite, setSelectedSuite] = useState<{ id: number; name: string } | null>(selectedSuiteCome)
     const [name, setName] = useState("")
     const [namePresence, setNamePresence] = useState(false)
     const [fillFieldName, setFillFieldName] = useState(false)
+    const [suitesForSelect, setSuitesForSelect] = useState<{ id: number, name: string }[] | treeSuite[]>([])
 
     const handleClose = () => {
         setShow(false)
@@ -55,11 +54,27 @@ const CreationSuite: React.FC<Props> = ({
 
     useEffect(() => {
         setSelectedSuite(selectedSuiteCome)
+        if (selectedSuiteForTreeView) {
+            const suitesForSelect: { id: number, name: string }[] = []
+            const fillSuitesForSelect = (childrenSuitesArr: treeSuite[]) => {
+                childrenSuitesArr.map((suite) => {
+                    suitesForSelect.push({id: suite.id, name: suite.name})
+                    if (suite.children.length > 0) {
+                        fillSuitesForSelect(suite.children)
+                    }
+                })
+            }
+            suitesForSelect.push({id: selectedSuiteForTreeView.id, name: selectedSuiteForTreeView.name})
+            fillSuitesForSelect(selectedSuiteForTreeView.children)
+            setSuitesForSelect(suitesForSelect)
+        } else {
+            setSuitesForSelect(treeSuites)
+        }
         if (infoSuiteForEdit) {
             setName(infoSuiteForEdit.name)
             setNamePresence(true)
         }
-    }, [selectedSuiteCome, infoSuiteForEdit])
+    }, [selectedSuiteCome, infoSuiteForEdit, treeSuites])
 
     const chooseSuite = (e: any) => {
         setSelectedSuite(e.target.value ? {id: e.target.value.id, name: e.target.value.name} : null)
@@ -70,10 +85,10 @@ const CreationSuite: React.FC<Props> = ({
         if (namePresence && projectId) {
             const suite = {
                 name: name,
-                parent: selectedSuite ? selectedSuite.id : null,
+                parent: selectedSuite?.id ?? null,
                 project: projectId,
             }
-            console.log(infoSuiteForEdit)
+
             if (infoSuiteForEdit) {
                 SuiteCaseService.editSuite({id: infoSuiteForEdit.id, ...suite}).then(() => {
                     if (selectedSuiteForTreeView === undefined) {
@@ -97,9 +112,6 @@ const CreationSuite: React.FC<Props> = ({
                             setSelectedSuiteForTreeView(response.data)
                         })
                     }
-                    SuiteCaseService.getSuites().then((response) => {
-                        setSuites(response.data)
-                    })
                 })
             }
             setShow(false)
@@ -198,11 +210,11 @@ const CreationSuite: React.FC<Props> = ({
                                     renderValue={(selected) => <Grid>{selected}</Grid>}
                                     MenuProps={MenuProps}
                                 >
-                                    <MenuItem value={null as any}>
+                                    {!selectedSuiteForTreeView && <MenuItem value={null as any}>
                                         <em>Не выбрано</em>
-                                    </MenuItem>
-                                    {suites.map((suite, index) => <MenuItem key={index}
-                                                                            value={suite as any}>{suite.name}</MenuItem>)}
+                                    </MenuItem>}
+                                    {suitesForSelect.map((suite, index) => <MenuItem key={index}
+                                                                                     value={suite as any}>{suite.name}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>

@@ -80,7 +80,6 @@ const SuitesComponent: React.FC = () => {
     const [showCreationCase, setShowCreationCase] = useState(false)
     const [showCreationSuite, setShowCreationSuite] = useState(false)
     const [selected, setSelected] = React.useState<readonly string[]>([]);
-    const [suites, setSuites] = useState<suite []>([])
     const [treeSuites, setTreeSuites] = useState<treeSuite[]>([])
     const [infoCaseForEdit, setInfoCaseForEdit] = useState<myCase | null>(null)
     const [infoSuiteForEdit, setInfoSuiteForEdit] = useState<{ id: number, name: string } | null>(null)
@@ -102,8 +101,8 @@ const SuitesComponent: React.FC = () => {
     const [selectedSuiteForTreeView, setSelectedSuiteForTreeView] = useState<treeSuite | undefined>(undefined)
     const navigate = useNavigate()
     const memoizedValueFolderStructureOfSuites = useMemo(() =>
-            <FolderSuites treeSuites={selectedSuiteForTreeView} suites={suites}/>,
-        [suites, treeSuites, selectedSuiteForTreeView]);
+            <FolderSuites selectedSuiteForTreeView={selectedSuiteForTreeView}/>,
+        [treeSuites, selectedSuiteForTreeView]);
     const [countOfSuitesOnPage, setCountOfSuitesOnPage] = useState(parseInt(localStorage.getItem("countOfSuitesOnPage") ?? "20"));
     const start = 10
     const stop = 100
@@ -112,11 +111,6 @@ const SuitesComponent: React.FC = () => {
 
 
     useEffect(() => {
-        SuiteCaseService.getSuites().then((response) => {
-            setSuites(response.data)
-        }).catch((e) => {
-            console.log(e);
-        });
         SuiteCaseService.getTreeSuites().then((response) => {
             setTreeSuites(response.data)
         }).catch((e) => {
@@ -141,7 +135,7 @@ const SuitesComponent: React.FC = () => {
     }, [selectedSuiteId])
 
     const handleShowCreationCase = () => {
-        if (suites.length > 0 && selectedSuiteForTreeView !== undefined) {
+        if (selectedSuiteForTreeView !== undefined) {
             setShowCreationCase(true)
             setSelectedSuiteCome({id: selectedSuiteForTreeView.id, name: selectedSuiteForTreeView.name})
         }
@@ -177,7 +171,6 @@ const SuitesComponent: React.FC = () => {
                                                                         setShowCreationCase={setShowCreationCase}
                                                                         setShowCreationSuite={setShowCreationSuite}
                                                                         setSelectedSuiteCome={setSelectedSuiteCome}
-                                                                        suites={suites}
                                                                         selectedSuiteForTreeView={selectedSuiteForTreeView}
                                                                         setSelectedSuiteForTreeView={setSelectedSuiteForTreeView}
                                                                         setInfoCaseForEdit={setInfoCaseForEdit}
@@ -206,7 +199,7 @@ const SuitesComponent: React.FC = () => {
                             }
                         }} onClick={handleShowCreationCase}>Создать
                             тест-кейс</Button>
-                        <CreationCase show={showCreationCase} setShow={setShowCreationCase} suites={suites}
+                        <CreationCase show={showCreationCase} setShow={setShowCreationCase}
                                       selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
                                       infoCaseForEdit={infoCaseForEdit}
                                       setInfoCaseForEdit={setInfoCaseForEdit}
@@ -228,13 +221,13 @@ const SuitesComponent: React.FC = () => {
                         }
                     }} onClick={handleShowCreationSuite}>Создать
                         сьюту</Button>
-                    <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite} suites={suites}
-                                   setSuites={setSuites}
+                    <CreationSuite show={showCreationSuite} setShow={setShowCreationSuite}
                                    selectedSuiteCome={selectedSuiteCome} setTreeSuites={setTreeSuites}
                                    setSelectedSuiteForTreeView={setSelectedSuiteForTreeView}
                                    selectedSuiteForTreeView={selectedSuiteForTreeView}
                                    infoSuiteForEdit={infoSuiteForEdit}
                                    setInfoSuiteForEdit={setInfoSuiteForEdit}
+                                   treeSuites={treeSuites}
                     />
                 </div>
                 {selectedSuiteForTreeView === undefined &&
